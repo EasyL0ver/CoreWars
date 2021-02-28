@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
-using BotArena;
-using BotArena.Common;
+using CoreWars.Common;
+using CoreWars.Competition;
 using JetBrains.Annotations;
 
 namespace PrisonerDilemma
@@ -34,7 +34,7 @@ namespace PrisonerDilemma
         }
 
         protected override IReadOnlyList<ICompetitionAgent> Players => _game.Players;
-        protected override void RunCompetition(BotArena.Messages.RunCompetitionMessage message)
+        protected override void RunCompetition(CoreWars.Competition.Messages.RunCompetitionMessage message)
         {
             RequestChoices();
         }

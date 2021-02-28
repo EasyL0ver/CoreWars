@@ -1,6 +1,6 @@
 using System;
 
-namespace BotArena.Common
+namespace CoreWars.Common
 {
     public struct Range<T> where T : IComparable<T>
     {

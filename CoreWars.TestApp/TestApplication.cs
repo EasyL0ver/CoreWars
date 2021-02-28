@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
+using CoreWars.Competition;
 using PrisonerDilemma;
 using PrisonerDilemma.SampleBot;
+using Messages = CoreWars.Competition.Messages;
 
-namespace BotArena.TestApp
+namespace CoreWars.TestApp
 {
     public static class TestApplication
     {

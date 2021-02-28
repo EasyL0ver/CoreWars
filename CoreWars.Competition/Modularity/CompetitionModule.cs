@@ -1,7 +1,7 @@
 using Autofac;
-using BotArena.Common;
+using CoreWars.Common;
 
-namespace BotArena.Modularity
+namespace CoreWars.Competition.Modularity
 {
     public abstract class CompetitionModule : Module
     {

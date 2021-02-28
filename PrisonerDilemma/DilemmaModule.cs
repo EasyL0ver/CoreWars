@@ -1,6 +1,6 @@
 using Autofac;
-using BotArena.Common;
-using BotArena.Modularity;
+using CoreWars.Common;
+using CoreWars.Competition.Modularity;
 
 namespace PrisonerDilemma
 {

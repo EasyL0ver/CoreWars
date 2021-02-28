@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using BotArena;
+using CoreWars.Competition;
 
 namespace PrisonerDilemma
 {

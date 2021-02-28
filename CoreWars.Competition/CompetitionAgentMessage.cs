@@ -1,6 +1,6 @@
 using System;
 
-namespace BotArena
+namespace CoreWars.Competition
 {
     public class CompetitionAgentMessage
     {

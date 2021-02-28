@@ -1,7 +1,6 @@
-using System;
 using Akka.Actor;
 
-namespace BotArena
+namespace CoreWars.Competition
 {
     public interface ICompetitionAgentInfo
     {

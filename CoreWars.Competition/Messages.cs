@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace BotArena
+namespace CoreWars.Competition
 {
     [UsedImplicitly]
     public class Messages

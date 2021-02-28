@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BotArena.TestApp
+﻿namespace CoreWars.TestApp
 {
     class Program
     {

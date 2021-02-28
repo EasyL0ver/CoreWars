@@ -9,7 +9,7 @@ namespace PrisonerDilemma.SampleBot
         {
             Receive<Messages.PresentDilemmaMessage>(msg =>
             {
-                Sender.Tell(new BotArena.Messages.RequestContextMessage());
+                Sender.Tell(new CoreWars.Competition.Messages.RequestContextMessage());
             });
 
             Receive<DilemmaContext>(context =>

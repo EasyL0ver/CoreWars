@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Akka.Actor;
 
-namespace BotArena
+namespace CoreWars.Competition
 {
     public interface ICompetitionContext
     {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Akka.Actor;
-using BotArena;
+using CoreWars.Competition;
 
 namespace PrisonerDilemma
 {
