@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>BotArena.Competition</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Akka" Version="1.4.11" />
+      <PackageReference Include="Autofac" Version="6.0.0" />
+      <PackageReference Include="JetBrains.Annotations" Version="2020.2.0-eap" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CoreWars.Common\CoreWars.Common.csproj" />
+    </ItemGroup>
+
+</Project>
