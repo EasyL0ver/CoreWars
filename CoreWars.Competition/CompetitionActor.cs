@@ -1,27 +1,26 @@
 using System.Collections.Generic;
+using System.Linq;
 using Akka.Actor;
 
 namespace CoreWars.Competition
 {
-    public interface ICompetitionContext
-    {
-        IReadOnlyList<ICompetitionAgentInfo> Opponents { get; }
-    }
     public abstract class CompetitionActor<TContext> : ReceiveActor
-        where TContext : ICompetitionContext
+        where TContext : class
     {
         protected CompetitionActor()
         {
             Receive<Messages.RequestContextMessage>(
-                (msg) =>
-            {
-                Sender.Tell(GetGameContext(Sender));
-            });
+                (msg) => Sender.Tell(GetGameContext(Sender)));
 
-            Receive<Messages.RunCompetitionMessage>(RunCompetition);
+            Receive<Messages.RunCompetitionMessage>(
+                x => RunCompetition());
         }
-        protected abstract IReadOnlyList<ICompetitionAgent> Players { get; }
-        protected abstract void RunCompetition(Messages.RunCompetitionMessage message);
-        protected abstract TContext GetGameContext(IActorRef playerRef);
+
+        protected virtual TContext GetGameContext(IActorRef sender)
+        {
+            return null as TContext;
+        }
+        
+        protected abstract void RunCompetition();
     }
 }

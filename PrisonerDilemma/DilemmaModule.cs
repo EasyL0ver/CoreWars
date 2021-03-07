@@ -6,12 +6,18 @@ namespace PrisonerDilemma
 {
     public class DilemmaModule : CompetitionModule
     {
-        //strictly for 2 players
-        public override Range<int> PlayersAllowedCount => Range<int>.Between(2, 2);
-        
-        public override void RegisterApi()
+        protected override void Load(ContainerBuilder builder)
         {
-            throw new System.NotImplementedException();
+            base.Load(builder);
+        }
+
+        protected override void ConfigureCompetitionInfo(CompetitionInfo competitionInfo)
+        {
+            competitionInfo.Name = "prisoner-dilemma";
+            competitionInfo.PlayerCount = Range<int>.Between(2,2);
+            
+            competitionInfo
+                .RegisterApiAction<Messages.PresentDilemmaMessage, PrisonerAction>("present-dilemma-action");
         }
     }
 }

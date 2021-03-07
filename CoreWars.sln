@@ -2,13 +2,13 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Competition", "CoreWars.Competition\CoreWars.Competition.csproj", "{C457B506-E09E-4890-A6EA-0EC810A66114}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrisonerDilemma", "PrisonerDilemma\PrisonerDilemma.csproj", "{3DC4F7C1-C2C3-40E7-B047-F45C84610BF0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Common", "CoreWars.Common\CoreWars.Common.csproj", "{94A0D6BE-39F2-48B7-A922-E4B19FF64E48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.TestApp", "CoreWars.TestApp\CoreWars.TestApp.csproj", "{D9F703A7-C261-471F-8855-610EABB713E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Scripting", "CoreWars.Scripting\CoreWars.Scripting.csproj", "{E225E303-60BD-495C-85C8-D29531E92660}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrisonerDilemma.SampleBot", "PrisonerDilemma.SampleBot\PrisonerDilemma.SampleBot.csproj", "{1724D5D4-4282-4AAF-83D3-6B19FB20E781}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Scripting.Python", "CoreWars.Scripting.Python\CoreWars.Scripting.Python.csproj", "{76241FD8-2AAF-42BD-8377-8BA5F79A6C12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Scripting.Python.Tests", "CoreWars.Scripting.Python.Tests\CoreWars.Scripting.Python.Tests.csproj", "{613A65AB-BF27-4F42-95B3-46B33B91F647}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,21 +20,21 @@ Global
 		{C457B506-E09E-4890-A6EA-0EC810A66114}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C457B506-E09E-4890-A6EA-0EC810A66114}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C457B506-E09E-4890-A6EA-0EC810A66114}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DC4F7C1-C2C3-40E7-B047-F45C84610BF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3DC4F7C1-C2C3-40E7-B047-F45C84610BF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3DC4F7C1-C2C3-40E7-B047-F45C84610BF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DC4F7C1-C2C3-40E7-B047-F45C84610BF0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{94A0D6BE-39F2-48B7-A922-E4B19FF64E48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{94A0D6BE-39F2-48B7-A922-E4B19FF64E48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94A0D6BE-39F2-48B7-A922-E4B19FF64E48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94A0D6BE-39F2-48B7-A922-E4B19FF64E48}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D9F703A7-C261-471F-8855-610EABB713E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9F703A7-C261-471F-8855-610EABB713E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D9F703A7-C261-471F-8855-610EABB713E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D9F703A7-C261-471F-8855-610EABB713E3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1724D5D4-4282-4AAF-83D3-6B19FB20E781}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1724D5D4-4282-4AAF-83D3-6B19FB20E781}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1724D5D4-4282-4AAF-83D3-6B19FB20E781}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1724D5D4-4282-4AAF-83D3-6B19FB20E781}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E225E303-60BD-495C-85C8-D29531E92660}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E225E303-60BD-495C-85C8-D29531E92660}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E225E303-60BD-495C-85C8-D29531E92660}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E225E303-60BD-495C-85C8-D29531E92660}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76241FD8-2AAF-42BD-8377-8BA5F79A6C12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76241FD8-2AAF-42BD-8377-8BA5F79A6C12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76241FD8-2AAF-42BD-8377-8BA5F79A6C12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76241FD8-2AAF-42BD-8377-8BA5F79A6C12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{613A65AB-BF27-4F42-95B3-46B33B91F647}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{613A65AB-BF27-4F42-95B3-46B33B91F647}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{613A65AB-BF27-4F42-95B3-46B33B91F647}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{613A65AB-BF27-4F42-95B3-46B33B91F647}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -7,5 +7,6 @@ namespace CoreWars.Competition
     {
         public class RunCompetitionMessage {}
         public class RequestContextMessage {}
+        public class RequestCompetitorsInfoMessage {}
     }
 }

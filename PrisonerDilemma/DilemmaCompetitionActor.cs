@@ -13,45 +13,43 @@ namespace PrisonerDilemma
     public class DilemmaCompetitionActor : CompetitionActor<DilemmaContext>
     {
         private readonly IDilemmaConfiguration _configuration;
-        private readonly DilemmaGame _game;
 
+        private int _iterationCounter;
         private ICancelable _timeoutCancelable;
         
         public DilemmaCompetitionActor(
-            IDilemmaConfiguration configuration
-            , DilemmaGame game) 
+            IDilemmaConfiguration configuration)
         {
             _configuration = configuration;
-            _game = game;
-
+        
             Receive<PrisonerAction>(OnActionReceived);
             Receive<Messages.ConcludeRoundMessage>(OnRoundConcluded);
         }
+        
         private void OnRoundConcluded(Messages.ConcludeRoundMessage obj)
         {
             _timeoutCancelable?.Cancel();
-            _game.ConcludeRound();
+            _playerActions.Clear();
+            
+            if(_iterationCounter > _configuration.IterationsCount)
+                throw new InvalidOperationException("placeholder ! game is ended");
+            
+            UpdateScore();
         }
 
-        protected override IReadOnlyList<ICompetitionAgent> Players => _game.Players;
-        protected override void RunCompetition(CoreWars.Competition.Messages.RunCompetitionMessage message)
-        {
-            RequestChoices();
-        }
         private void OnActionReceived(PrisonerAction action)
         {
-            var competitorSource = GetPlayerByReference(Sender);
-            competitorSource.CurrentAction = action;
-
-            if (!_game.AllPlayersReady)
+            _playerActions[Sender] = action;            
+        
+            if (_playerActions.Count == _players.Count)
                 return;
             
             Self.Tell(new Messages.ConcludeRoundMessage(), Self);
         }
-
+        
         private void RequestChoices()
         {
-            _game.Players.ForEach(c => c.Reference.Tell(new Messages.PresentDilemmaMessage(), Self));
+            _players.Keys.ForEach(c => c.Tell(new Messages.PresentDilemmaMessage(), Self));
             
             _timeoutCancelable = new Cancelable(Context.System.Scheduler);
             
@@ -63,23 +61,46 @@ namespace PrisonerDilemma
                     , Self
                     , _timeoutCancelable );
         }
-        private IDilemmaPlayer GetPlayerByReference(IActorRef reference)
+        
+        private static bool IsDecisionUniform(IEnumerable<PrisonerAction> source)
         {
-            return _game.Players
-                .Single(x => x.Reference.Equals(Sender));
+            var sourceList = source.ToList();
+
+            return sourceList.All(x => x == sourceList[0]);
         }
-        protected override DilemmaContext GetGameContext(IActorRef playerRef)
+        
+        private void UpdateScore()
         {
-            var player = GetPlayerByReference(playerRef);
-            var opponents = _game.Players.Where(x => x != player).ToList();
+            var actionsUniform = IsDecisionUniform(_playerActions.Values);
             
-            return new DilemmaContext()
+            _playerActions.ForEach(pair =>
             {
-                Score = player.Score
-                , OpponentScore = opponents[0].Score
-                , Opponents = opponents
-                , OpponentActionLog = opponents[0].ActionLog
-            };
+                var pointsScored = pair.Value switch
+                {
+                    PrisonerAction.NoAction => 0,
+                    PrisonerAction.Cooperate when actionsUniform => _configuration.BothCooperateScore,
+                    PrisonerAction.Defect when actionsUniform => _configuration.BothDefectScore,
+                    PrisonerAction.Cooperate => _configuration.CooperateScore,
+                    PrisonerAction.Defect => _configuration.DefectScore,
+                    _ => 0
+                };
+
+                _players[pair.Key].Score += pointsScored;
+            });
+        }
+
+        private readonly Dictionary<IActorRef, IDilemmaPlayer> _players;
+        private readonly Dictionary<IActorRef, PrisonerAction> _playerActions;
+
+        public DilemmaCompetitionActor(
+            Dictionary<IActorRef, IDilemmaPlayer> players)
+        {
+            _players = players;
+        }
+
+        protected override void RunCompetition()
+        {
+            RequestChoices();
         }
     }
 }
