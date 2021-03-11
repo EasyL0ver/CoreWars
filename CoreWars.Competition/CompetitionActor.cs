@@ -4,14 +4,18 @@ using Akka.Actor;
 
 namespace CoreWars.Competition
 {
-    public abstract class CompetitionActor<TContext> : ReceiveActor
-        where TContext : class
+    public abstract class CompetitionActor : ReceiveActor
     {
-        protected CompetitionActor()
+        protected CompetitionActor(
+            IEnumerable<IActorRef> competitorActors)
         {
+            Competitors = competitorActors.ToList();
+            
             Receive<Messages.RunCompetitionMessage>(
                 x => RunCompetition());
         }
+        
+        protected IReadOnlyList<IActorRef> Competitors { get; }
         
         protected abstract void RunCompetition();
     }
