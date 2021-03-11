@@ -8,6 +8,5 @@ namespace CoreWars.Competition
     {
         public string Name { get; }
         public Range<int> PlayerCount { get; }
-        public Type ContextType { get; } 
     }
 }

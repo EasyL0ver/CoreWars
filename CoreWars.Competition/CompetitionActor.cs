@@ -9,16 +9,8 @@ namespace CoreWars.Competition
     {
         protected CompetitionActor()
         {
-            Receive<Messages.RequestContextMessage>(
-                (msg) => Sender.Tell(GetGameContext(Sender)));
-
             Receive<Messages.RunCompetitionMessage>(
                 x => RunCompetition());
-        }
-
-        protected virtual TContext GetGameContext(IActorRef sender)
-        {
-            return null as TContext;
         }
         
         protected abstract void RunCompetition();

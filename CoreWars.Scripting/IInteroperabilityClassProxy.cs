@@ -2,8 +2,8 @@ using System;
 
 namespace CoreWars.Scripting
 {
-    public interface IInteroperabilityClassProxy : IDisposable
+    public interface IInteroperabilityClassProxy 
     {
-        object InvokeMethod(string methodName, object[] methodParameters, Type expectedResponseType = null);
+        object InvokeMethod(string methodName, object[] methodParameters);
     }
 }

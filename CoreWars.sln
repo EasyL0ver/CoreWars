@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Scripting.Python",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Scripting.Python.Tests", "CoreWars.Scripting.Python.Tests\CoreWars.Scripting.Python.Tests.csproj", "{613A65AB-BF27-4F42-95B3-46B33B91F647}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrisonerDilemma", "PrisonerDilemma\PrisonerDilemma\PrisonerDilemma.csproj", "{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PrisonerDilemma", "PrisonerDilemma", "{D4015C08-3824-4BCD-A76F-E01255142F1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +40,12 @@ Global
 		{613A65AB-BF27-4F42-95B3-46B33B91F647}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{613A65AB-BF27-4F42-95B3-46B33B91F647}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{613A65AB-BF27-4F42-95B3-46B33B91F647}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111} = {D4015C08-3824-4BCD-A76F-E01255142F1A}
 	EndGlobalSection
 EndGlobal

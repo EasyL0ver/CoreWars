@@ -29,7 +29,7 @@ namespace CoreWars.Scripting.Python.Tests
 
         private string ProbeMembers(object probed)
         {
-            var response = _sut.InvokeMethod("probe_members", new object[] {probed}, typeof(string));
+            var response = _sut.InvokeMethod("probe_members", new object[] {probed});
             return response as string;
         }
 

@@ -24,19 +24,9 @@ namespace CoreWars.Scripting.Python
 
         private ObjectOperations Operations => _scriptEngine.Operations;
 
-        public void Dispose()
+        public object InvokeMethod(string methodName, object[] methodParameters)
         {
-            throw new NotImplementedException();
-        }
-
-        public object InvokeMethod(string methodName, object[] methodParameters, Type expectedResponseType = null)
-        {
-            dynamic methodResult = Operations.InvokeMember(_instance, methodName, methodParameters);
-
-            if (expectedResponseType == null)
-                return null;
-            
-            return Operations.ConvertTo(methodResult, expectedResponseType);
+            return Operations.InvokeMember(_instance, methodName, methodParameters);
         }
     }
 }

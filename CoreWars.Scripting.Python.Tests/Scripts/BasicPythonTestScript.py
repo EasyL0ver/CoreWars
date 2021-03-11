@@ -1,7 +1,8 @@
-class Person:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
+import clr
+clr.AddReference("CoreWars.Scripting.Python.Tests")
+
+from CoreWars.Scripting.Python.Tests import *
+
 
 class TestAgentBehaviour:
     def __init__(self):
@@ -27,5 +28,16 @@ class TestAgentBehaviour:
         person.Name = 'Gawel'
         
     def create_person(self, age):
-        return Person(self.default_name, age)
+        instance = Person(self.default_name, age)
+        return instance
+    
+    def ret_enum(self):
+        return TestEnum.Second
+    
+    def take_enum(self, enum):
+        if enum == TestEnum.Second:
+            return "correct"
+        
+    def ret_none(self):
+        pass
         

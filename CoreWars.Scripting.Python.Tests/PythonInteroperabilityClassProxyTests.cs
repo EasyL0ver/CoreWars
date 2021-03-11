@@ -1,13 +1,27 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 
 namespace CoreWars.Scripting.Python.Tests
 {
+    public enum TestEnum : short
+    {
+        First
+        , Second
+    }
+    
     public class Person
     {
         public string Name { get; set; }
         public int Age { get; set; }
+        
+        public Person() {}
+        public Person(string name, int age)
+        {
+            Name = name;
+            Age = age;
+        }
     }
     
     public class PythonInteroperabilityClassProxyTests
@@ -30,7 +44,7 @@ namespace CoreWars.Scripting.Python.Tests
         [Test]
         public void InvokeBasicMethod_HelloMessageIsReturned()
         {
-            var response = _sut.InvokeMethod("say_hello", System.Array.Empty<object>(), typeof(string));
+            var response = _sut.InvokeMethod("say_hello", System.Array.Empty<object>());
             
             Assert.IsInstanceOf<string>(response);
             Assert.AreEqual("hello", response);
@@ -40,7 +54,7 @@ namespace CoreWars.Scripting.Python.Tests
         public void IncrementIntegerWithScript_TypePersistAndNumberIncremented()
         {
             const int number = 6;
-            var response = _sut.InvokeMethod("increment_number", new object[1] {number}, typeof(int));
+            var response = _sut.InvokeMethod("increment_number", new object[1] {number});
             
             Assert.IsInstanceOf<int>(response);
             Assert.AreEqual(number + 1, response);
@@ -50,7 +64,7 @@ namespace CoreWars.Scripting.Python.Tests
         public void ConcatStringFromWithinScript_TypePersistAndStringCorrect()
         {
             const string sentence = "hello";
-            var response = _sut.InvokeMethod("concat_dot", new object[1] {sentence}, typeof(string));
+            var response = _sut.InvokeMethod("concat_dot", new object[1] {sentence});
             
             Assert.IsInstanceOf<string>(response);
             Assert.AreEqual(sentence + ".", response);
@@ -60,7 +74,7 @@ namespace CoreWars.Scripting.Python.Tests
         public void DoesntExpectResponse_ResponseTypeIsNull()
         {
             const int number = 6;
-            var response = _sut.InvokeMethod("increment_number", new object[1] {number});
+            var response = _sut.InvokeMethod("ret_none", Array.Empty<object>());
             
             Assert.IsNull(response);
         }
@@ -92,7 +106,7 @@ namespace CoreWars.Scripting.Python.Tests
         {
             var age = 18;
             
-            var result = _sut.InvokeMethod("create_person", new object[1] {age}, typeof(Person));
+            var result = _sut.InvokeMethod("create_person", new object[1] {age});
             
             Assert.IsInstanceOf<Person>(result);
 
@@ -100,6 +114,20 @@ namespace CoreWars.Scripting.Python.Tests
             
             Assert.AreEqual(age, personResult.Age);
             Assert.AreEqual("mati", personResult.Name);
+        }
+
+        [Test]
+        public void InvokedMethodReturnsEnum_CorrectValueIsReturned()
+        {
+            var response = _sut.InvokeMethod("ret_enum", Array.Empty<object>());
+            Assert.AreEqual(TestEnum.Second, response);
+        }
+        
+        [Test]
+        public void InvokedMethodTakesEnum_CorrectValueIsReturned()
+        {
+            var response = _sut.InvokeMethod("take_enum", new object[1] {TestEnum.Second});
+            Assert.AreEqual("correct", response);
         }
         
         
