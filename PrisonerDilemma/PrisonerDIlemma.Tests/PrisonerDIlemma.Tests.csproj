@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Akka" Version="1.4.11" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="AlwaysDefectScript.py">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="AlwaysCooperateScript.py">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="DefectIfOpponentDefectedScript.py">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\CoreWars.Scripting.Python\CoreWars.Scripting.Python.csproj" />
+      <ProjectReference Include="..\PrisonerDilemma\PrisonerDilemma.csproj" />
+    </ItemGroup>
+
+</Project>

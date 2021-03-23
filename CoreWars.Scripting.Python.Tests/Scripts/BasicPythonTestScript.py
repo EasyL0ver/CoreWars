@@ -9,6 +9,7 @@ class TestAgentBehaviour:
         self.dot_char = '.'
         self.hello_message = 'hello'
         self.default_name = 'mati'
+        self.inner_list = []
         
     def say_hello(self):
         return self.hello_message
@@ -40,4 +41,10 @@ class TestAgentBehaviour:
         
     def ret_none(self):
         pass
+    
+    def append_to_inner_list(self, object):
+        self.inner_list.append(object)
+    
+    def get_inner_list(self):
+        return self.inner_list
         

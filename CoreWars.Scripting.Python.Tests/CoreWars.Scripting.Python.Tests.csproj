@@ -20,9 +20,6 @@
       <None Update="Scripts\BasicPythonTestScript.py">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="Scripts\PythonSerializationProbe.py">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
     </ItemGroup>
 
 </Project>
