@@ -4,24 +4,23 @@ using CoreWars.Competition;
 
 namespace CoreWars.Scripting
 {
-    public class ScriptCompetitorActor : UntypedActor
+    public class ScriptCompetitorActor : ReceiveActor
     {
         private readonly IInteroperabilityClassProxy _interoperabilityClassProxy;
         
         public ScriptCompetitorActor(IInteroperabilityClassProxy interoperabilityClassProxy)
         {
             _interoperabilityClassProxy = interoperabilityClassProxy;
+
+            Receive<RunMethodMessage>(msg =>
+            {
+                var response = _interoperabilityClassProxy
+                                   .InvokeMethod(msg.MethodName, msg.MethodParams) 
+                               ?? new Messages.Acknowledged();
+
+                Sender.Tell(response);
+            });
         }
-        protected override void OnReceive(object message)
-        {
-            var messageType = message.GetType();
-            var methodName = messageType.Name;
-            var response = _interoperabilityClassProxy.InvokeMethod(methodName, new object[1] {message});
-            
-            if(response == null)
-                return;
-            
-            Sender.Tell(response);
-        }
+
     }
 }

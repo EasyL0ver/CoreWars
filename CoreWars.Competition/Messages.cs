@@ -6,6 +6,11 @@ namespace CoreWars.Competition
     public class Messages
     {
         public class RunCompetitionMessage {}
+
+        public sealed class Acknowledged
+        {
+        }
+
         public class RequestContextMessage {}
         public class RequestCompetitorsInfoMessage {}
     }
