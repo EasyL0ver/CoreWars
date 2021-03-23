@@ -24,7 +24,7 @@ namespace CoreWars.Scripting.Python
 
         private ObjectOperations Operations => _scriptEngine.Operations;
 
-        public object InvokeMethod(string methodName, object[] methodParameters)
+        public object InvokeMethod(string methodName, params object[] methodParameters)
         {
             return Operations.InvokeMember(_instance, methodName, methodParameters);
         }

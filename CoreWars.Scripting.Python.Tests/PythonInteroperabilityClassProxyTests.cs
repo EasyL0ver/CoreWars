@@ -129,6 +129,20 @@ namespace CoreWars.Scripting.Python.Tests
             var response = _sut.InvokeMethod("take_enum", new object[1] {TestEnum.Second});
             Assert.AreEqual("correct", response);
         }
+
+        [Test]
+        public void AppendingToList_ReturnsCorrectList()
+        {
+            _sut.InvokeMethod("append_to_inner_list", true);
+            var response = _sut.InvokeMethod("get_inner_list");
+            
+            Assert.IsInstanceOf<IronPython.Runtime.List>(response);
+
+            var listResponse = response as IronPython.Runtime.List;
+            
+            Assert.IsTrue((bool) listResponse[0]);
+            
+        }
         
         
         
