@@ -2,26 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
+using CoreWars.Common;
 using CoreWars.Common.TypedActorQuery;
 
 namespace CoreWars.Competition
 {
     public abstract class CompetitionActor : ReceiveActor
     {
-        protected static void QueryFor<T>(
-            IEnumerable<IActorRef> competitors
-            , object message
-            , TimeSpan timeout)
-        {
-            var queryActorProps = Props.Create<TypedQueryActor<T>>(
-                competitors
-                , message
-                , QueryResultStrategy.ReportResultToParent<T>()
-                , timeout);
-            
-            Context.ActorOf(queryActorProps);
-        }
-        
         protected CompetitionActor(
             IEnumerable<IActorRef> competitorActors)
         {
@@ -29,6 +16,13 @@ namespace CoreWars.Competition
             
             Receive<Messages.RunCompetitionMessage>(
                 x => RunCompetition());
+        }
+
+        protected void AnnounceResult(
+            CompetitionResultMessage resultMessage)
+        {
+            Context.Parent.Tell(resultMessage);
+            Competitors.ForEach(c => c.Tell(resultMessage));
         }
         
         protected IReadOnlyList<IActorRef> Competitors { get; }
