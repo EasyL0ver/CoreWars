@@ -30,19 +30,23 @@ namespace PrisonerDilemma
             _playersScore = Competitors
                 .ToDictionary(x => x, x => 0);
 
-            Receive<Messages.StartRound>(
-                msg => QueryFor<bool>(
-                    Competitors
-                    , new RunMethodMessage("choose_dilemma")
-                    , _configuration.Timeout));
+            Receive<Messages.StartRound>(msg =>
+            {
+                ActorQuery
+                    .WithExpectedResponse<bool>()
+                    .WithRecipients(Competitors)
+                    .WithMessage(new RunMethodMessage("choose_dilemma"))
+                    .WithTimeout(_configuration.Timeout)
+                    .RunOn(Context);
+            });
             
             Receive<TypedQueryResult<bool>>(OnDilemmaQueryReceived);
-            Receive<TypedQueryResult<CoreWars.Competition.Messages.Acknowledged>>(OnOpponentMoveAck);
+            Receive<TypedQueryResult<Acknowledged>>(OnOpponentMoveAck);
             ReceiveAny(x => Console.WriteLine("cojest"));
         }
         
         //todo customize typed query action on finish
-        private void OnOpponentMoveAck(TypedQueryResult<CoreWars.Competition.Messages.Acknowledged> obj)
+        private void OnOpponentMoveAck(TypedQueryResult<Acknowledged> obj)
         {
             Self.Tell(new Messages.StartRound());
         }
@@ -54,9 +58,7 @@ namespace PrisonerDilemma
 
             if (CurrentIterationCounter >= _configuration.IterationsCount)
             {
-                //conclude game
-                var gameConclusionMessage = CompetitionResultMessage.FromScoreboard(_playersScore);
-                Context.Parent.Tell(gameConclusionMessage);
+                AnnounceResult(CompetitionResultMessage.FromScoreboard(_playersScore));
                 return;
             }
             
@@ -77,17 +79,13 @@ namespace PrisonerDilemma
         private void NotifyAboutOpponentsMove(
             IDictionary<IActorRef, bool> playersActions)
         {
-            var runAnotherTurnQueryResultHandler =
-                new TypedQueryResultHandler<CoreWars.Competition.Messages.Acknowledged>(
-                    (ctx, res) => ctx.Parent.Tell(new Messages.StartRound()));
-
-            var queryActorProps = Props.Create<TypedQueryActor<CoreWars.Competition.Messages.Acknowledged>>(
-                Competitors
-                , new Func<IActorRef,object> ((x) => GetOpponentAction(x, playersActions))
-                , runAnotherTurnQueryResultHandler
-                , _configuration.Timeout);
-            
-            Context.ActorOf(queryActorProps);
+            ActorQuery
+                .WithoutResponse()
+                .WithRecipients(Competitors)
+                .WithMessageSelector((x) => GetOpponentAction(x, playersActions))
+                .RunOnFinished((ctx, res) => ctx.Parent.Tell(new Messages.StartRound()))
+                .WithTimeout(_configuration.Timeout)
+                .RunOn(Context);
         }
 
         private void AdjustScores(IDictionary<IActorRef, bool> playersActions)

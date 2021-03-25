@@ -1,5 +1,6 @@
 using System;
 using Akka.Actor;
+using CoreWars.Common;
 using CoreWars.Competition;
 
 namespace CoreWars.Scripting
@@ -16,7 +17,7 @@ namespace CoreWars.Scripting
             {
                 var response = _interoperabilityClassProxy
                                    .InvokeMethod(msg.MethodName, msg.MethodParams) 
-                               ?? new Messages.Acknowledged();
+                               ?? new Acknowledged();
 
                 Sender.Tell(response);
             });

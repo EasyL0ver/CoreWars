@@ -60,13 +60,6 @@ namespace CoreWars.Common.TypedActorQuery
             });
         }
         
-        public TypedQueryActor(
-            IEnumerable<IActorRef> queriedActors
-            , object queryMessage
-            , TypedQueryResultHandler<TResponse> resultHandler
-            , TimeSpan timeoutTimeSpan)
-            : this(queriedActors, actorRef => queryMessage, resultHandler, timeoutTimeSpan) {}
-        
         protected override void PreStart()
         {
             _queriedActors.ForEach(actor => actor.Tell(_getQueryMessage(actor)));
