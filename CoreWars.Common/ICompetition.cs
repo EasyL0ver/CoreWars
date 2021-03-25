@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using CoreWars.Common;
-
-namespace CoreWars.Competition
+namespace CoreWars.Common
 {
     public interface ICompetition
     {
