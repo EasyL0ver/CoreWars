@@ -1,4 +1,4 @@
-namespace CoreWars.Coordination
+namespace CoreWars.Coordination.GameSlot
 {
     public class Uninitialized : ICompetitionSlotFSMData
     {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Akka.Actor;
 
-namespace CoreWars.Coordination
+namespace CoreWars.Coordination.GameSlot
 {
     public class ActiveGameData : ICompetitionSlotFSMData
     {

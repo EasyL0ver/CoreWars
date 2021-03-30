@@ -3,6 +3,7 @@ using Akka.Actor;
 using CoreWars.Common.TypedActorQuery;
 using CoreWars.Common.TypedActorQuery.Query;
 using CoreWars.Coordination.Messages;
+using CoreWars.Coordination.PlayerSet;
 using CoreWars.Player.Messages;
 
 namespace CoreWars.Coordination

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using CoreWars.Common;
 
-namespace CoreWars.Coordination
+namespace CoreWars.Coordination.PlayerSet
 {
     public class PlayerSet<IActorRef> : HashSet<Akka.Actor.IActorRef> , ISelectableSet<Akka.Actor.IActorRef>
     {

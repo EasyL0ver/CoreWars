@@ -1,6 +1,6 @@
 using Akka.Actor;
 
-namespace CoreWars.Coordination
+namespace CoreWars.Coordination.GameSlot
 {
     public class QueryData : ICompetitionSlotFSMData
     {

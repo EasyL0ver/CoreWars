@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using CoreWars.Common;
 
-namespace CoreWars.Coordination
+namespace CoreWars.Coordination.PlayerSet
 {
     public interface ISelectableSet<T> : ISet<T>
     {

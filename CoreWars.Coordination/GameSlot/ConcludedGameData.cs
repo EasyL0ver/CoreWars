@@ -1,7 +1,7 @@
 using Akka.Actor;
 using CoreWars.Competition;
 
-namespace CoreWars.Coordination
+namespace CoreWars.Coordination.GameSlot
 {
     public class ConcludedGameData : ICompetitionSlotFSMData
     {

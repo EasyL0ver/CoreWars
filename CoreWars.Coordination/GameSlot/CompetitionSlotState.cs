@@ -1,4 +1,4 @@
-namespace CoreWars.Coordination.Slot
+namespace CoreWars.Coordination.GameSlot
 {
     public enum CompetitionSlotState
     {

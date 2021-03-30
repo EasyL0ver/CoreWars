@@ -3,9 +3,8 @@ using Akka.Actor;
 using CoreWars.Common.TypedActorQuery.Ask;
 using CoreWars.Competition;
 using CoreWars.Coordination.Messages;
-using CoreWars.Coordination.Slot;
 
-namespace CoreWars.Coordination
+namespace CoreWars.Coordination.GameSlot
 {
     public class CompetitionSlot : FSM<CompetitionSlotState, ICompetitionSlotFSMData>
     {
