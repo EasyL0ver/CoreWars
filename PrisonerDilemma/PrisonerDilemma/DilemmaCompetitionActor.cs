@@ -4,6 +4,7 @@ using System.Linq;
 using Akka.Actor;
 using CoreWars.Common;
 using CoreWars.Common.TypedActorQuery;
+using CoreWars.Common.TypedActorQuery.Query;
 using CoreWars.Competition;
 using JetBrains.Annotations;
 
@@ -32,12 +33,11 @@ namespace PrisonerDilemma
 
             Receive<Messages.StartRound>(msg =>
             {
-                ActorQuery
-                    .WithExpectedResponse<bool>()
-                    .WithRecipients(Competitors)
-                    .WithMessage(new RunMethodMessage("choose_dilemma"))
-                    .WithTimeout(_configuration.Timeout)
-                    .RunOn(Context);
+                Competitors
+                    .QueryFor<bool>(
+                        new RunMethodMessage("choose_dilemma")
+                        , Context
+                        , _configuration.Timeout);
             });
             
             Receive<TypedQueryResult<bool>>(OnDilemmaQueryReceived);
@@ -79,13 +79,11 @@ namespace PrisonerDilemma
         private void NotifyAboutOpponentsMove(
             IDictionary<IActorRef, bool> playersActions)
         {
-            ActorQuery
-                .WithoutResponse()
-                .WithRecipients(Competitors)
-                .WithMessageSelector((x) => GetOpponentAction(x, playersActions))
-                .RunOnFinished((ctx, res) => ctx.Parent.Tell(new Messages.StartRound()))
-                .WithTimeout(_configuration.Timeout)
-                .RunOn(Context);
+            Competitors
+                .QueryFor<Acknowledged>(
+                    (x) => GetOpponentAction(x, playersActions)
+                    , Context
+                    , _configuration.Timeout);
         }
 
         private void AdjustScores(IDictionary<IActorRef, bool> playersActions)

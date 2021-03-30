@@ -1,6 +1,7 @@
 using System.Linq;
 using Akka.Actor;
 using CoreWars.Common.TypedActorQuery;
+using CoreWars.Common.TypedActorQuery.Query;
 using CoreWars.Coordination.Messages;
 using CoreWars.Player.Messages;
 
@@ -33,33 +34,18 @@ namespace CoreWars.Coordination
             Receive<OrderAgents>(obj =>
             {
                 var selectedPlayers = _players.Select(_lobbyConfiguration.PlayerCount);
-
-                var queryActorProps = Props.Create<TypedQueryActor<AgentCreated>>(
-                    selectedPlayers
-                    , new RequestCompetitionAgent()
-                    , GetRespondSenderResultHandler(obj)
+                var messages = selectedPlayers.ToDictionary(x => x, y => (object) new RequestCompetitionAgent());
+                var queryProps = TypedQuery<OrderAgents>.Props(
+                    messages
+                    , Sender
                     , _lobbyConfiguration.CreateCompetitorAgentTimeout);
 
-                Context.ActorOf(queryActorProps);
+                Context.ActorOf(queryProps).Tell(RunTypedQuery.Instance);
             });
 
             Receive<Terminated>(obj =>
             {
                 _players.Remove(obj.ActorRef);
-            });
-        }
-
-        private TypedQueryResultHandler<AgentCreated> GetRespondSenderResultHandler(
-            OrderAgents request)
-        {
-            return ((context, result) =>
-            {
-                var agents = result.Result.Values
-                    .Select(x => x.AgentReference);
-
-                var message = new AgentsOrderCompleted(request.RequestId, agents);
-                
-                Sender.Tell(message);
             });
         }
     }
