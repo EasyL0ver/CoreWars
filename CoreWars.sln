@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Player", "CoreWars
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Coordination.Tests", "CoreWars.Coordination.Tests\CoreWars.Coordination.Tests.csproj", "{1579AB10-0CCD-4F9B-8A21-FAEB87BD9790}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Scripting.StaticCSharp", "CoreWars.Scripting.StaticCSharp\CoreWars.Scripting.StaticCSharp.csproj", "{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{1579AB10-0CCD-4F9B-8A21-FAEB87BD9790}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1579AB10-0CCD-4F9B-8A21-FAEB87BD9790}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1579AB10-0CCD-4F9B-8A21-FAEB87BD9790}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111} = {D4015C08-3824-4BCD-A76F-E01255142F1A}
