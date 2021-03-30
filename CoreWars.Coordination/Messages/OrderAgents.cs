@@ -10,5 +10,7 @@ namespace CoreWars.Coordination.Messages
         {
             RequestId = Guid.NewGuid();;
         }
+
+        public static OrderAgents Instance => new OrderAgents();
     }
 }
