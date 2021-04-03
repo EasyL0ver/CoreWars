@@ -11,7 +11,7 @@ namespace CoreWars.Coordination.GameSlot
         public CompetitionSlot(
             IActorRef competitorSource
             , IActorRef competitionsResultHandler
-            , ICompetitionActorPropsFactory competitionActorPropsFactory)
+            , ICompetitionActorFactory competitionActorFactory)
         {
             StartWith(CompetitionSlotState.Idle, Uninitialized.Instance);
             
@@ -27,7 +27,7 @@ namespace CoreWars.Coordination.GameSlot
             {
                 if (state.FsmEvent is AgentsOrderCompleted agentsOrderCompleted)
                 {
-                    var competitionActor = competitionActorPropsFactory.Build(agentsOrderCompleted.Agents, Context);
+                    var competitionActor = competitionActorFactory.Build(agentsOrderCompleted.Agents, Context);
                     
                     return GoTo(CompetitionSlotState.Game)
                         .Using(
@@ -84,6 +84,7 @@ namespace CoreWars.Coordination.GameSlot
                         break;
                     case CompetitionSlotState.Game when NextStateData is ActiveGameData nextStateGameData:
                         Context.WatchWith(nextStateGameData.Game, new LobbyGameTerminated(nextStateGameData.Game));
+                        nextStateGameData.Game.Tell(new Competition.Messages.RunCompetitionMessage());
                         break;
                 }
             });
@@ -95,7 +96,7 @@ namespace CoreWars.Coordination.GameSlot
         public static Props Props(
             IActorRef competitorsSource
             , IActorRef resultHandler
-            , ICompetitionActorPropsFactory competitorsFactory)
+            , ICompetitionActorFactory competitorsFactory)
         {
             return Akka.Actor.Props.Create(() => new CompetitionSlot(competitorsSource, resultHandler, competitorsFactory));
         }

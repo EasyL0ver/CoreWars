@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Akka.Actor;
 using Akka.TestKit;
@@ -16,7 +17,7 @@ namespace CoreWars.Coordination.Tests
         private TestProbe _competitorSourceProbe;
         private TestProbe _resultHandlerProbe;
         private TestProbe _gameProbe;
-        private Mock<ICompetitionActorPropsFactory> _competitionActorFactoryMock;
+        private Mock<ICompetitionActorFactory> _competitionActorFactoryMock;
 
         [SetUp]
         public void Setup()
@@ -25,7 +26,7 @@ namespace CoreWars.Coordination.Tests
             _resultHandlerProbe = CreateTestProbe();
             _gameProbe = CreateTestProbe();
 
-            _competitionActorFactoryMock = new Mock<ICompetitionActorPropsFactory>();
+            _competitionActorFactoryMock = new Mock<ICompetitionActorFactory>();
             _competitionActorFactoryMock
                 .Setup(
                     x => x.Build(
@@ -47,5 +48,23 @@ namespace CoreWars.Coordination.Tests
             _sut.Tell(RunCompetition.Instance);
             _competitorSourceProbe.ExpectMsg<OrderAgents>();
         }
+        
+        [Test]
+        public void ChangeStateToGame_GameActorIsInitialized()
+        {
+            _sut.Tell(RunCompetition.Instance);
+            _competitorSourceProbe.Send(_sut, new AgentsOrderCompleted(Array.Empty<IActorRef>()));
+
+            _gameProbe.ExpectMsg<Competition.Messages.RunCompetitionMessage>();
+        }
+        
+        // [Test]
+        // public void CompleteGame_NewLobbyIsInstantiated()
+        // {
+        //     _sut.Tell(RunCompetition.Instance);
+        //     _competitorSourceProbe.Send(_sut, new AgentsOrderCompleted(Array.Empty<IActorRef>()));
+        //     
+        // }
+  
     }
 }

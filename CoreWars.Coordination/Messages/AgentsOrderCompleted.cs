@@ -1,18 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Akka.Actor;
 
 namespace CoreWars.Coordination.Messages
 {
     public sealed class AgentsOrderCompleted
     {
-        public AgentsOrderCompleted(Guid requestId, IEnumerable<IActorRef> agents)
+        public AgentsOrderCompleted(IEnumerable<IActorRef> agents)
         {
-            RequestId = requestId;
-            Agents = agents;
+            Agents = agents.ToList();
         }
 
-        public Guid RequestId { get; }
-        public IEnumerable<IActorRef> Agents { get; }
+        public IReadOnlyList<IActorRef> Agents { get; }
     }
 }

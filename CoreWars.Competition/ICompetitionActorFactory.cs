@@ -3,7 +3,7 @@ using Akka.Actor;
 
 namespace CoreWars.Competition
 {
-    public interface ICompetitionActorPropsFactory
+    public interface ICompetitionActorFactory
     {
         IActorRef Build(IEnumerable<IActorRef> competitionParticipants, IActorContext context);
     }
