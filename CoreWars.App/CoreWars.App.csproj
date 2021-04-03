@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CoreWars.Competition\CoreWars.Competition.csproj" />
+      <ProjectReference Include="..\CoreWars.Coordination\CoreWars.Coordination.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="akka.hocon">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Akka.Logger.NLog" Version="1.4.10" />
+    </ItemGroup>
+
+</Project>

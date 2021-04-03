@@ -30,5 +30,13 @@ namespace CoreWars.Competition
 
             return new CompetitionResultMessage(resultsDictionary);
         }
+
+        public override string ToString()
+        {
+            var results = CompetitionResults.Values;
+            var winnersCount = results.Count(x => x == CompetitionResult.Winner);
+            var losersCount = results.Count(x => x == CompetitionResult.Loser);
+            return $"Competition results with: {winnersCount} winners and {losersCount} losers";
+        }
     }
 }

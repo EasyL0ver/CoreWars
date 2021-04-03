@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Coordination.Tests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Scripting.StaticCSharp", "CoreWars.Scripting.StaticCSharp\CoreWars.Scripting.StaticCSharp.csproj", "{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.App", "CoreWars.App\CoreWars.App.csproj", "{F67965A0-5B90-4546-8F7E-F62662794FB9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F67965A0-5B90-4546-8F7E-F62662794FB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F67965A0-5B90-4546-8F7E-F62662794FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F67965A0-5B90-4546-8F7E-F62662794FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F67965A0-5B90-4546-8F7E-F62662794FB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111} = {D4015C08-3824-4BCD-A76F-E01255142F1A}

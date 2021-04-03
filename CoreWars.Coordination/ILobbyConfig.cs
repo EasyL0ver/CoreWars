@@ -8,4 +8,6 @@ namespace CoreWars.Coordination
         int MaxInstancesCount { get; }
         TimeSpan CreateCompetitorAgentTimeout { get; }
     }
+
+
 }

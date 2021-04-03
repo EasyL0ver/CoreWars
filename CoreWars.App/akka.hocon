@@ -1,0 +1,3 @@
+loggers = ["Akka.Logger.NLog.NLogLogger, Akka.Logger.NLog"]
+actor.debug.unhandled = on
+log-config-on-start = on   

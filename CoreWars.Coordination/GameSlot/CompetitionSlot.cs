@@ -25,15 +25,15 @@ namespace CoreWars.Coordination.GameSlot
             
             When(CompetitionSlotState.Lobby, state =>
             {
-                if (state.FsmEvent is AgentsOrderCompleted agentsOrderCompleted)
+                if (state.FsmEvent is TypedAskResult<AgentsOrderCompleted> agentsOrderCompleted)
                 {
-                    var competitionActor = competitionActorFactory.Build(agentsOrderCompleted.Agents, Context);
+                    var competitionActor = competitionActorFactory.Build(agentsOrderCompleted.Answer.Agents, Context);
                     
                     return GoTo(CompetitionSlotState.Game)
                         .Using(
                             new ActiveGameData(
                                 competitionActor
-                                , agentsOrderCompleted.Agents.ToList()));
+                                , agentsOrderCompleted.Answer.Agents.ToList()));
                 }
 
                 return null;

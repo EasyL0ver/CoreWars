@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Akka.Actor;
 using CoreWars.Common.TypedActorQuery;
@@ -35,11 +36,26 @@ namespace CoreWars.Coordination
             Receive<OrderAgents>(obj =>
             {
                 var selectedPlayers = _players.Select(_lobbyConfiguration.PlayerCount);
-                var messages = selectedPlayers.ToDictionary(x => x, y => (object) new RequestCompetitionAgent());
-                var queryProps = TypedQuery<OrderAgents>.Props(
+                var messages = selectedPlayers.ToDictionary(x => x, y => (object) new RequestCreateAgent());
+
+
+                var transform = new Func<TypedQueryResult<AgentCreated>, AgentsOrderCompleted>(input =>
+                {
+                    return new AgentsOrderCompleted(input.Result.Values.Select(x => x.AgentReference));
+                });
+
+                var transformActorProps =
+                    Akka.Actor.Props.Create(
+                        () => new MessageTransform<TypedQueryResult<AgentCreated>, AgentsOrderCompleted>(transform,
+                            Sender));
+
+                var transformActor = Context.ActorOf(transformActorProps);
+                
+                var queryProps = TypedQuery<AgentCreated>.Props(
                     messages
-                    , Sender
+                    , transformActor
                     , _lobbyConfiguration.CreateCompetitorAgentTimeout);
+                
 
                 Context.ActorOf(queryProps).Tell(RunTypedQuery.Instance);
             });
@@ -48,6 +64,11 @@ namespace CoreWars.Coordination
             {
                 _players.Remove(obj.ActorRef);
             });
+        }
+
+        public static Props Props(ISelectableSet<IActorRef> playerSet, ILobbyConfig lobbyConfiguration)
+        {
+            return Akka.Actor.Props.Create(() => new PlayerLobby(playerSet, lobbyConfiguration));
         }
     }
 }

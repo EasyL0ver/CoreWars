@@ -66,7 +66,12 @@ namespace CoreWars.Common.TypedActorQuery.Ask
             });
             
             Receive<TimeElapsed>(ex => throw new TimeoutException());
-            ReceiveAny(msg => throw new InvalidOperationException(msg.ToString()));
+            ReceiveAny(msg =>
+            {
+                var unhandledMessageType =
+                    $"Invalid type response for typed ask. Received message: {msg} from: {Sender}";
+                throw new InvalidOperationException(unhandledMessageType);
+            });
         }
 
         private ICancelable ScheduleTimeoutMessage(TimeSpan after)
