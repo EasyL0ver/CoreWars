@@ -21,16 +21,16 @@ namespace CoreWars.Coordination
             _players = players;
             _lobbyConfiguration = lobbyConfiguration;
 
-            Receive<AddPlayer>(obj =>
+            Receive<RequestLobbyJoin>(obj =>
             {
-                if (_players.Contains(obj.AddedPlayerReference))
+                if (_players.Contains(Sender))
                     return;
 
-                _players.Add(obj.AddedPlayerReference);
+                _players.Add(Sender);
 
                 Context.WatchWith(
-                    obj.AddedPlayerReference
-                    , new LobbyPlayerTerminated(obj.AddedPlayerReference));
+                    Sender
+                    , new LobbyPlayerTerminated(Sender));
             });
 
             Receive<OrderAgents>(obj =>

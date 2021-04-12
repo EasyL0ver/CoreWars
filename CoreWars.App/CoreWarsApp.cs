@@ -7,6 +7,7 @@ using CoreWars.Coordination.GameSlot;
 using CoreWars.Coordination.Messages;
 using CoreWars.Coordination.PlayerSet;
 using CoreWars.Player;
+using CoreWars.Player.Messages;
 
 namespace CoreWars.App
 {
@@ -27,7 +28,7 @@ namespace CoreWars.App
             //todo replace with autofac modules
             var lobby = SetUpCompetitionModule(new RandomCompetitorWinsCompetitionFactory(), config, randomLobbyStrategy);
             
-            AddMockPlayers(lobby, 10);
+            AddMockPlayers(lobby, 5);
             
         }
 
@@ -36,8 +37,7 @@ namespace CoreWars.App
             var dummyCompetitorsFactory = new DummyCompetitorFactory();
             for (var i = 0; i < amount; i++)
             {
-                var mockPlayer = _actorSystem.ActorOf(PlayerActor.Props(dummyCompetitorsFactory), "mock-player" + i);
-                lobby.Tell(new AddPlayer(mockPlayer));
+                _actorSystem.ActorOf(PlayerActor.Props(dummyCompetitorsFactory, lobby), "mock-player" + i);
             }
         }
 

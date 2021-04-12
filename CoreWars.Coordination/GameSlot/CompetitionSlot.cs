@@ -8,6 +8,8 @@ namespace CoreWars.Coordination.GameSlot
 {
     public class CompetitionSlot : FSM<CompetitionSlotState, ICompetitionSlotFSMData>
     {
+        // ReSharper disable once MemberCanBePrivate.Global
+        // public constructor required for akka
         public CompetitionSlot(
             IActorRef competitorSource
             , IActorRef competitionsResultHandler
