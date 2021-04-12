@@ -70,7 +70,7 @@ namespace CoreWars.Common.TypedActorQuery.Ask
             {
                 var unhandledMessageType =
                     $"Invalid type response for typed ask. Received message: {msg} from: {Sender}";
-                throw new InvalidOperationException(unhandledMessageType);
+                throw new AskTypeMismatchException(unhandledMessageType, msg);
             });
         }
 

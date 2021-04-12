@@ -11,22 +11,17 @@ namespace CoreWars.Coordination
 {
     public class PlayerLobby : ReceiveActor
     {
-        private readonly ISelectableSet<IActorRef> _players;
-        private readonly ILobbyConfig _lobbyConfiguration;
-
         public PlayerLobby(
             ISelectableSet<IActorRef> players
             , ILobbyConfig lobbyConfiguration)
         {
-            _players = players;
-            _lobbyConfiguration = lobbyConfiguration;
 
             Receive<RequestLobbyJoin>(obj =>
             {
-                if (_players.Contains(Sender))
+                if (players.Contains(Sender))
                     return;
 
-                _players.Add(Sender);
+                players.Add(Sender);
 
                 Context.WatchWith(
                     Sender
@@ -35,34 +30,41 @@ namespace CoreWars.Coordination
 
             Receive<OrderAgents>(obj =>
             {
-                var selectedPlayers = _players.Select(_lobbyConfiguration.PlayerCount);
-                var messages = selectedPlayers.ToDictionary(x => x, y => (object) new RequestCreateAgent());
-
-
-                var transform = new Func<TypedQueryResult<AgentCreated>, AgentsOrderCompleted>(input =>
+                try
                 {
-                    return new AgentsOrderCompleted(input.Result.Values.Select(x => x.AgentReference));
-                });
+                    var selectedPlayers = players.Select(lobbyConfiguration.PlayerCount);
+                    var messages = selectedPlayers.ToDictionary(x => x, y => (object) new RequestCreateAgent());
 
-                var transformActorProps =
-                    Akka.Actor.Props.Create(
-                        () => new MessageTransform<TypedQueryResult<AgentCreated>, AgentsOrderCompleted>(transform,
-                            Sender));
 
-                var transformActor = Context.ActorOf(transformActorProps);
+                    var transform = new Func<TypedQueryResult<AgentCreated>, AgentsOrderCompleted>(input =>
+                    {
+                        return new AgentsOrderCompleted(input.Result.Values.Select(x => x.AgentReference));
+                    });
+
+                    var transformActorProps =
+                        Akka.Actor.Props.Create(
+                            () => new MessageTransform<TypedQueryResult<AgentCreated>, AgentsOrderCompleted>(transform,
+                                Sender));
+
+                    var transformActor = Context.ActorOf(transformActorProps);
                 
-                var queryProps = TypedQuery<AgentCreated>.Props(
-                    messages
-                    , transformActor
-                    , _lobbyConfiguration.CreateCompetitorAgentTimeout);
+                    var queryProps = TypedQuery<AgentCreated>.Props(
+                        messages
+                        , transformActor
+                        , lobbyConfiguration.CreateCompetitorAgentTimeout);
                 
 
-                Context.ActorOf(queryProps).Tell(RunTypedQuery.Instance);
+                    Context.ActorOf(queryProps).Tell(RunTypedQuery.Instance);
+                }
+                catch (InvalidOperationException e)
+                {
+                    Sender.Tell(NotEnoughPlayers.Instance);
+                }
             });
 
             Receive<Terminated>(obj =>
             {
-                _players.Remove(obj.ActorRef);
+                players.Remove(obj.ActorRef);
             });
         }
 

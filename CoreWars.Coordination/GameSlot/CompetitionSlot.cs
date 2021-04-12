@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Akka.Actor;
 using CoreWars.Common.TypedActorQuery.Ask;
@@ -8,13 +9,16 @@ namespace CoreWars.Coordination.GameSlot
 {
     public class CompetitionSlot : FSM<CompetitionSlotState, ICompetitionSlotFSMData>
     {
+        private readonly IActorRef _competitorSource;
+
         // ReSharper disable once MemberCanBePrivate.Global
         // public constructor required for akka
         public CompetitionSlot(
             IActorRef competitorSource
             , IActorRef competitionsResultHandler
-            , ICompetitionActorFactory competitionActorFactory)
+            , ICompetitionActorPropsFactory competitionActorPropsFactory)
         {
+            _competitorSource = competitorSource;
             StartWith(CompetitionSlotState.Idle, Uninitialized.Instance);
             
             When(CompetitionSlotState.Idle, state =>
@@ -29,12 +33,13 @@ namespace CoreWars.Coordination.GameSlot
             {
                 if (state.FsmEvent is TypedAskResult<AgentsOrderCompleted> agentsOrderCompleted)
                 {
-                    var competitionActor = competitionActorFactory.Build(agentsOrderCompleted.Answer.Agents, Context);
+                    var competitorActorProps = competitionActorPropsFactory.Build(agentsOrderCompleted.Answer.Agents);
+                    var competitorActor = Context.ActorOf(competitorActorProps);
                     
                     return GoTo(CompetitionSlotState.Game)
                         .Using(
                             new ActiveGameData(
-                                competitionActor
+                                competitorActor
                                 , agentsOrderCompleted.Answer.Agents.ToList()));
                 }
 
@@ -98,9 +103,25 @@ namespace CoreWars.Coordination.GameSlot
         public static Props Props(
             IActorRef competitorsSource
             , IActorRef resultHandler
-            , ICompetitionActorFactory competitorsFactory)
+            , ICompetitionActorPropsFactory competitorsPropsFactory)
         {
-            return Akka.Actor.Props.Create(() => new CompetitionSlot(competitorsSource, resultHandler, competitorsFactory));
+            return Akka.Actor.Props.Create(() => new CompetitionSlot(competitorsSource, resultHandler, competitorsPropsFactory));
+        }
+        
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(
+                localOnlyDecider: ex =>
+                {
+                    switch (ex)
+                    {
+                        case AskTypeMismatchException {MismatchedResponse: NotEnoughPlayers}:
+                            GoToLobby(_competitorSource);
+                            return Directive.Stop;
+                        default:
+                            return Directive.Escalate;
+                    }
+                });
         }
 
         private State<CompetitionSlotState, ICompetitionSlotFSMData> GoToLobby(IActorRef competitorSource)
