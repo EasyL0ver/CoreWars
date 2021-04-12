@@ -19,12 +19,12 @@ namespace PrisonerDIlemma.Tests
 
             var alwaysDefectScript = File.ReadAllText("./AlwaysDefectScript.py");
             var alwaysDefectClassProxy = new PythonInteroperabilityClassProxy(alwaysDefectScript);
-            var alwaysDefectActorProps = Props.Create<ScriptCompetitorActor>(alwaysDefectClassProxy);
+            var alwaysDefectActorProps = Props.Create<ClassProxyScriptCompetitor>(alwaysDefectClassProxy);
             var alwaysDefectActor = system.ActorOf(alwaysDefectActorProps);
             
             var alwaysCooperateScript = File.ReadAllText("./DefectIfOpponentDefectedScript.py");
             var alwaysCooperateClassProxy = new PythonInteroperabilityClassProxy(alwaysCooperateScript);
-            var alwaysCooperateActorProps = Props.Create<ScriptCompetitorActor>(alwaysCooperateClassProxy);
+            var alwaysCooperateActorProps = Props.Create<ClassProxyScriptCompetitor>(alwaysCooperateClassProxy);
             var alwaysCooperateActor = system.ActorOf(alwaysCooperateActorProps);
 
             var dilemmaConfig = DilemmaConfiguration.Default();

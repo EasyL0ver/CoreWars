@@ -21,28 +21,27 @@ namespace CoreWars.App
             _actorSystem = ActorSystem.Create("core-wars", actorSystemConfig);
         }
 
-        public void Initialize()
+        public ActorSystem Initialize()
         {
             var randomLobbyStrategy = new SelectMaxRandomCollectionSelectionStrategy<IActorRef>();
             var config = new DummyCompetitionConfig();
             //todo replace with autofac modules
-            var lobby = SetUpCompetitionModule(new RandomCompetitorWinsCompetitionFactory(), config, randomLobbyStrategy);
+            var lobby = SetUpCompetitionModule(new RandomCompetitorWinsCompetitionPropsFactory(), config, randomLobbyStrategy);
             
             AddMockPlayers(lobby, 5);
-            
+            return _actorSystem;
         }
 
         private void AddMockPlayers(IActorRef lobby, int amount)
         {
-            var dummyCompetitorsFactory = new DummyCompetitorFactory();
             for (var i = 0; i < amount; i++)
             {
-                _actorSystem.ActorOf(Competitor.Props(dummyCompetitorsFactory, lobby), "mock-player" + i);
+                _actorSystem.ActorOf(Competitor.Props(Props.Create<DummyCompetitor>(), lobby), "mock-player" + i);
             }
         }
 
         private IActorRef SetUpCompetitionModule(
-            ICompetitionActorFactory competitionFactory
+            ICompetitionActorPropsFactory competitionPropsFactory
             , ILobbyConfig lobbyConfiguration
             , ICollectionSelectionStrategy<IActorRef> selectPlayersStrategy)
         {
@@ -52,7 +51,7 @@ namespace CoreWars.App
             
             for(var i = 0; i < lobbyConfiguration.MaxInstancesCount; i++)
             {
-                var props = CompetitionSlot.Props(lobby, resultHandler, competitionFactory);
+                var props = CompetitionSlot.Props(lobby, resultHandler, competitionPropsFactory);
                 var competitionSlot = _actorSystem.ActorOf(props);
                 
                 competitionSlot.Tell(RunCompetition.Instance);

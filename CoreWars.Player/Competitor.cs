@@ -8,11 +8,11 @@ namespace CoreWars.Player
     {
         private const int RejoinLobbyTimeMilliseconds = 5000;
         //todo private readonly IPlayerStats _playerStats;
-        private readonly IPlayerAgentActorFactory _playerAgentActorFactory;
+        private readonly Props _playerAgentActorFactory;
         private readonly IActorRef _playerLobby;
         //todo private readonly IPlayerActorCredentials _credentials;
         
-        public Competitor(IPlayerAgentActorFactory playerAgentActorFactory, IActorRef playerLobby)
+        public Competitor(Props playerAgentActorFactory, IActorRef playerLobby)
         {
             _playerAgentActorFactory = playerAgentActorFactory;
             _playerLobby = playerLobby;
@@ -21,7 +21,7 @@ namespace CoreWars.Player
             Receive<RequestPlayerCredentials>(OnRequestPlayerCredentialsReceived);
         }
 
-        public static Props Props(IPlayerAgentActorFactory factory, IActorRef playerLobby)
+        public static Props Props(Props factory, IActorRef playerLobby)
         {
             return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby));
         }
@@ -40,7 +40,7 @@ namespace CoreWars.Player
 
         private void OnRequestCreateAgentReceived(RequestCreateAgent obj)
         {
-            var agentActorRef = _playerAgentActorFactory.Build(Context);
+            var agentActorRef = Context.ActorOf(_playerAgentActorFactory);
             Context.Watch(agentActorRef);
             Sender.Tell(new AgentCreated(agentActorRef));
         }

@@ -17,7 +17,7 @@ namespace CoreWars.Coordination.Tests
         private TestProbe _competitorSourceProbe;
         private TestProbe _resultHandlerProbe;
         private TestProbe _gameProbe;
-        private Mock<ICompetitionActorFactory> _competitionActorFactoryMock;
+        private Mock<ICompetitionActorPropsFactory> _competitionActorFactoryMock;
 
         [SetUp]
         public void Setup()
@@ -26,13 +26,13 @@ namespace CoreWars.Coordination.Tests
             _resultHandlerProbe = CreateTestProbe();
             _gameProbe = CreateTestProbe();
 
-            _competitionActorFactoryMock = new Mock<ICompetitionActorFactory>();
-            _competitionActorFactoryMock
-                .Setup(
-                    x => x.Build(
-                        It.IsAny<IEnumerable<IActorRef>>()
-                            , It.IsAny<IActorContext>()))
-                .Returns(_gameProbe);
+            _competitionActorFactoryMock = new Mock<ICompetitionActorPropsFactory>();
+            // _competitionActorFactoryMock
+            //     .Setup(
+            //         x => x.Build(
+            //             It.IsAny<IEnumerable<IActorRef>>()
+            //                 , It.IsAny<IActorContext>()))
+            //     .Returns(_gameProbe);
 
             var sutProps = CompetitionSlot.Props(
                 _competitorSourceProbe

@@ -22,8 +22,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Player", "CoreWars
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Coordination.Tests", "CoreWars.Coordination.Tests\CoreWars.Coordination.Tests.csproj", "{1579AB10-0CCD-4F9B-8A21-FAEB87BD9790}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Scripting.StaticCSharp", "CoreWars.Scripting.StaticCSharp\CoreWars.Scripting.StaticCSharp.csproj", "{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.WebApp", "CoreWars.WebApp\CoreWars.WebApp.csproj", "{A7551C34-6555-4440-A57F-7C745508CD63}"
 EndProject
 Global
@@ -72,10 +70,6 @@ Global
 		{1579AB10-0CCD-4F9B-8A21-FAEB87BD9790}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1579AB10-0CCD-4F9B-8A21-FAEB87BD9790}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1579AB10-0CCD-4F9B-8A21-FAEB87BD9790}.Release|Any CPU.Build.0 = Release|Any CPU
-		{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{94ABFE73-28A1-41C4-AC7B-F14E80F3EC75}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A7551C34-6555-4440-A57F-7C745508CD63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A7551C34-6555-4440-A57F-7C745508CD63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7551C34-6555-4440-A57F-7C745508CD63}.Release|Any CPU.ActiveCfg = Release|Any CPU

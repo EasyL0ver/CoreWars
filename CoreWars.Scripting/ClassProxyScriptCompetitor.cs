@@ -5,11 +5,11 @@ using CoreWars.Competition;
 
 namespace CoreWars.Scripting
 {
-    public class ScriptCompetitorActor : ReceiveActor
+    public class ClassProxyScriptCompetitor : ReceiveActor
     {
         private readonly IInteroperabilityClassProxy _interoperabilityClassProxy;
         
-        public ScriptCompetitorActor(IInteroperabilityClassProxy interoperabilityClassProxy)
+        public ClassProxyScriptCompetitor(IInteroperabilityClassProxy interoperabilityClassProxy)
         {
             _interoperabilityClassProxy = interoperabilityClassProxy;
 
