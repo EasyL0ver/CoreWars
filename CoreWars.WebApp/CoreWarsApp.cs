@@ -37,7 +37,7 @@ namespace CoreWars.App
             var dummyCompetitorsFactory = new DummyCompetitorFactory();
             for (var i = 0; i < amount; i++)
             {
-                _actorSystem.ActorOf(PlayerActor.Props(dummyCompetitorsFactory, lobby), "mock-player" + i);
+                _actorSystem.ActorOf(Competitor.Props(dummyCompetitorsFactory, lobby), "mock-player" + i);
             }
         }
 

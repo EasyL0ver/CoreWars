@@ -1,11 +1,10 @@
 using System;
 using Akka.Actor;
-using CoreWars.Common;
 using CoreWars.Player.Messages;
 
 namespace CoreWars.Player
 {
-    public class PlayerActor : ReceiveActor
+    public class Competitor : ReceiveActor
     {
         private const int RejoinLobbyTimeMilliseconds = 5000;
         //todo private readonly IPlayerStats _playerStats;
@@ -13,7 +12,7 @@ namespace CoreWars.Player
         private readonly IActorRef _playerLobby;
         //todo private readonly IPlayerActorCredentials _credentials;
         
-        public PlayerActor(IPlayerAgentActorFactory playerAgentActorFactory, IActorRef playerLobby)
+        public Competitor(IPlayerAgentActorFactory playerAgentActorFactory, IActorRef playerLobby)
         {
             _playerAgentActorFactory = playerAgentActorFactory;
             _playerLobby = playerLobby;
@@ -24,7 +23,7 @@ namespace CoreWars.Player
 
         public static Props Props(IPlayerAgentActorFactory factory, IActorRef playerLobby)
         {
-            return Akka.Actor.Props.Create(() => new PlayerActor(factory, playerLobby));
+            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby));
         }
 
         protected override void PreStart()
