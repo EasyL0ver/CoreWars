@@ -14,10 +14,6 @@ namespace CoreWars.Coordination.Messages
 
         public string CompetitionName { get; }
         public Range<int> CompetitorsAmount { get; }
-
-        public static RequestCompetitors FromCompetition(ICompetition competition)
-        {
-            return new RequestCompetitors(competition.Name, competition.PlayerCount);
-        }
+    
     }
 }

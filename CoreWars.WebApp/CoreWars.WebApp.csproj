@@ -22,6 +22,7 @@
       <ProjectReference Include="..\CoreWars.Competition\CoreWars.Competition.csproj" />
       <ProjectReference Include="..\CoreWars.Coordination\CoreWars.Coordination.csproj" />
       <ProjectReference Include="..\CoreWars.Scripting.Python\CoreWars.Scripting.Python.csproj" />
+      <ProjectReference Include="..\DummyCompetition\DummyCompetition\DummyCompetition.csproj" />
     </ItemGroup>
 
 </Project>

@@ -9,16 +9,19 @@ namespace CoreWars.Competition
         {
             base.Load(builder);
 
-            var competitionConfiguration = new CompetitionInfo();
+            var competitionConfiguration = new LobbyConfig();
             
             ConfigureCompetitionInfo(competitionConfiguration);
 
+            var competition = new Competition(competitionConfiguration, ConfigureFactory());
+
             builder
-                .RegisterInstance(competitionConfiguration)
+                .RegisterInstance(competition)
                 .As<ICompetition>()
                 .SingleInstance();
         }
 
-        protected abstract void ConfigureCompetitionInfo(CompetitionInfo competitionInfo);
+        protected abstract ICompetitionActorPropsFactory ConfigureFactory();
+        protected abstract void ConfigureCompetitionInfo(LobbyConfig lobbyConfig);
     }
 }

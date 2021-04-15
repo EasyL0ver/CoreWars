@@ -24,6 +24,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Coordination.Tests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.WebApp", "CoreWars.WebApp\CoreWars.WebApp.csproj", "{A7551C34-6555-4440-A57F-7C745508CD63}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DummyCompetition", "DummyCompetition", "{45B36E19-BE72-44E4-A7FC-7B03BB8E57DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyCompetition", "DummyCompetition\DummyCompetition\DummyCompetition.csproj", "{866D464A-8BE0-4F74-B746-50B18F80A4C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,9 +78,14 @@ Global
 		{A7551C34-6555-4440-A57F-7C745508CD63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7551C34-6555-4440-A57F-7C745508CD63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7551C34-6555-4440-A57F-7C745508CD63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{866D464A-8BE0-4F74-B746-50B18F80A4C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{866D464A-8BE0-4F74-B746-50B18F80A4C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{866D464A-8BE0-4F74-B746-50B18F80A4C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{866D464A-8BE0-4F74-B746-50B18F80A4C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111} = {D4015C08-3824-4BCD-A76F-E01255142F1A}
 		{C4429057-0291-4D5D-8D70-AFAB76257E16} = {D4015C08-3824-4BCD-A76F-E01255142F1A}
+		{866D464A-8BE0-4F74-B746-50B18F80A4C5} = {45B36E19-BE72-44E4-A7FC-7B03BB8E57DB}
 	EndGlobalSection
 EndGlobal

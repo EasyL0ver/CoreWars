@@ -43,6 +43,9 @@ namespace CoreWars.Coordination.GameSlot
                                 , agentsOrderCompleted.Answer.Agents.ToList()));
                 }
 
+                if (state.FsmEvent is NotEnoughPlayers)
+                    return GoTo(CompetitionSlotState.Idle);
+
                 return null;
             });
             
@@ -86,6 +89,9 @@ namespace CoreWars.Coordination.GameSlot
 
                 switch (nextState)
                 {
+                    case CompetitionSlotState.Idle:
+                        Context.System.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(5), Self, RunCompetition.Instance, Self);
+                        break;
                     case CompetitionSlotState.Conclude when NextStateData is ConcludedGameData concludedGameData:
                         competitionsResultHandler.Tell(concludedGameData.Result);
                         break;
@@ -115,8 +121,8 @@ namespace CoreWars.Coordination.GameSlot
                 {
                     switch (ex)
                     {
-                        case AskTypeMismatchException {MismatchedResponse: NotEnoughPlayers}:
-                            GoToLobby(_competitorSource);
+                        case AskTypeMismatchException {MismatchedResponse: NotEnoughPlayers} exception:
+                            Self.Tell(exception.MismatchedResponse);
                             return Directive.Stop;
                         default:
                             return Directive.Escalate;

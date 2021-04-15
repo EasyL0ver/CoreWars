@@ -1,14 +1,21 @@
-using Akka.DI.AutoFac;
+using Akka.Actor;
 using Autofac;
-using CoreWars.App;
+using CoreWars.Common;
+using CoreWars.Competition;
+using CoreWars.Coordination;
+using CoreWars.Coordination.GameSlot;
+using CoreWars.Coordination.Messages;
+using CoreWars.Coordination.PlayerSet;
 using CoreWars.Scripting.Python;
+using CoreWars.WebApp.Controllers;
+using CoreWars.WebApp.Mock;
+using DummyCompetition;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using ServiceProvider = Akka.DependencyInjection.ServiceProvider;
 
 namespace CoreWars.WebApp
 {
@@ -20,7 +27,6 @@ namespace CoreWars.WebApp
         }
 
         public IConfiguration Configuration { get; }
-        public ILifetimeScope AutofacContainer { get; private set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -30,6 +36,10 @@ namespace CoreWars.WebApp
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CoreWars.WebApp", Version = "v1" });
             });
+            
+            //add actor system service
+            services.AddSingleton<IActorSystemService, AkkaService>();
+            services.AddHostedService(x => (AkkaService) x.GetService<IActorSystemService>());
         }
         
         // ConfigureContainer is where you can register things directly
@@ -37,26 +47,35 @@ namespace CoreWars.WebApp
         // here will override registrations made in ConfigureServices.
         // Don't build the container; that gets done for you by the factory.
         // ReSharper disable once UnusedMember.Global
-        public void ConfigureContainer(ContainerBuilder builder)
+        public void ConfigureContainer(Autofac.ContainerBuilder builder)
         {
             // Register your own things directly with Autofac here. Don't
             // call builder.Populate(), that happens in AutofacServiceProviderFactory
             // for you.
+            builder.RegisterType<AkkaService>()
+                .AsImplementedInterfaces()
+                .SingleInstance();
 
-            var system = new CoreWarsApp().Initialize();
+            builder
+                .RegisterType<SelectMaxRandomCollectionSelectionStrategy<IActorRef>>()
+                .AsImplementedInterfaces();
 
-            builder.RegisterInstance(system);
+            var randomLobbyStrategy = new SelectMaxRandomCollectionSelectionStrategy<IActorRef>();
+            //todo replace with autofac modules
+            //var lobby = SetUpCompetitionModule(new RandomCompetitorWinsCompetitionPropsFactory(), config, randomLobbyStrategy);
+
+            builder.RegisterType<DiTest3>();
+            builder.RegisterType<SampleAddCompetitorController>();
+            //builder.RegisterInstance(lobby);
             builder.RegisterModule<PythonScriptingModule>();
-            builder.RegisterType<DITest>();
-            builder.RegisterInstance(new CoreWarsApp());
-
-
-
+            builder.RegisterModule<DummyCompetitionModule>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -64,13 +83,33 @@ namespace CoreWars.WebApp
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CoreWars.WebApp v1"));
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseAuthorization();
+            //app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
         }
+        
+        // private ILobby SetUpCompetitionModule(
+        //     ICompetitionActorPropsFactory competitionPropsFactory
+        //     , ILobbyConfig lobbyConfiguration
+        //     , ICollectionSelectionStrategy<IActorRef> selectPlayersStrategy)
+        // {
+        //     var resultHandler = ActorSystem.ActorOf<DummyCompetitionResultHandler>();
+        //     var playerSet = new PlayerSet<IActorRef>(selectPlayersStrategy);
+        //     var lobby = ActorSystem.ActorOf(PlayerLobby.Props(playerSet, lobbyConfiguration));
+        //     
+        //     for(var i = 0; i < lobbyConfiguration.MaxInstancesCount; i++)
+        //     {
+        //         var props = CompetitionSlot.Props(lobby, resultHandler, competitionPropsFactory);
+        //         var competitionSlot = ActorSystem.ActorOf(props);
+        //         
+        //         competitionSlot.Tell(RunCompetition.Instance);
+        //     }
+        //
+        //     return new Lobby(lobby);
+        // }
     }
 }

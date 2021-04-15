@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\CoreWars.Common\CoreWars.Common.csproj" />
+      <ProjectReference Include="..\..\CoreWars.Competition\CoreWars.Competition.csproj" />
+      <ProjectReference Include="..\..\CoreWars.Coordination\CoreWars.Coordination.csproj" />
+    </ItemGroup>
+
+</Project>

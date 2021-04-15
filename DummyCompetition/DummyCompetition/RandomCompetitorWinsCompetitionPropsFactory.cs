@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Akka.Actor;
 using CoreWars.Competition;
 
-namespace CoreWars.App.Mock
+namespace DummyCompetition
 {
     public class RandomCompetitorWinsCompetitionPropsFactory : ICompetitionActorPropsFactory
     {

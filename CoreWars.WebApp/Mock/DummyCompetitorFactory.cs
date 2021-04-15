@@ -1,7 +1,7 @@
 using Akka.Actor;
 using CoreWars.Player;
 
-namespace CoreWars.App.Mock
+namespace CoreWars.WebApp.Mock
 {
     public class DummyCompetitorFactory : IPlayerAgentActorFactory
     {

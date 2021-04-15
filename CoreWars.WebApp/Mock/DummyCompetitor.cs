@@ -2,7 +2,7 @@ using Akka.Actor;
 using CoreWars.Common;
 using CoreWars.Competition;
 
-namespace CoreWars.App.Mock
+namespace CoreWars.WebApp.Mock
 {
     public class DummyCompetitor : ReceiveActor
     {

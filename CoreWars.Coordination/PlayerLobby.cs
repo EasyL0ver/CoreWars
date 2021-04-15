@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Akka.Actor;
 using CoreWars.Common.TypedActorQuery;
+using CoreWars.Common;
 using CoreWars.Common.TypedActorQuery.Query;
 using CoreWars.Coordination.Messages;
 using CoreWars.Coordination.PlayerSet;
@@ -51,7 +52,7 @@ namespace CoreWars.Coordination
                     var queryProps = TypedQuery<AgentCreated>.Props(
                         messages
                         , transformActor
-                        , lobbyConfiguration.CreateCompetitorAgentTimeout);
+                        , lobbyConfiguration.Timeout);
                 
 
                     Context.ActorOf(queryProps).Tell(RunTypedQuery.Instance);

@@ -1,10 +1,9 @@
-using System;
 using Akka.Actor;
 using Akka.Event;
 using CoreWars.Competition;
 using CoreWars.Coordination.Messages;
 
-namespace CoreWars.App.Mock
+namespace CoreWars.WebApp.Mock
 {
     public class DummyCompetitionResultHandler : ReceiveActor
     {

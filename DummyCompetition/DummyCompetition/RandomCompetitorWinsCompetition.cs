@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Akka.Actor;
 using CoreWars.Competition;
 
-namespace CoreWars.App.Mock
+namespace DummyCompetition
 {
     public class RandomCompetitorWinsCompetition : CompetitionActor
     {
@@ -19,8 +20,9 @@ namespace CoreWars.App.Mock
             var winner = Competitors[index];
 
             var result = Competitors.ToDictionary(x => x,
-                y => y == winner ? CompetitionResult.Winner : CompetitionResult.Loser);
+                y => y.Equals(winner) ? CompetitionResult.Winner : CompetitionResult.Loser);
             
+            Thread.Sleep(TimeSpan.FromSeconds(5));
             AnnounceResult(new CompetitionResultMessage(result));
         }
         
