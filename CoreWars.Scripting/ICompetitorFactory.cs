@@ -2,7 +2,7 @@ using Akka.Actor;
 
 namespace CoreWars.Scripting
 {
-    public interface IClassProxyScriptCompetitorPropsFactory
+    public interface ICompetitorFactory
     {
         Props Build(string script);
     }

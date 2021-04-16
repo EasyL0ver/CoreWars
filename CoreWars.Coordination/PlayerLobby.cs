@@ -14,7 +14,7 @@ namespace CoreWars.Coordination
     {
         public PlayerLobby(
             ISelectableSet<IActorRef> players
-            , ILobbyConfig lobbyConfiguration)
+            , ICompetitionInfo lobbyConfiguration)
         {
 
             Receive<RequestLobbyJoin>(obj =>
@@ -69,7 +69,7 @@ namespace CoreWars.Coordination
             });
         }
 
-        public static Props Props(ISelectableSet<IActorRef> playerSet, ILobbyConfig lobbyConfiguration)
+        public static Props Props(ISelectableSet<IActorRef> playerSet, ICompetitionInfo lobbyConfiguration)
         {
             return Akka.Actor.Props.Create(() => new PlayerLobby(playerSet, lobbyConfiguration));
         }

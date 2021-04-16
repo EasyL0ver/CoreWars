@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using Akka.Actor;
 using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using CoreWars.Common;
 using CoreWars.Competition;
 using CoreWars.Coordination;
@@ -16,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using ICompetition = CoreWars.Competition.ICompetition;
 
 namespace CoreWars.WebApp
 {
@@ -36,10 +39,7 @@ namespace CoreWars.WebApp
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CoreWars.WebApp", Version = "v1" });
             });
-            
-            //add actor system service
-            services.AddSingleton<IActorSystemService, AkkaService>();
-            services.AddHostedService(x => (AkkaService) x.GetService<IActorSystemService>());
+            services.AddHostedService(x => (AkkaGameService) x.GetService<IActorSystemService>());
         }
         
         // ConfigureContainer is where you can register things directly
@@ -52,7 +52,7 @@ namespace CoreWars.WebApp
             // Register your own things directly with Autofac here. Don't
             // call builder.Populate(), that happens in AutofacServiceProviderFactory
             // for you.
-            builder.RegisterType<AkkaService>()
+            builder.RegisterType<AkkaGameService>()
                 .AsImplementedInterfaces()
                 .SingleInstance();
 
@@ -64,8 +64,8 @@ namespace CoreWars.WebApp
             //todo replace with autofac modules
             //var lobby = SetUpCompetitionModule(new RandomCompetitorWinsCompetitionPropsFactory(), config, randomLobbyStrategy);
 
-            builder.RegisterType<DiTest3>();
-            builder.RegisterType<SampleAddCompetitorController>();
+            //builder.RegisterType<DiTest3>();
+            //builder.RegisterType<SampleAddCompetitorController>();
             //builder.RegisterInstance(lobby);
             builder.RegisterModule<PythonScriptingModule>();
             builder.RegisterModule<DummyCompetitionModule>();
@@ -74,7 +74,7 @@ namespace CoreWars.WebApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            //this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
+            InitializeGameServer(app);
             
             if (env.IsDevelopment())
             {
@@ -90,6 +90,16 @@ namespace CoreWars.WebApp
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private static void InitializeGameServer(IApplicationBuilder app)
+        {
+            var container = app.ApplicationServices.GetAutofacRoot();
+            var actorSystem = app.ApplicationServices.GetService<IGameService>();
+
+            container
+                .Resolve<IEnumerable<ICompetition>>()
+                .ForEach(c => actorSystem.AddCompetition(c));
         }
         
         // private ILobby SetUpCompetitionModule(

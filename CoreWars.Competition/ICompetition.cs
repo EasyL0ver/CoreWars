@@ -4,19 +4,19 @@ namespace CoreWars.Competition
 {
     public interface ICompetition
     {
-        ILobbyConfig Configuration { get; }
+        ICompetitionInfo Info { get; }
         ICompetitionActorPropsFactory Factory { get; }
     }
 
     public class Competition : ICompetition
     {
-        public Competition(ILobbyConfig configuration, ICompetitionActorPropsFactory factory)
+        public Competition(ICompetitionInfo configuration, ICompetitionActorPropsFactory factory)
         {
-            Configuration = configuration;
+            Info = configuration;
             Factory = factory;
         }
 
-        public ILobbyConfig Configuration { get; }
+        public ICompetitionInfo Info { get; }
         public ICompetitionActorPropsFactory Factory { get; }
     }
 }

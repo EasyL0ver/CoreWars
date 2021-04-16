@@ -11,10 +11,10 @@ namespace DummyCompetition
             return new RandomCompetitorWinsCompetitionPropsFactory();
         }
 
-        protected override void ConfigureCompetitionInfo(LobbyConfig lobbyConfig)
+        protected override void ConfigureCompetitionInfo(CompetitionInfo competitionInfo)
         {
-            lobbyConfig.Name = "dummy-competition";
-            lobbyConfig.PlayerCount = Range<int>.Between(2,5);
+            competitionInfo.Name = "dummy-competition";
+            competitionInfo.PlayerCount = Range<int>.Between(2,5);
         }
     }
 }

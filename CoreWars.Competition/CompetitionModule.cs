@@ -9,7 +9,7 @@ namespace CoreWars.Competition
         {
             base.Load(builder);
 
-            var competitionConfiguration = new LobbyConfig();
+            var competitionConfiguration = new CompetitionInfo();
             
             ConfigureCompetitionInfo(competitionConfiguration);
 
@@ -22,6 +22,6 @@ namespace CoreWars.Competition
         }
 
         protected abstract ICompetitionActorPropsFactory ConfigureFactory();
-        protected abstract void ConfigureCompetitionInfo(LobbyConfig lobbyConfig);
+        protected abstract void ConfigureCompetitionInfo(CompetitionInfo competitionInfo);
     }
 }

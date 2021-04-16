@@ -7,22 +7,22 @@ namespace CoreWars.WebApp.Controllers
     [Route("[controller]")]
     public class SampleAddCompetitorController : ControllerBase
     {
-        private readonly IClassProxyScriptCompetitorPropsFactory _competitionActorPropsFactory;
+        private readonly ICompetitorFactory _competitionActorFactory;
         private readonly IActorSystemService _actorSystem;
 
         public SampleAddCompetitorController(
             IActorSystemService actorSystem, 
-            IClassProxyScriptCompetitorPropsFactory competitionActorPropsFactory)
+            ICompetitorFactory competitionActorFactory)
         {
             _actorSystem = actorSystem;
-            _competitionActorPropsFactory = competitionActorPropsFactory;
+            _competitionActorFactory = competitionActorFactory;
         }
 
 
         [HttpPost]
         public void Post(string competitionName, string scriptingLanguage,[FromBody] string code)
         {
-            var competitorAgentProps = _competitionActorPropsFactory.Build(code);
+            var competitorAgentProps = _competitionActorFactory.Build(code);
             //var playerProps = Competitor.Props(competitorAgentProps, _lobby.LobbyRef);
 
             //_actorSystem.ActorOf(playerProps);

@@ -7,9 +7,9 @@ namespace CoreWars.Scripting.Python
         protected override void Load(ContainerBuilder builder)
         {
             builder
-                .RegisterType<PythonCompetitorPropsFactory>()
-                .As<IClassProxyScriptCompetitorPropsFactory>()
-                .Named<IClassProxyScriptCompetitorPropsFactory>("python");
+                .RegisterType<PythonScriptCompetitorFactory>()
+                .As<ICompetitorFactory>()
+                .Named<ICompetitorFactory>("python");
         }
     }
 }

@@ -2,7 +2,7 @@ using Akka.Actor;
 
 namespace CoreWars.Scripting.Python
 {
-    public class PythonCompetitorPropsFactory : IClassProxyScriptCompetitorPropsFactory
+    public class PythonScriptCompetitorFactory : ICompetitorFactory
     {
         public Props Build(string script)
         {

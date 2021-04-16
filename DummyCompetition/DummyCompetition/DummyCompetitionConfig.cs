@@ -3,7 +3,7 @@ using CoreWars.Common;
 
 namespace DummyCompetition
 {
-    public class DummyCompetitionConfig : ILobbyConfig
+    public class DummyCompetitionConfig : ICompetitionInfo
     {
         public string Name { get; } = "dummy competition";
         public Range<int> PlayerCount { get; } = Range<int>.Between(2,5);

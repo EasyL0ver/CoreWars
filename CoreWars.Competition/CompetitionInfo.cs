@@ -4,7 +4,7 @@ using CoreWars.Common;
 
 namespace CoreWars.Competition
 {
-    public class LobbyConfig : ILobbyConfig
+    public class CompetitionInfo : ICompetitionInfo
     {
         public string Name { get; set; }
         public Range<int> PlayerCount { get; set; }
