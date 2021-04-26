@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Akka.Actor;
+using Akka.Event;
 using CoreWars.Common.TypedActorQuery.Ask;
 using CoreWars.Competition;
 using CoreWars.Coordination.Messages;
@@ -10,6 +11,7 @@ namespace CoreWars.Coordination.GameSlot
     public class CompetitionSlot : FSM<CompetitionSlotState, ICompetitionSlotFSMData>
     {
         private readonly IActorRef _competitorSource;
+        private readonly ILoggingAdapter _logger = Context.GetLogger();
 
         // ReSharper disable once MemberCanBePrivate.Global
         // public constructor required for akka
@@ -42,9 +44,6 @@ namespace CoreWars.Coordination.GameSlot
                                 competitorActor
                                 , agentsOrderCompleted.Answer.Agents.ToList()));
                 }
-
-                if (state.FsmEvent is NotEnoughPlayers)
-                    return GoTo(CompetitionSlotState.Idle);
 
                 return null;
             });
@@ -85,13 +84,15 @@ namespace CoreWars.Coordination.GameSlot
                     case CompetitionSlotState.Game when StateData is ActiveGameData activeGameData:
                         Context.Stop(activeGameData.Game);
                         break;
+                    case CompetitionSlotState.Idle:
+                    case CompetitionSlotState.Conclude:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(initialState), initialState, null);
                 }
 
                 switch (nextState)
                 {
-                    case CompetitionSlotState.Idle:
-                        Context.System.Scheduler.ScheduleTellOnce(TimeSpan.FromSeconds(5), Self, RunCompetition.Instance, Self);
-                        break;
                     case CompetitionSlotState.Conclude when NextStateData is ConcludedGameData concludedGameData:
                         competitionsResultHandler.Tell(concludedGameData.Result);
                         break;
@@ -99,6 +100,11 @@ namespace CoreWars.Coordination.GameSlot
                         Context.WatchWith(nextStateGameData.Game, new LobbyGameTerminated(nextStateGameData.Game));
                         nextStateGameData.Game.Tell(new Competition.Messages.RunCompetitionMessage());
                         break;
+                    case CompetitionSlotState.Idle:
+                    case CompetitionSlotState.Lobby:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(nextState), nextState, null);
                 }
             });
             
@@ -117,22 +123,28 @@ namespace CoreWars.Coordination.GameSlot
         protected override SupervisorStrategy SupervisorStrategy()
         {
             return new OneForOneStrategy(
+                loggingEnabled: false,
                 localOnlyDecider: ex =>
                 {
                     switch (ex)
                     {
-                        case AskTypeMismatchException {MismatchedResponse: NotEnoughPlayers} exception:
-                            Self.Tell(exception.MismatchedResponse);
-                            return Directive.Stop;
+                        case TimeoutException:
+                        case AskTypeMismatchException {MismatchedResponse: NotEnoughPlayers}:
+                            return Directive.Restart;
                         default:
+                            _logger.Error(ex, "Unhandled competition slot error");
                             return Directive.Escalate;
                     }
                 });
         }
 
-        private State<CompetitionSlotState, ICompetitionSlotFSMData> GoToLobby(IActorRef competitorSource)
+        private State<CompetitionSlotState, ICompetitionSlotFSMData> GoToLobby(
+            IActorRef competitorSource)
         {
-            var query = competitorSource.AskFor<AgentsOrderCompleted>(OrderAgents.Instance, Context);
+            var query = competitorSource
+                .AskFor<AgentsOrderCompleted>(
+                    OrderAgents.Instance
+                    , Context);
 
             return GoTo(CompetitionSlotState.Lobby).Using(new QueryData(query));
         }
