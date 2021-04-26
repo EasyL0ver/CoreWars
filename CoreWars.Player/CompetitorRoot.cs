@@ -44,7 +44,8 @@ namespace CoreWars.Player
 
         private void OnNewScriptAdded(Data.Entities.Messages.AddedEvent<GameScript> obj)
         {
-            if (obj.AddedElement.CompetitionType != _competitionInfo.Name) return;
+            if (obj.AddedElement.CompetitionType != _competitionInfo.Name)
+                return;
             
             CreateCompetitor(obj.AddedElement);
         }
@@ -60,7 +61,7 @@ namespace CoreWars.Player
         protected override void PreStart()
         {
             base.PreStart();
-            _scriptRepository.Tell(Data.Entities.Messages.GetAll.Instance);
+            _scriptRepository.Tell(new Data.Entities.Messages.GetAllForCompetition(_competitionInfo.Name));
         }
 
         private void CreateCompetitor(GameScript script)

@@ -32,6 +32,11 @@ namespace CoreWars.Data
                 Sender.Tell(context.Scripts.ToList());
             });
 
+            Receive<Messages.GetAllForCompetition>(msg =>
+            {
+                Sender.Tell(context.Scripts.Where(x => x.CompetitionType == msg.CompetitionName).ToList());
+            });
+
             Receive<Messages.Subscribe>(msg =>
             {
                 _subscribed.Add(Sender);

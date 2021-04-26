@@ -17,6 +17,16 @@ namespace CoreWars.Data.Entities
             public static GetAll Instance => new GetAll();
         }
 
+        public class GetAllForCompetition
+        {
+            public GetAllForCompetition(string competitionName)
+            {
+                CompetitionName = competitionName;
+            }
+
+            public string CompetitionName { get; }
+        }
+
         public class Subscribe
         {
             public static Subscribe Instance => new Subscribe();
