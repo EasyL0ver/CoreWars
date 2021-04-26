@@ -10,6 +10,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CoreWars.Common\CoreWars.Common.csproj" />
+      <ProjectReference Include="..\CoreWars.Data\CoreWars.Data.csproj" />
+      <ProjectReference Include="..\CoreWars.Scripting\CoreWars.Scripting.csproj" />
     </ItemGroup>
 
 </Project>

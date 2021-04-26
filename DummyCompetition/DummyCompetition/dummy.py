@@ -1,0 +1,1 @@
+"class GameController:\n\tpass"

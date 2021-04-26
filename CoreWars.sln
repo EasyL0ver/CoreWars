@@ -28,6 +28,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DummyCompetition", "DummyCo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyCompetition", "DummyCompetition\DummyCompetition\DummyCompetition.csproj", "{866D464A-8BE0-4F74-B746-50B18F80A4C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Data", "CoreWars.Data\CoreWars.Data.csproj", "{3A1E4CF4-C8DF-4FD4-A457-F006948CC642}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Data.Tests", "CoreWars.Data.Tests\CoreWars.Data.Tests.csproj", "{DA3464CB-50E1-498D-AADF-2D0BE99766AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +86,14 @@ Global
 		{866D464A-8BE0-4F74-B746-50B18F80A4C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{866D464A-8BE0-4F74-B746-50B18F80A4C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{866D464A-8BE0-4F74-B746-50B18F80A4C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A1E4CF4-C8DF-4FD4-A457-F006948CC642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A1E4CF4-C8DF-4FD4-A457-F006948CC642}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A1E4CF4-C8DF-4FD4-A457-F006948CC642}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A1E4CF4-C8DF-4FD4-A457-F006948CC642}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA3464CB-50E1-498D-AADF-2D0BE99766AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA3464CB-50E1-498D-AADF-2D0BE99766AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA3464CB-50E1-498D-AADF-2D0BE99766AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA3464CB-50E1-498D-AADF-2D0BE99766AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111} = {D4015C08-3824-4BCD-A76F-E01255142F1A}

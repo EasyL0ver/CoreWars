@@ -12,22 +12,26 @@ using CoreWars.Coordination;
 using CoreWars.Coordination.GameSlot;
 using CoreWars.Coordination.Messages;
 using CoreWars.Coordination.PlayerSet;
+using CoreWars.Data;
+using CoreWars.Data.Entities;
 using CoreWars.Player;
 using CoreWars.Scripting;
 using CoreWars.WebApp.Mock;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Scripting.Hosting;
+using ICompetition = CoreWars.Competition.ICompetition;
 
 namespace CoreWars.WebApp
 {
     public sealed class AkkaGameService : IHostedService, IActorSystemService, IGameService
     {
-        private readonly ConcurrentDictionary<Competition.ICompetition, IActorRef> _competitionLobbies;
         private readonly ILifetimeScope _container;
-
+        private readonly List<ICompetitionInfo> _supportedCompetitions;
+        
         public AkkaGameService(IServiceProvider serviceProvider)
         {
             _container = serviceProvider.GetAutofacRoot();
-            _competitionLobbies = new ConcurrentDictionary<Competition.ICompetition, IActorRef>();
+            _supportedCompetitions = new List<ICompetitionInfo>();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -35,30 +39,49 @@ namespace CoreWars.WebApp
             var actorSystemConfig = HoconLoader.FromFile("./akka.hocon");
             ActorSystem = ActorSystem.Create("core-wars", actorSystemConfig);
 
+            var data = _container.Resolve<IDataContext>();
+            var scriptRepositoryProps = ScriptRepositoryActor.Props(data);
+            ScriptRepository = ActorSystem.ActorOf(scriptRepositoryProps);
+
+
+            InitializeCompetitions();
+
             return Task.CompletedTask;
+        }
+
+        private void InitializeCompetitions()
+        {
+            _container
+                .Resolve<IEnumerable<ICompetition>>()
+                .ForEach(AddCompetition);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
             ActorSystem.Dispose();
-            
             return Task.CompletedTask;
         }
 
         public ActorSystem ActorSystem { get; private set; }
-        public IReadOnlyList<Competition.ICompetition> AvailableCompetitions => _competitionLobbies.Keys.ToList();
+        public IActorRef ScriptRepository { get; private set; }
+        
+        public IReadOnlyList<ICompetitionInfo> AvailableCompetitions => _supportedCompetitions.ToList();
 
-        public void AddCompetitor(Props factory, Competition.ICompetition competition)
+        public void AddScript(GameScript gameScript)
         {
-            var playerLobby = _competitionLobbies[competition];
-            ActorSystem.ActorOf(Competitor.Props(factory, playerLobby));
+            ScriptRepository.Tell(new Messages.Add<GameScript>(gameScript));
         }
 
-        public void AddCompetition(Competition.ICompetition competition)
+        private void AddCompetition(ICompetition competition)
         {
             var resultHandler = ActorSystem.ActorOf<DummyCompetitionResultHandler>();
             var playerSet = _container.Resolve<ISelectableSet<IActorRef>>();
+            var competitorFactory = _container.Resolve<AggregatedCompetitorFactory>();
             var lobby = ActorSystem.ActorOf(PlayerLobby.Props(playerSet, competition.Info));
+
+            var competitorsRootProps = CompetitorRoot.Props(ScriptRepository, competition.Info, lobby, competitorFactory);
+            ActorSystem.ActorOf(competitorsRootProps);
+            
             
             for(var i = 0; i < competition.Info.MaxInstancesCount; i++)
             {
@@ -68,7 +91,7 @@ namespace CoreWars.WebApp
                 competitionSlot.Tell(RunCompetition.Instance);
             }
 
-            _competitionLobbies[competition] = lobby;
+            _supportedCompetitions.Add(competition.Info);
         }
 
  

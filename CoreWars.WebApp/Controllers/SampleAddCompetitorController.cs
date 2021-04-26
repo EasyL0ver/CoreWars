@@ -1,4 +1,8 @@
-﻿using CoreWars.Scripting;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using CoreWars.Data.Entities;
+using CoreWars.Scripting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoreWars.WebApp.Controllers
@@ -7,25 +11,24 @@ namespace CoreWars.WebApp.Controllers
     [Route("[controller]")]
     public class SampleAddCompetitorController : ControllerBase
     {
-        private readonly ICompetitorFactory _competitionActorFactory;
-        private readonly IActorSystemService _actorSystem;
-
-        public SampleAddCompetitorController(
-            IActorSystemService actorSystem, 
-            ICompetitorFactory competitionActorFactory)
+        private readonly IGameService _gameService;
+        public SampleAddCompetitorController(IGameService gameService)
         {
-            _actorSystem = actorSystem;
-            _competitionActorFactory = competitionActorFactory;
+            _gameService = gameService;
         }
-
 
         [HttpPost]
         public void Post(string competitionName, string scriptingLanguage,[FromBody] string code)
         {
-            var competitorAgentProps = _competitionActorFactory.Build(code);
-            //var playerProps = Competitor.Props(competitorAgentProps, _lobby.LobbyRef);
-
-            //_actorSystem.ActorOf(playerProps);
+            var script = new GameScript()
+            {
+                Id = Guid.NewGuid()
+                , CompetitionType = competitionName
+                , ScriptFiles = new[]{code}
+                , ScriptType = scriptingLanguage
+            };
+            
+            _gameService.AddScript(script);
         }
     }
 }
