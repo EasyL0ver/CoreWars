@@ -5,7 +5,6 @@ using JetBrains.Annotations;
 namespace CoreWars.Common.TypedActorQuery.Ask
 {
     //todo monitor target for termination
-    //todo allow resetting
     [UsedImplicitly]
     internal class TypedAsk<TAnswer> : ReceiveActor
     {
@@ -31,34 +30,6 @@ namespace CoreWars.Common.TypedActorQuery.Ask
             _timeoutTimeSpan = timeoutTimeSpan 
                                ?? TimeSpan.FromMilliseconds(DefaultAskTimeoutMillis);
             
-            WaitingForStartingMessage();
-        }
-
-        public static Props Props(
-            IActorRef target
-            , object askMessage
-            , IActorRef resultHandler
-            , TimeSpan? timeout = null)
-        {
-            return Akka.Actor.Props
-                .Create(() => new TypedAsk<TAnswer>(target, askMessage, resultHandler, timeout));
-        }
-
-        private void WaitingForStartingMessage()
-        {
-            Receive<RunTypedQuery>(msg =>
-            {
-                _target.Tell(_queryMessage);
-
-                if (_timeoutTimeSpan != null)
-                    _timeoutCancelable = ScheduleTimeoutMessage(_timeoutTimeSpan.Value);
-                
-                Become(ReceivingResponses);
-            });
-        }
-
-        private void ReceivingResponses()
-        {
             Receive<TAnswer>(response =>
             {
                 _resultHandler.Tell(new TypedAskResult<TAnswer>(response, Sender));
@@ -72,6 +43,36 @@ namespace CoreWars.Common.TypedActorQuery.Ask
                     $"Invalid type response for typed ask. Received message: {msg} from: {Sender}";
                 throw new AskTypeMismatchException(unhandledMessageType, msg);
             });
+        }
+
+        public static Props Props(
+            IActorRef target
+            , object askMessage
+            , IActorRef resultHandler
+            , TimeSpan? timeout = null)
+        {
+            return Akka.Actor.Props
+                .Create(() => new TypedAsk<TAnswer>(target, askMessage, resultHandler, timeout));
+        }
+
+        protected override void PreStart()
+        {
+            base.PreStart();
+            _target.Tell(_queryMessage);
+            RefreshTimer();
+        }
+
+        protected override void PostRestart(Exception reason)
+        {
+            base.PostRestart(reason);
+            RefreshTimer();
+        }
+
+        private void RefreshTimer()
+        {
+            _timeoutCancelable?.Cancel();
+            if (_timeoutTimeSpan != null)
+                _timeoutCancelable = ScheduleTimeoutMessage(_timeoutTimeSpan.Value);
         }
 
         private ICancelable ScheduleTimeoutMessage(TimeSpan after)

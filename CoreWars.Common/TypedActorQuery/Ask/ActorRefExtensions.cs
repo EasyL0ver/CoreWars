@@ -12,11 +12,7 @@ namespace CoreWars.Common.TypedActorQuery.Ask
             , TimeSpan? timeout = null)
         {
             var props = TypedAsk<T>.Props(target, message, context.Self, timeout);
-            var actor = context.ActorOf(props);
-            
-            actor.Tell(RunTypedQuery.Instance);
-            
-            return actor;
+            return context.ActorOf(props);
         }
     }
 }
