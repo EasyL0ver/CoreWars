@@ -76,6 +76,7 @@ namespace CoreWars.Coordination.GameSlot
             
             OnTransition((initialState, nextState) =>
             {
+                _logger.Debug("Changed state from {0} to {1}", initialState, nextState);
                 switch (initialState)
                 {
                     case CompetitionSlotState.Lobby when StateData is QueryData queryStateData:
