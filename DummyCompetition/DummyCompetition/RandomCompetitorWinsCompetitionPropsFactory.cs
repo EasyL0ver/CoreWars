@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Akka.Actor;
+using CoreWars.Common;
 using CoreWars.Competition;
 
 namespace DummyCompetition

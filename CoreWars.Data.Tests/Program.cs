@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using CoreWars.Data;
 using CoreWars.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoreWars.Data.Tests
 {
@@ -12,7 +14,7 @@ namespace CoreWars.Data.Tests
             using (var context = new CoreWarsDataContext(connectionString))
             {
                 context.Database.EnsureCreated();
-                context.Add(new GameScript() {Id = Guid.NewGuid()});
+                var test = context.Scripts.Include(x => x.Stats).ToList();
 
                 context.SaveChanges();
             }
