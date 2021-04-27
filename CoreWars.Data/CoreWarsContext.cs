@@ -7,7 +7,10 @@ namespace CoreWars.Data
 {
     public interface IDataContext : IBaseRepository
     {
-        DbSet<GameScript> Scripts { get; set; }
+        DbSet<Script> Scripts { get; set; }
+        DbSet<Competition> Competitions { get; set; }
+        DbSet<Language> Languages { get; }
+        DbSet<ScriptStatistics> Stats { get; }
     }
     
 
@@ -24,12 +27,33 @@ namespace CoreWars.Data
         {
             _connectionString = connectionString;
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Script>()
+                .HasOne(x => x.Language)
+                .WithMany(x => x.Scripts)
+                .HasForeignKey(x => x.ScriptType);
+            
+            modelBuilder.Entity<Script>()
+                .HasOne(x => x.Competition)
+                .WithMany(x => x.Scripts)
+                .HasForeignKey(x => x.CompetitionName);
+
+            modelBuilder.Entity<ScriptStatistics>()
+                .HasOne(x => x.Script)
+                .WithOne(x => x.Stats);
+
+        }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseNpgsql(_connectionString);
         
-        public DbSet<GameScript> Scripts { get; set; }
-        
+        public DbSet<Script> Scripts { get; set; }
+        public DbSet<Competition> Competitions { get; set; }
+        public DbSet<Language> Languages { get; set; }
+        public DbSet<ScriptStatistics> Stats { get; set; }
+
         public void Commit()
         {
             base.SaveChanges();

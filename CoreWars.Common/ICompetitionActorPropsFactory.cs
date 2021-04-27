@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Akka.Actor;
 
-namespace CoreWars.Competition
+namespace CoreWars.Common
 {
     public interface ICompetitionActorPropsFactory
     {

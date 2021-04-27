@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using Akka.Actor;
-using CoreWars.Data.Entities;
 
-namespace CoreWars.Scripting
+namespace CoreWars.Common
 {
     public interface ICompetitorFactory
     {
         IReadOnlyList<string> SupportedCompetitionNames { get; }
         
-        Props Build(GameScript script);
+        Props Build(IScript script);
     }
 }

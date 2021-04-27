@@ -6,6 +6,7 @@ namespace CoreWars.Coordination.GameSlot
         , Lobby
         , Game
         , Conclude
+        , Terminate
     }
     
 }

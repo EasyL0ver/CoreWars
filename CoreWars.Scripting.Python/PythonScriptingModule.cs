@@ -1,4 +1,5 @@
 using Autofac;
+using CoreWars.Common;
 
 namespace CoreWars.Scripting.Python
 {

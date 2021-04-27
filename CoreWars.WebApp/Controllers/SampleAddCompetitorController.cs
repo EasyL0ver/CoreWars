@@ -20,10 +20,10 @@ namespace CoreWars.WebApp.Controllers
         [HttpPost]
         public void Post(string competitionName, string scriptingLanguage,[FromBody] string code)
         {
-            var script = new GameScript()
+            var script = new Script()
             {
                 Id = Guid.NewGuid()
-                , CompetitionType = competitionName
+                , CompetitionName = competitionName
                 , ScriptFiles = new[]{code}
                 , ScriptType = scriptingLanguage
             };

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace CoreWars.Common
 {
     public static class EnumerableExtensions
     {
+        [DebuggerStepThrough]
         public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
             foreach(var element in source)

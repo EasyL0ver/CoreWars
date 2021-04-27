@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
+using CoreWars.Common;
 using CoreWars.Data.Entities;
 using CoreWars.Scripting;
 
@@ -18,7 +19,7 @@ namespace CoreWars.WebApp
         public IReadOnlyList<string> SupportedCompetitionNames =>
             _factories.SelectMany(x => x.SupportedCompetitionNames).ToList();
 
-        public Props Build(GameScript script)
+        public Props Build(IScript script)
         {
             var innerFactory = _factories.Single(x => x.SupportedCompetitionNames.Contains(script.ScriptType));
 

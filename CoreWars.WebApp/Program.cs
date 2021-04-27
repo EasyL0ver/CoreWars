@@ -1,6 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Autofac.Features.Indexed;
+using CoreWars.Common;
 using CoreWars.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,27 +20,25 @@ namespace CoreWars.WebApp
         {
             var host = CreateHostBuilder(args).Build();
             
-            CreateDbIfNotExists(host);
+            InitializeDatabase(host);
             
             host.Run();
         }
+
         
-        private static void CreateDbIfNotExists(IHost host)
+        private static void InitializeDatabase(IHost host)
         {
-            using (var scope = host.Services.CreateScope())
-            {
-                var container = scope.ServiceProvider.GetAutofacRoot();
-                try
-                {
-                    var context = container.Resolve<CoreWarsDataContext>();
-                    context.Database.EnsureCreated();
-                    // DbInitializer.Initialize(context);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
-            }
+            using var scope = host.Services.CreateScope();
+            var container = scope.ServiceProvider.GetAutofacRoot();
+            var context = container.Resolve<CoreWarsDataContext>();
+
+            context.Database.EnsureCreated();
+            
+            var competitions = container.Resolve<IEnumerable<ICompetition>>();
+            context.SeedCompetitionInfo(competitions);
+
+            var scriptingLanguages = container.Resolve<IEnumerable<ICompetitorFactory>>();
+            context.SeedLanguageInfo(scriptingLanguages.SelectMany(x => x.SupportedCompetitionNames));
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

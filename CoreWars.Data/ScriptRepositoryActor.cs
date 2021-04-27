@@ -14,12 +14,12 @@ namespace CoreWars.Data
         
         public ScriptRepositoryActor(IDataContext context)
         {
-            Receive<Messages.Add<GameScript>>(msg =>
+            Receive<Messages.Add<Script>>(msg =>
             {
                 context.Scripts.Add(msg.Content);
                 context.Commit();
 
-                var @event = new Messages.AddedEvent<GameScript>(msg.Content);
+                var @event = new Messages.AddedEvent<Script>(msg.Content);
                 _subscribed.ForEach(sub =>
                 {
                     sub.Tell(@event);
@@ -34,7 +34,7 @@ namespace CoreWars.Data
 
             Receive<Messages.GetAllForCompetition>(msg =>
             {
-                Sender.Tell(context.Scripts.Where(x => x.CompetitionType == msg.CompetitionName).ToList());
+                Sender.Tell(context.Scripts.Where(x => x.CompetitionName == msg.CompetitionName).ToList());
             });
 
             Receive<Messages.Subscribe>(msg =>

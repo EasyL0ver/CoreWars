@@ -28,8 +28,8 @@ namespace CoreWars.Player
 
             EnsureSubscription(_scriptRepository);
 
-            Receive<IEnumerable<GameScript>>(OnScriptBatchReceived);
-            Receive<Data.Entities.Messages.AddedEvent<GameScript>>(OnNewScriptAdded);
+            Receive<IEnumerable<Script>>(OnScriptBatchReceived);
+            Receive<Data.Entities.Messages.AddedEvent<Script>>(OnNewScriptAdded);
 
         }
 
@@ -42,15 +42,15 @@ namespace CoreWars.Player
             return Akka.Actor.Props.Create(() => new CompetitorRoot(scriptRepository, competitionInfo, lobby, factory));
         }
 
-        private void OnNewScriptAdded(Data.Entities.Messages.AddedEvent<GameScript> obj)
+        private void OnNewScriptAdded(Data.Entities.Messages.AddedEvent<Script> obj)
         {
-            if (obj.AddedElement.CompetitionType != _competitionInfo.Name)
+            if (obj.AddedElement.CompetitionName != _competitionInfo.Name)
                 return;
             
             CreateCompetitor(obj.AddedElement);
         }
 
-        private void OnScriptBatchReceived(IEnumerable<GameScript> obj)
+        private void OnScriptBatchReceived(IEnumerable<Script> obj)
         {
             //ensure children ale deleted
             Context.GetChildren().ForEach(child => child.Tell(PoisonPill.Instance));
@@ -64,7 +64,7 @@ namespace CoreWars.Player
             _scriptRepository.Tell(new Data.Entities.Messages.GetAllForCompetition(_competitionInfo.Name));
         }
 
-        private void CreateCompetitor(GameScript script)
+        private void CreateCompetitor(Script script)
         {
             var competitorAgentProps = _competitorFactory.Build(script);
             var competitorProps = Competitor.Props(competitorAgentProps, _lobby);

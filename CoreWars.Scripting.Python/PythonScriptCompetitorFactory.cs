@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Akka.Actor;
+using CoreWars.Common;
 using CoreWars.Data.Entities;
 
 namespace CoreWars.Scripting.Python
@@ -8,7 +9,7 @@ namespace CoreWars.Scripting.Python
     {
         public IReadOnlyList<string> SupportedCompetitionNames => new[] {"python"};
 
-        public Props Build(GameScript script)
+        public Props Build(IScript script)
         {
             var classProxy = new PythonInteroperabilityClassProxy(script.ScriptFiles[0]);
             return Props.Create(() => new ClassProxyScriptCompetitor(classProxy));

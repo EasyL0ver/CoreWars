@@ -15,7 +15,7 @@ namespace CoreWars.WebApp
     {
         IReadOnlyList<ICompetitionInfo> AvailableCompetitions { get; }
 
-        void AddScript(GameScript gameScript);
+        void AddScript(Script script);
     }
 
 }

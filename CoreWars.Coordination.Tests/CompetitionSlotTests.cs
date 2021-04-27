@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Akka.Actor;
 using Akka.TestKit;
 using Akka.TestKit.NUnit;
+using CoreWars.Common;
 using CoreWars.Competition;
 using CoreWars.Coordination.GameSlot;
 using CoreWars.Coordination.Messages;

@@ -19,7 +19,7 @@ using CoreWars.Scripting;
 using CoreWars.WebApp.Mock;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Scripting.Hosting;
-using ICompetition = CoreWars.Competition.ICompetition;
+using ICompetition = CoreWars.Common.ICompetition;
 
 namespace CoreWars.WebApp
 {
@@ -67,9 +67,10 @@ namespace CoreWars.WebApp
         
         public IReadOnlyList<ICompetitionInfo> AvailableCompetitions => _supportedCompetitions.ToList();
 
-        public void AddScript(GameScript gameScript)
+        public void AddScript(Script script)
         {
-            ScriptRepository.Tell(new Messages.Add<GameScript>(gameScript));
+            ScriptRepository.Tell(new Messages.Add<Script>(script));
+            
         }
 
         private void AddCompetition(ICompetition competition)
