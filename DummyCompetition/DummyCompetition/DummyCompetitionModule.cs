@@ -1,4 +1,3 @@
-using Autofac;
 using CoreWars.Common;
 using CoreWars.Competition;
 

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -10,14 +9,11 @@ using Autofac.Extensions.DependencyInjection;
 using CoreWars.Common;
 using CoreWars.Coordination;
 using CoreWars.Coordination.GameSlot;
-using CoreWars.Coordination.Messages;
 using CoreWars.Coordination.PlayerSet;
 using CoreWars.Data;
 using CoreWars.Data.Entities;
 using CoreWars.Player;
-using CoreWars.Scripting;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Scripting.Hosting;
 using ICompetition = CoreWars.Common.ICompetition;
 
 namespace CoreWars.WebApp

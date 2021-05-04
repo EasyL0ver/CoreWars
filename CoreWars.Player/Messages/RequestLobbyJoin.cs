@@ -1,5 +1,3 @@
-using Akka.Actor;
-
 namespace CoreWars.Player.Messages
 {
     public class RequestLobbyJoin

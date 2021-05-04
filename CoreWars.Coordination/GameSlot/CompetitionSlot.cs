@@ -4,7 +4,6 @@ using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Common.TypedActorQuery.Ask;
-using CoreWars.Competition;
 using CoreWars.Coordination.Messages;
 
 namespace CoreWars.Coordination.GameSlot

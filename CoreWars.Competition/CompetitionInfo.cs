@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using CoreWars.Common;
 
 namespace CoreWars.Competition

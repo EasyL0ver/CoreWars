@@ -1,5 +1,3 @@
-using System;
-
 namespace CoreWars.Common
 {
     public interface IScript : IScriptInfo

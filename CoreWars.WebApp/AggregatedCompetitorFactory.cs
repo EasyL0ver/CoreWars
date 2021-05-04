@@ -1,10 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
 using CoreWars.Common;
-using CoreWars.Data.Entities;
-using CoreWars.Scripting;
 
 namespace CoreWars.WebApp
 {

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using Akka.Actor;
 using CoreWars.Scripting;
 using CoreWars.Scripting.Python;

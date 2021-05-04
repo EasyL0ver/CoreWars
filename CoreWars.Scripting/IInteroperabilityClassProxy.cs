@@ -1,5 +1,3 @@
-using System;
-
 namespace CoreWars.Scripting
 {
     public interface IInteroperabilityClassProxy 

@@ -1,6 +1,4 @@
-using Akka.Routing;
 using CoreWars.Common;
-using CoreWars.Competition;
 
 namespace CoreWars.Coordination.Messages
 {

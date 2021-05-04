@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PrisonerDIlemma.Tests
+﻿namespace PrisonerDIlemma.Tests
 {
     class Program
     {

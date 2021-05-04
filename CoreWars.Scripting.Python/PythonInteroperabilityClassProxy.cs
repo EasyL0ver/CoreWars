@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Scripting.Hosting;
 
 namespace CoreWars.Scripting.Python

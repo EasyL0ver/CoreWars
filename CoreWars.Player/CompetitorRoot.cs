@@ -1,10 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Akka.Actor;
 using CoreWars.Common;
 using CoreWars.Data.Entities;
-using CoreWars.Scripting;
 
 namespace CoreWars.Player
 {

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Akka.Actor;
 using CoreWars.Common;
-using CoreWars.Data.Entities;
 
 namespace CoreWars.Scripting.Python
 {

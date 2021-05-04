@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data.Entity.Infrastructure.Interception;
-using CoreWars.Data.Entities;
+﻿using CoreWars.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoreWars.Data

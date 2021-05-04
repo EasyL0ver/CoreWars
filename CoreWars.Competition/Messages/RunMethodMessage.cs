@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace CoreWars.Competition
 {
     public sealed class RunMethodMessage

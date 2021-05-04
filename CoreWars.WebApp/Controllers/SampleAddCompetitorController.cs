@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using CoreWars.Data.Entities;
-using CoreWars.Scripting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoreWars.WebApp.Controllers

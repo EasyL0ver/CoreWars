@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using CoreWars.Data;
-using CoreWars.Data.Entities;
+﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoreWars.Data.Tests
