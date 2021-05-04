@@ -20,8 +20,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Coordination", "Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Player", "CoreWars.Player\CoreWars.Player.csproj", "{85C9A730-D238-4DB6-8851-A75F82D2CB91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Coordination.Tests", "CoreWars.Coordination.Tests\CoreWars.Coordination.Tests.csproj", "{1579AB10-0CCD-4F9B-8A21-FAEB87BD9790}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.WebApp", "CoreWars.WebApp\CoreWars.WebApp.csproj", "{A7551C34-6555-4440-A57F-7C745508CD63}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DummyCompetition", "DummyCompetition", "{45B36E19-BE72-44E4-A7FC-7B03BB8E57DB}"
@@ -31,8 +29,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Data", "CoreWars.Data\CoreWars.Data.csproj", "{3A1E4CF4-C8DF-4FD4-A457-F006948CC642}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Data.Tests", "CoreWars.Data.Tests\CoreWars.Data.Tests.csproj", "{DA3464CB-50E1-498D-AADF-2D0BE99766AF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Stats", "CoreWars.Stats\CoreWars.Stats.csproj", "{564C23C2-0437-4DD8-B5D2-820143AE9F70}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,10 +72,6 @@ Global
 		{85C9A730-D238-4DB6-8851-A75F82D2CB91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85C9A730-D238-4DB6-8851-A75F82D2CB91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{85C9A730-D238-4DB6-8851-A75F82D2CB91}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1579AB10-0CCD-4F9B-8A21-FAEB87BD9790}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1579AB10-0CCD-4F9B-8A21-FAEB87BD9790}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1579AB10-0CCD-4F9B-8A21-FAEB87BD9790}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1579AB10-0CCD-4F9B-8A21-FAEB87BD9790}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A7551C34-6555-4440-A57F-7C745508CD63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A7551C34-6555-4440-A57F-7C745508CD63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7551C34-6555-4440-A57F-7C745508CD63}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -96,10 +88,6 @@ Global
 		{DA3464CB-50E1-498D-AADF-2D0BE99766AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA3464CB-50E1-498D-AADF-2D0BE99766AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA3464CB-50E1-498D-AADF-2D0BE99766AF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{564C23C2-0437-4DD8-B5D2-820143AE9F70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{564C23C2-0437-4DD8-B5D2-820143AE9F70}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{564C23C2-0437-4DD8-B5D2-820143AE9F70}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{564C23C2-0437-4DD8-B5D2-820143AE9F70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111} = {D4015C08-3824-4BCD-A76F-E01255142F1A}

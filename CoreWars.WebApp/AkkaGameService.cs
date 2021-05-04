@@ -16,7 +16,6 @@ using CoreWars.Data;
 using CoreWars.Data.Entities;
 using CoreWars.Player;
 using CoreWars.Scripting;
-using CoreWars.WebApp.Mock;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Scripting.Hosting;
 using ICompetition = CoreWars.Common.ICompetition;
@@ -43,6 +42,9 @@ namespace CoreWars.WebApp
             var scriptRepositoryProps = ScriptRepositoryActor.Props(data);
             ScriptRepository = ActorSystem.ActorOf(scriptRepositoryProps);
 
+            var statsRepositoryProps = Props.Create(() => new StatsRepositoryActor(data));
+            ResultsHandler = ActorSystem.ActorOf(statsRepositoryProps);
+
 
             InitializeCompetitions();
 
@@ -64,6 +66,7 @@ namespace CoreWars.WebApp
 
         public ActorSystem ActorSystem { get; private set; }
         public IActorRef ScriptRepository { get; private set; }
+        private IActorRef ResultsHandler { get; set; }
         
         public IReadOnlyList<ICompetitionInfo> AvailableCompetitions => _supportedCompetitions.ToList();
 
@@ -75,7 +78,6 @@ namespace CoreWars.WebApp
 
         private void AddCompetition(ICompetition competition)
         {
-            var resultHandler = ActorSystem.ActorOf<DummyCompetitionResultHandler>();
             var playerSet = _container.Resolve<ISelectableSet<IActorRef>>();
             var competitorFactory = _container.Resolve<AggregatedCompetitorFactory>();
             var lobby = ActorSystem.ActorOf(PlayerLobby.Props(playerSet, competition.Info));
@@ -86,10 +88,8 @@ namespace CoreWars.WebApp
             
             for(var i = 0; i < competition.Info.MaxInstancesCount; i++)
             {
-                var props = CompetitionSlot.Props(lobby, resultHandler, competition.Factory);
-                var competitionSlot = ActorSystem.ActorOf(props);
-                
-                competitionSlot.Tell(RunCompetition.Instance);
+                var props = CompetitionSlot.Props(lobby, ResultsHandler, competition.Factory);
+                ActorSystem.ActorOf(props, $"{competition.Info.Name}-{i}");
             }
 
             _supportedCompetitions.Add(competition.Info);

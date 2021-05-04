@@ -1,4 +1,4 @@
-namespace CoreWars.Coordination.Messages
+namespace CoreWars.Common
 {
     public class ResultAcknowledged
     {

@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Akka.Actor;
+using CoreWars.Common;
 using CoreWars.Competition;
 
 namespace DummyCompetition
 {
     public class RandomCompetitorWinsCompetition : CompetitionActor
     {
-        public RandomCompetitorWinsCompetition(IEnumerable<IActorRef> competitorActors) : base(competitorActors)
+        private Dictionary<IActorRef, CompetitionResult> _result;
+        public RandomCompetitorWinsCompetition(IEnumerable<IAgentActorRef> competitorActors) : base(competitorActors)
         {
         }
 
@@ -19,13 +21,16 @@ namespace DummyCompetition
             int index = random.Next(Competitors.Count);
             var winner = Competitors[index];
 
-            var result = Competitors.ToDictionary(x => x,
+            _result = Competitors.ToDictionary(x => x,
                 y => y.Equals(winner) ? CompetitionResult.Winner : CompetitionResult.Loser);
             
             Thread.Sleep(TimeSpan.FromSeconds(5));
-            AnnounceResult(new CompetitionResultMessage(result));
+            Conclude();
         }
-        
-        
+
+        protected override CompetitionResult GetResult(IActorRef playerActor)
+        {
+            return _result[playerActor];
+        }
     }
 }

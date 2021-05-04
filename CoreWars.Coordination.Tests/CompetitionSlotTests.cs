@@ -50,14 +50,14 @@ namespace CoreWars.Coordination.Tests
             _competitorSourceProbe.ExpectMsg<OrderAgents>();
         }
         
-        [Test]
-        public void ChangeStateToGame_GameActorIsInitialized()
-        {
-            _sut.Tell(RunCompetition.Instance);
-            _competitorSourceProbe.Send(_sut, new AgentsOrderCompleted(Array.Empty<IActorRef>()));
-
-            _gameProbe.ExpectMsg<Competition.Messages.RunCompetitionMessage>();
-        }
+        // [Test]
+        // public void ChangeStateToGame_GameActorIsInitialized()
+        // {
+        //     _sut.Tell(RunCompetition.Instance);
+        //     _competitorSourceProbe.Send(_sut, new AgentsOrderCompleted(Array.Empty<IActorRef>()));
+        //
+        //     _gameProbe.ExpectMsg<Competition.Messages.RunCompetitionMessage>();
+        // }
         
         // [Test]
         // public void CompleteGame_NewLobbyIsInstantiated()

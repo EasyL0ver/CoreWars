@@ -33,7 +33,7 @@ namespace CoreWars.WebApp
 
             //services.AddDbContext<IBaseRepository, CoreWarsDataContext>();
             
-            services.AddHostedService(x => (AkkaGameService) x.GetService<IActorSystemService>());
+            services.AddHostedService(x => (AkkaGameService) x.GetService<IGameService>());
         }
         
         // ConfigureContainer is where you can register things directly
@@ -47,7 +47,7 @@ namespace CoreWars.WebApp
             // call builder.Populate(), that happens in AutofacServiceProviderFactory
             // for you.
             builder.RegisterType<AkkaGameService>()
-                .AsImplementedInterfaces()
+                .As<IGameService>()
                 .SingleInstance();
 
 

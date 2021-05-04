@@ -11,6 +11,7 @@ namespace CoreWars.Data
         DbSet<Competition> Competitions { get; set; }
         DbSet<Language> Languages { get; }
         DbSet<ScriptStatistics> Stats { get; }
+        DbSet<User> Users { get; }
     }
     
 
@@ -44,6 +45,11 @@ namespace CoreWars.Data
                 .HasOne(x => x.Script)
                 .WithOne(x => x.Stats);
 
+            modelBuilder.Entity<User>()
+                .HasMany(x => x.Scripts)
+                .WithOne(x => x.User)
+                .HasForeignKey(x => x.UserId);
+
         }
         
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -53,6 +59,7 @@ namespace CoreWars.Data
         public DbSet<Competition> Competitions { get; set; }
         public DbSet<Language> Languages { get; set; }
         public DbSet<ScriptStatistics> Stats { get; set; }
+        public DbSet<User> Users { get; }
 
         public void Commit()
         {

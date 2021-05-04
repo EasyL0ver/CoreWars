@@ -1,4 +1,5 @@
 using Akka.Actor;
+using CoreWars.Common;
 using CoreWars.Competition;
 
 namespace CoreWars.Coordination.GameSlot

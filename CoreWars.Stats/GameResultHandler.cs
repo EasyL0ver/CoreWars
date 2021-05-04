@@ -1,5 +1,6 @@
 ﻿using System;
 using Akka.Actor;
+using CoreWars.Common;
 using CoreWars.Competition;
 
 namespace CoreWars.Stats
@@ -10,6 +11,7 @@ namespace CoreWars.Stats
         {
             Receive<CompetitionResultMessage>(msg =>
             {
+                
 
             });
         }

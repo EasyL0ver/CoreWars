@@ -7,7 +7,7 @@ namespace DummyCompetition
 {
     public class RandomCompetitorWinsCompetitionPropsFactory : ICompetitionActorPropsFactory
     {
-        public Props Build(IEnumerable<IActorRef> competitionParticipants)
+        public Props Build(IEnumerable<IAgentActorRef> competitionParticipants)
         {
             return Props.Create(() => new RandomCompetitorWinsCompetition(competitionParticipants));
         }

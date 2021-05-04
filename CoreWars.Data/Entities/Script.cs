@@ -13,15 +13,21 @@ namespace CoreWars.Data.Entities
     {
         [Key]
         public Guid Id { get; set; }
+
+        public string Name { get; }
+
         [ForeignKey("Language")]
         public string ScriptType { get; set; }
         [ForeignKey("Competition")]
         public string CompetitionName { get; set; }
+        [ForeignKey("User")]
+        public Guid UserId { get; set; }
         
         //todo create file entity ?
         [Required]
         public string[] ScriptFiles { get; set; }
         
+        public virtual User User { get; set; }
         public virtual Competition Competition { get; set; }
         public virtual Language Language { get; set; }
         public virtual ScriptStatistics Stats { get; set; }

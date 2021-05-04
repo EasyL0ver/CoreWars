@@ -34,7 +34,12 @@ namespace CoreWars.Data
 
             Receive<Messages.GetAllForCompetition>(msg =>
             {
-                Sender.Tell(context.Scripts.Where(x => x.CompetitionName == msg.CompetitionName).ToList());
+                var competitionScripts = context.Scripts
+                    .Where(x => x.CompetitionName == msg.CompetitionName)
+                    .Include(x => x.User)
+                    .ToList();
+                
+                Sender.Tell(competitionScripts);
             });
 
             Receive<Messages.Subscribe>(msg =>

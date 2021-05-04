@@ -21,15 +21,23 @@ namespace PrisonerDilemma
             Self.Tell(new Messages.StartRound());
         }
 
+        protected override CompetitionResult GetResult(IActorRef playerActor)
+        {
+            var maxScore = _playersScore.Values.Max();
+            var winner = _playersScore[playerActor] == maxScore;
+
+            return winner ? CompetitionResult.Winner : CompetitionResult.Loser;
+        }
+
         public DilemmaCompetitionActor(
-            IEnumerable<IActorRef> competitorActors
+            IEnumerable<IAgentActorRef> competitorActors
             , IDilemmaConfiguration configuration) : base(competitorActors)
         {
             IActorRef actor = null;
             _configuration = configuration;
 
             _playersScore = Competitors
-                .ToDictionary(x => x, x => 0);
+                .ToDictionary(x => (IActorRef) x, x => 0);
 
             Receive<Messages.StartRound>(msg =>
             {
@@ -58,7 +66,7 @@ namespace PrisonerDilemma
 
             if (CurrentIterationCounter >= _configuration.IterationsCount)
             {
-                AnnounceResult(CompetitionResultMessage.FromScoreboard(_playersScore));
+                Conclude();
                 return;
             }
             

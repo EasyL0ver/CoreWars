@@ -34,28 +34,8 @@ namespace CoreWars.Coordination
                 try
                 {
                     var selectedPlayers = players.Select(lobbyConfiguration.PlayerCount);
-                    var messages = selectedPlayers.ToDictionary(x => x, y => (object) new RequestCreateAgent());
-
-
-                    var transform = new Func<TypedQueryResult<AgentCreated>, AgentsOrderCompleted>(input =>
-                    {
-                        return new AgentsOrderCompleted(input.Result.Values.Select(x => x.AgentReference));
-                    });
-
-                    var transformActorProps =
-                        Akka.Actor.Props.Create(
-                            () => new MessageTransform<TypedQueryResult<AgentCreated>, AgentsOrderCompleted>(transform,
-                                Sender));
-
-                    var transformActor = Context.ActorOf(transformActorProps);
-                
-                    var queryProps = TypedQuery<AgentCreated>.Props(
-                        messages
-                        , transformActor
-                        , lobbyConfiguration.Timeout);
-                
-
-                    Context.ActorOf(queryProps).Tell(RunTypedQuery.Instance);
+                    var orderProps = LobbyOrder.Props(selectedPlayers, Sender);
+                    Context.ActorOf(orderProps);
                 }
                 catch (InvalidOperationException e)
                 {

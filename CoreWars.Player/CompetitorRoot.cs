@@ -67,7 +67,7 @@ namespace CoreWars.Player
         private void CreateCompetitor(Script script)
         {
             var competitorAgentProps = _competitorFactory.Build(script);
-            var competitorProps = Competitor.Props(competitorAgentProps, _lobby);
+            var competitorProps = Competitor.Props(competitorAgentProps, _lobby, script.User, script);
 
             Context.ActorOf(competitorProps);
         }

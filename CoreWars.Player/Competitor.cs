@@ -1,5 +1,6 @@
 using System;
 using Akka.Actor;
+using CoreWars.Common;
 using CoreWars.Player.Messages;
 
 namespace CoreWars.Player
@@ -7,23 +8,25 @@ namespace CoreWars.Player
     public class Competitor : ReceiveActor
     {
         private const int RejoinLobbyTimeMilliseconds = 5000;
-        //todo private readonly IPlayerStats _playerStats;
         private readonly Props _playerAgentActorFactory;
         private readonly IActorRef _playerLobby;
-        //todo private readonly IPlayerActorCredentials _credentials;
+        private readonly IUser _creator;
+        private readonly IScriptInfo _scriptInfo;
         
-        public Competitor(Props playerAgentActorFactory, IActorRef playerLobby)
+        public Competitor(Props playerAgentActorFactory, IActorRef playerLobby, IUser creator, IScriptInfo scriptInfo)
         {
             _playerAgentActorFactory = playerAgentActorFactory;
             _playerLobby = playerLobby;
+            _creator = creator;
+            _scriptInfo = scriptInfo;
 
             Receive<RequestCreateAgent>(OnRequestCreateAgentReceived);
             Receive<RequestPlayerCredentials>(OnRequestPlayerCredentialsReceived);
         }
 
-        public static Props Props(Props factory, IActorRef playerLobby)
+        public static Props Props(Props factory, IActorRef playerLobby, IUser creator, IScriptInfo info)
         {
-            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby));
+            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby, creator, info));
         }
 
         protected override void PreStart()
@@ -41,8 +44,10 @@ namespace CoreWars.Player
         private void OnRequestCreateAgentReceived(RequestCreateAgent obj)
         {
             var agentActorRef = Context.ActorOf(_playerAgentActorFactory);
+            var credentialsWrapper = new AgentActorRef(agentActorRef, _creator, _scriptInfo);
+            
             Context.Watch(agentActorRef);
-            Sender.Tell(new AgentCreated(agentActorRef));
+            Sender.Tell(credentialsWrapper);
         }
 
         private void OnRequestPlayerCredentialsReceived(RequestPlayerCredentials obj)

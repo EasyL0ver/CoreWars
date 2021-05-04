@@ -46,6 +46,11 @@ namespace CoreWars.Coordination.GameSlot
                                 , agentsOrderCompleted.Answer.Agents.ToList()));
                 }
 
+                if (state.FsmEvent is NotEnoughPlayers)
+                {
+                    return GoTo(CompetitionSlotState.Idle);
+                }
+
                 return null;
             });
             
@@ -77,7 +82,7 @@ namespace CoreWars.Coordination.GameSlot
             
             OnTransition((initialState, nextState) =>
             {
-                _logger.Debug("Changed state from {0} to {1}", initialState, nextState);
+                _logger.Info("Changed state from {0} to {1}", initialState, nextState);
                 switch (initialState)
                 {
                     case CompetitionSlotState.Lobby when StateData is QueryData queryStateData:
@@ -88,6 +93,8 @@ namespace CoreWars.Coordination.GameSlot
                         break;
                     case CompetitionSlotState.Idle:
                     case CompetitionSlotState.Conclude:
+                        break;
+                    case CompetitionSlotState.Terminate:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(initialState), initialState, null);
@@ -103,7 +110,14 @@ namespace CoreWars.Coordination.GameSlot
                         nextStateGameData.Game.Tell(new Competition.Messages.RunCompetitionMessage());
                         break;
                     case CompetitionSlotState.Idle:
+                        Context.System.Scheduler.ScheduleTellOnce(
+                            TimeSpan.FromSeconds(2),
+                            Self,
+                            RunCompetition.Instance,
+                            Self);
+                        break;
                     case CompetitionSlotState.Lobby:
+                    case CompetitionSlotState.Terminate:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(nextState), nextState, null);
@@ -112,6 +126,11 @@ namespace CoreWars.Coordination.GameSlot
             
             
             Initialize();
+        }
+
+        public override void AroundPostRestart(Exception cause, object message)
+        {
+            base.AroundPostRestart(cause, message);
         }
 
         public static Props Props(
@@ -125,7 +144,7 @@ namespace CoreWars.Coordination.GameSlot
         protected override SupervisorStrategy SupervisorStrategy()
         {
             return new OneForOneStrategy(
-                loggingEnabled: false,
+                loggingEnabled: true,
                 localOnlyDecider: ex =>
                 {
                     switch (ex)

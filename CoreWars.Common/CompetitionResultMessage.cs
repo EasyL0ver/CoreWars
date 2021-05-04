@@ -1,26 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
-using Akka.Actor;
 
-namespace CoreWars.Competition
+namespace CoreWars.Common
 {
-    public enum CompetitionResult
-    {
-        Inconclusive
-        , Winner
-        , Loser
-    }
-    
     public sealed class CompetitionResultMessage
     {
-        public CompetitionResultMessage(IReadOnlyDictionary<IActorRef, CompetitionResult> competitionResults)
+        public CompetitionResultMessage(IReadOnlyDictionary<IAgentActorRef, CompetitionResult> competitionResults)
         {
             CompetitionResults = competitionResults;
         }
 
-        public IReadOnlyDictionary<IActorRef, CompetitionResult> CompetitionResults { get; }
+        public IReadOnlyDictionary<IAgentActorRef, CompetitionResult> CompetitionResults { get; }
 
-        public static CompetitionResultMessage FromScoreboard(IDictionary<IActorRef, int> scoreBoard)
+        public static CompetitionResultMessage FromScoreboard(IDictionary<IAgentActorRef, int> scoreBoard)
         {
             var maxScore = scoreBoard.Max(pair => pair.Value);
             var resultsDictionary = scoreBoard
@@ -33,9 +25,8 @@ namespace CoreWars.Competition
 
         public override string ToString()
         {
-            var results = CompetitionResults.Values;
-            var winnersCount = results.Count(x => x == CompetitionResult.Winner);
-            var losersCount = results.Count(x => x == CompetitionResult.Loser);
+            var winnersCount = CompetitionResults.Values.Count(x => x == CompetitionResult.Winner);
+            var losersCount = CompetitionResults.Values.Count(x => x == CompetitionResult.Loser);
             return $"Competition results with: {winnersCount} winners and {losersCount} losers";
         }
     }
