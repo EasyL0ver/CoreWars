@@ -11,7 +11,7 @@ namespace CoreWars.WebApp
         ActorSystem ActorSystem { get; }
     }
 
-    public interface IGameService
+    public interface IGameService : IActorSystemService
     {
         IReadOnlyList<ICompetitionInfo> AvailableCompetitions { get; }
 

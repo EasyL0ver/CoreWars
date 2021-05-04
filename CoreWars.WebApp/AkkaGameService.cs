@@ -22,7 +22,7 @@ using ICompetition = CoreWars.Common.ICompetition;
 
 namespace CoreWars.WebApp
 {
-    public sealed class AkkaGameService : IHostedService, IActorSystemService, IGameService
+    public sealed class AkkaGameService : IHostedService, IGameService
     {
         private readonly ILifetimeScope _container;
         private readonly List<ICompetitionInfo> _supportedCompetitions;
