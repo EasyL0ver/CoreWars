@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Akka.Actor;
+using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Data.Entities;
 
@@ -12,6 +13,7 @@ namespace CoreWars.Player
         private readonly IActorRef _lobby;
         private readonly ICompetitionInfo _competitionInfo;
         private readonly ICompetitorFactory _competitorFactory;
+        private readonly ILoggingAdapter _logger = Context.GetLogger();
         
         public CompetitorRoot(
             IActorRef scriptRepository
@@ -45,6 +47,7 @@ namespace CoreWars.Player
             if (obj.AddedElement.CompetitionName != _competitionInfo.Name)
                 return;
             
+            
             CreateCompetitor(obj.AddedElement);
         }
 
@@ -64,10 +67,11 @@ namespace CoreWars.Player
 
         private void CreateCompetitor(Script script)
         {
+            _logger.Info($"Creating competitor: {script.Name} from {script.ScriptType} script with id: {script.Id}");
             var competitorAgentProps = _competitorFactory.Build(script);
             var competitorProps = Competitor.Props(competitorAgentProps, _lobby, script.User, script);
 
-            Context.ActorOf(competitorProps);
+            Context.ActorOf(competitorProps, $"{script.Name}-{script.Id}");
         }
 
         private void EnsureSubscription(ICanTell repository)

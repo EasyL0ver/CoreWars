@@ -1,5 +1,6 @@
 using System;
 using Akka.Actor;
+using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Player.Messages;
 
@@ -12,6 +13,9 @@ namespace CoreWars.Player
         private readonly IActorRef _playerLobby;
         private readonly IUser _creator;
         private readonly IScriptInfo _scriptInfo;
+        
+        private readonly ILoggingAdapter _logger = Context.GetLogger();
+
         
         public Competitor(Props playerAgentActorFactory, IActorRef playerLobby, IUser creator, IScriptInfo scriptInfo)
         {
@@ -43,6 +47,8 @@ namespace CoreWars.Player
 
         private void OnRequestCreateAgentReceived(RequestCreateAgent obj)
         {
+            _logger.Info($"Spawning new agent");
+            
             var agentActorRef = Context.ActorOf(_playerAgentActorFactory);
             var credentialsWrapper = new AgentActorRef(agentActorRef, _creator, _scriptInfo);
             

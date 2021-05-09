@@ -74,13 +74,13 @@ namespace CoreWars.WebApp
             var lobby = ActorSystem.ActorOf(PlayerLobby.Props(playerSet, competition.Info));
 
             var competitorsRootProps = CompetitorRoot.Props(ScriptRepository, competition.Info, lobby, competitorFactory);
-            ActorSystem.ActorOf(competitorsRootProps);
+            ActorSystem.ActorOf(competitorsRootProps, competition.Info.Name + "-root");
             
             
             for(var i = 0; i < competition.Info.MaxInstancesCount; i++)
             {
                 var props = CompetitionSlot.Props(lobby, ResultsHandler, competition.Factory);
-                ActorSystem.ActorOf(props, $"{competition.Info.Name}-{i}");
+                ActorSystem.ActorOf(props, $"{competition.Info.Name}-slot-{i}");
             }
 
             _supportedCompetitions.Add(competition.Info);

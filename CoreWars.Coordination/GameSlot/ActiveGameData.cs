@@ -13,5 +13,10 @@ namespace CoreWars.Coordination.GameSlot
 
         public IActorRef Game { get; }
         public IReadOnlyList<IActorRef> Competitors { get; }
+
+        public override string ToString()
+        {
+            return $"Game with {Competitors.Count} competitors";
+        }
     }
 }

@@ -81,7 +81,7 @@ namespace CoreWars.Coordination.GameSlot
             
             OnTransition((initialState, nextState) =>
             {
-                _logger.Info("Changed state from {0} to {1}", initialState, nextState);
+                _logger.Debug("Changed state from {0} to {1}", initialState, nextState);
                 switch (initialState)
                 {
                     case CompetitionSlotState.Lobby when StateData is QueryData queryStateData:
@@ -105,6 +105,7 @@ namespace CoreWars.Coordination.GameSlot
                         competitionsResultHandler.Tell(concludedGameData.Result);
                         break;
                     case CompetitionSlotState.Game when NextStateData is ActiveGameData nextStateGameData:
+                        _logger.Info($"Creating new {nextStateGameData}");
                         Context.WatchWith(nextStateGameData.Game, new LobbyGameTerminated(nextStateGameData.Game));
                         nextStateGameData.Game.Tell(new Competition.Messages.RunCompetitionMessage());
                         break;
