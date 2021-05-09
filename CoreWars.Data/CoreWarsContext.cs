@@ -57,7 +57,7 @@ namespace CoreWars.Data
         public DbSet<Competition> Competitions { get; set; }
         public DbSet<Language> Languages { get; set; }
         public DbSet<ScriptStatistics> Stats { get; set; }
-        public DbSet<User> Users { get; }
+        public DbSet<User> Users { get; set; }
 
         public void Commit()
         {

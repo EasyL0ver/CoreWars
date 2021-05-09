@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using CoreWars.Common;
@@ -35,6 +36,21 @@ namespace CoreWars.Data
                     {
                         Name = name
                     });
+            });
+
+            context.SaveChanges();
+        }
+
+        public static void EnsureAdminExist(this CoreWarsDataContext context, string adminLogin, string adminPassword)
+        {
+            if(context.Users.Any(u => u.EmailAddress == adminLogin))
+                return;
+            
+            context.Users.Add(new User()
+            {
+                Id = Guid.NewGuid()
+                , EmailAddress = adminLogin
+                , Password = adminPassword
             });
 
             context.SaveChanges();

@@ -22,6 +22,13 @@ namespace CoreWars.Data
                 
                 Sender.Tell(new ResultAcknowledged());
             });
+
+            
+            Receive<Messages.GetAll>(msg =>
+            {
+                //todo use stream instead!
+                Sender.Tell(_context.Stats.ToList());
+            });
         }
 
         private void AdjustScore(IAgentActorRef agentRef, CompetitionResult result)

@@ -13,7 +13,7 @@ namespace CoreWars.Data.Entities
         [Key]
         public Guid Id { get; set; }
 
-        public string Name { get; }
+        public string Name { get; set; }
 
         [ForeignKey("Language")]
         public string ScriptType { get; set; }

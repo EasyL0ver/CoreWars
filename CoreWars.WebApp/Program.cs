@@ -36,6 +36,8 @@ namespace CoreWars.WebApp
 
             var scriptingLanguages = container.Resolve<IEnumerable<ICompetitorFactory>>();
             context.SeedLanguageInfo(scriptingLanguages.SelectMany(x => x.SupportedCompetitionNames));
+            
+            context.EnsureAdminExist("admin@example.com", "pass");
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
