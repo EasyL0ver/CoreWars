@@ -150,6 +150,7 @@ namespace CoreWars.Coordination.GameSlot
                     {
                         case TimeoutException:
                         case AskTypeMismatchException {MismatchedResponse: NotEnoughPlayers}:
+                            _logger.Debug(ex,"Cannot start game because of exception - restarting");
                             return Directive.Restart;
                         default:
                             _logger.Error(ex, "Unhandled competition slot error");
