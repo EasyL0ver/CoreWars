@@ -105,7 +105,6 @@ namespace CoreWars.Coordination.GameSlot
                         competitionsResultHandler.Tell(concludedGameData.Result);
                         break;
                     case CompetitionSlotState.Game when NextStateData is ActiveGameData nextStateGameData:
-                        _logger.Info($"Creating new {nextStateGameData}");
                         Context.WatchWith(nextStateGameData.Game, new LobbyGameTerminated(nextStateGameData.Game));
                         nextStateGameData.Game.Tell(new Competition.Messages.RunCompetitionMessage());
                         break;
@@ -144,7 +143,7 @@ namespace CoreWars.Coordination.GameSlot
         protected override SupervisorStrategy SupervisorStrategy()
         {
             return new OneForOneStrategy(
-                loggingEnabled: true,
+                loggingEnabled: false,
                 localOnlyDecider: ex =>
                 {
                     switch (ex)

@@ -47,7 +47,7 @@ namespace CoreWars.Player
 
         private void OnRequestCreateAgentReceived(RequestCreateAgent obj)
         {
-            _logger.Info($"Spawning new agent");
+            _logger.Debug($"Spawning new agent");
             
             var agentActorRef = Context.ActorOf(_playerAgentActorFactory);
             var credentialsWrapper = new AgentActorRef(agentActorRef, _creator, _scriptInfo);
