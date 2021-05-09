@@ -29,6 +29,12 @@ namespace CoreWars.Data
                 //todo use stream instead!
                 Sender.Tell(_context.Stats.ToList());
             });
+            
+            Receive<Messages.GetAllForCompetition>(msg =>
+            {
+                //todo use stream instead!
+                Sender.Tell(_context.Stats.Where(stats => stats.Script.CompetitionName == msg.CompetitionName).ToList());
+            });
         }
 
         private void AdjustScore(IAgentActorRef agentRef, CompetitionResult result)

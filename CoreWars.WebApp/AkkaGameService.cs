@@ -61,8 +61,8 @@ namespace CoreWars.WebApp
         }
 
         public ActorSystem ActorSystem { get; private set; }
-        public IActorRef ScriptRepository { get; private set; }
-        private IActorRef ResultsHandler { get; set; }
+        private IActorRef ScriptRepository { get; set; }
+        public IActorRef ResultsHandler { get; private set; }
         
         public IReadOnlyList<ICompetitionInfo> AvailableCompetitions => _supportedCompetitions.ToList();
 

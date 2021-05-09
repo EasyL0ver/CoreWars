@@ -13,6 +13,8 @@ namespace CoreWars.WebApp
     public interface IGameService : IActorSystemService
     {
         IReadOnlyList<ICompetitionInfo> AvailableCompetitions { get; }
+        
+        IActorRef ResultsHandler { get; }
 
         void AddScript(Script script);
     }
