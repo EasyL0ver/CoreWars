@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Akka.Actor;
+using CoreWars.Common;
 using CoreWars.Data.Entities;
 using CoreWars.WebApp.Model;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +22,7 @@ namespace CoreWars.WebApp.Controllers
 
         [HttpPost]
         [Authorize]
-        public void Post([FromBody] Competitor competitor)
+        public async Task<IActionResult> Post([FromBody] Competitor competitor)
         {
             var script = new Script()
             {
@@ -30,8 +33,12 @@ namespace CoreWars.WebApp.Controllers
                 , ScriptType = competitor.Language
                 , Name = competitor.Alias
             };
-            
-            _gameService.AddScript(script);
+
+            await _gameService.ScriptRepository.Ask<Acknowledged>(
+                script
+                , TimeSpan.FromSeconds(5));
+
+            return Ok();
         }
     }
 }

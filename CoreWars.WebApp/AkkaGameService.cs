@@ -61,17 +61,12 @@ namespace CoreWars.WebApp
         }
 
         public ActorSystem ActorSystem { get; private set; }
-        private IActorRef ScriptRepository { get; set; }
+        public IActorRef ScriptRepository { get; set; }
         public IActorRef ResultsHandler { get; private set; }
         
         public IReadOnlyList<ICompetitionInfo> AvailableCompetitions => _supportedCompetitions.ToList();
 
-        public void AddScript(Script script)
-        {
-            ScriptRepository.Tell(new Messages.Add<Script>(script));
-            
-        }
-
+   
         private void AddCompetition(ICompetition competition)
         {
             var playerSet = _container.Resolve<ISelectableSet<IActorRef>>();

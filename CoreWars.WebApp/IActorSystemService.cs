@@ -15,8 +15,7 @@ namespace CoreWars.WebApp
         IReadOnlyList<ICompetitionInfo> AvailableCompetitions { get; }
         
         IActorRef ResultsHandler { get; }
-
-        void AddScript(Script script);
+        IActorRef ScriptRepository { get; }
     }
 
 }

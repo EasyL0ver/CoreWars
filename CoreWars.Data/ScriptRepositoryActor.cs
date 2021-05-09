@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
 using Akka.Util.Internal;
+using CoreWars.Common;
 using CoreWars.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,16 +14,18 @@ namespace CoreWars.Data
         
         public ScriptRepositoryActor(IDataContext context)
         {
-            Receive<Messages.Add<Script>>(msg =>
+            Receive<Script>(msg =>
             {
-                context.Scripts.Add(msg.Content);
+                context.Scripts.Add(msg);
                 context.Commit();
 
-                var @event = new Messages.AddedEvent<Script>(msg.Content);
-                _subscribed.ForEach(sub =>
+                var @event = new Messages.AddedEvent<Script>(msg);
+                Extensions.ForEach(_subscribed, sub =>
                 {
                     sub.Tell(@event);
                 });
+                
+                Sender.Tell(new Acknowledged());
             });
 
             //todo replace with stream ??
