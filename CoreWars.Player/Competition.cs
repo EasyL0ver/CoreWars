@@ -7,7 +7,7 @@ using CoreWars.Data.Entities;
 
 namespace CoreWars.Player
 {
-    public class CompetitorRoot : ReceiveActor
+    public class Competition : ReceiveActor
     {
         private readonly IActorRef _scriptRepository;
         private readonly IActorRef _lobby;
@@ -15,7 +15,7 @@ namespace CoreWars.Player
         private readonly ICompetitorFactory _competitorFactory;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
         
-        public CompetitorRoot(
+        public Competition(
             IActorRef scriptRepository
             , ICompetitionInfo competitionInfo
             , IActorRef lobby
@@ -39,7 +39,7 @@ namespace CoreWars.Player
             , IActorRef lobby
             , ICompetitorFactory factory)
         {
-            return Akka.Actor.Props.Create(() => new CompetitorRoot(scriptRepository, competitionInfo, lobby, factory));
+            return Akka.Actor.Props.Create(() => new Competition(scriptRepository, competitionInfo, lobby, factory));
         }
 
         private void OnNewScriptAdded(Data.Entities.Messages.AddedEvent<Script> obj)

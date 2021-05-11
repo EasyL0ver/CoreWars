@@ -12,10 +12,9 @@ namespace CoreWars.WebApp
 
     public interface IGameService : IActorSystemService
     {
-        IReadOnlyList<ICompetitionInfo> AvailableCompetitions { get; }
-        
         IActorRef ResultsHandler { get; }
         IActorRef ScriptRepository { get; }
+        IActorRef NotificationProvider { get; }
     }
 
 }

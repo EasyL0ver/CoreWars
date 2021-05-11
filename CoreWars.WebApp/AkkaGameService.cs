@@ -13,6 +13,10 @@ using CoreWars.Coordination.PlayerSet;
 using CoreWars.Data;
 using CoreWars.Data.Entities;
 using CoreWars.Player;
+using CoreWars.Player.Messages;
+using CoreWars.WebApp.Actors;
+using CoreWars.WebApp.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using ICompetition = CoreWars.Common.ICompetition;
 
@@ -21,12 +25,10 @@ namespace CoreWars.WebApp
     public sealed class AkkaGameService : IHostedService, IGameService
     {
         private readonly ILifetimeScope _container;
-        private readonly List<ICompetitionInfo> _supportedCompetitions;
         
         public AkkaGameService(IServiceProvider serviceProvider)
         {
             _container = serviceProvider.GetAutofacRoot();
-            _supportedCompetitions = new List<ICompetitionInfo>();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -37,10 +39,20 @@ namespace CoreWars.WebApp
             var data = _container.Resolve<IDataContext>();
             var scriptRepositoryProps = ScriptRepositoryActor.Props(data);
             ScriptRepository = ActorSystem.ActorOf(scriptRepositoryProps);
+            
 
             var statsRepositoryProps = Props.Create(() => new StatsRepositoryActor(data));
             ResultsHandler = ActorSystem.ActorOf(statsRepositoryProps);
 
+            var hubContext = _container.Resolve<IHubContext<CompetitorNotificationHub>>();
+            var notifierProps = Props.Create(() => new CompetitorStatusNotificationActor(hubContext));
+            NotificationProvider = ActorSystem.ActorOf(notifierProps);
+            
+            
+            var competitorFactory = _container.Resolve<AggregatedCompetitorFactory>();
+            var competitorRootProps =
+                Props.Create(() => new CompetitorsRoot(ScriptRepository, competitorFactory));
+            CompetitorsRoot = ActorSystem.ActorOf(competitorRootProps, "competitors");
 
             InitializeCompetitions();
 
@@ -63,27 +75,23 @@ namespace CoreWars.WebApp
         public ActorSystem ActorSystem { get; private set; }
         public IActorRef ScriptRepository { get; set; }
         public IActorRef ResultsHandler { get; private set; }
+        public IActorRef NotificationProvider { get; private set; }
+        public IActorRef CompetitorsRoot { get; private set; }
         
-        public IReadOnlyList<ICompetitionInfo> AvailableCompetitions => _supportedCompetitions.ToList();
 
    
         private void AddCompetition(ICompetition competition)
         {
             var playerSet = _container.Resolve<ISelectableSet<IActorRef>>();
-            var competitorFactory = _container.Resolve<AggregatedCompetitorFactory>();
             var lobby = ActorSystem.ActorOf(PlayerLobby.Props(playerSet, competition.Info));
-
-            var competitorsRootProps = CompetitorRoot.Props(ScriptRepository, competition.Info, lobby, competitorFactory);
-            ActorSystem.ActorOf(competitorsRootProps, competition.Info.Name + "-root");
-            
-            
+          
             for(var i = 0; i < competition.Info.MaxInstancesCount; i++)
             {
                 var props = CompetitionSlot.Props(lobby, ResultsHandler, competition.Factory);
                 ActorSystem.ActorOf(props, $"{competition.Info.Name}-slot-{i}");
             }
-
-            _supportedCompetitions.Add(competition.Info);
+            
+            CompetitorsRoot.Tell(new AddCompetition(lobby, competition.Info));
         }
 
  

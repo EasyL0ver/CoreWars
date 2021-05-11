@@ -4,6 +4,7 @@ using Autofac;
 using CoreWars.Coordination.PlayerSet;
 using CoreWars.Data;
 using CoreWars.Scripting.Python;
+using CoreWars.WebApp.Hubs;
 using DummyCompetition;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -33,6 +34,8 @@ namespace CoreWars.WebApp
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CoreWars.WebApp", Version = "v1" });
             });
+
+            services.AddSignalR();
             
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)    
@@ -49,8 +52,6 @@ namespace CoreWars.WebApp
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))    
                     };    
                 });    
-
-            //services.AddDbContext<IBaseRepository, CoreWarsDataContext>();
             
             services.AddHostedService(x => (AkkaGameService) x.GetService<IGameService>());
         }
@@ -108,6 +109,7 @@ namespace CoreWars.WebApp
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<CompetitorNotificationHub>("/competitor/status");
             });
         }
 

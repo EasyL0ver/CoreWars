@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
@@ -9,23 +10,34 @@ namespace CoreWars.Player
     public class Competitor : ReceiveActor
     {
         private const int RejoinLobbyTimeMilliseconds = 5000;
+        
         private readonly Props _playerAgentActorFactory;
         private readonly IActorRef _playerLobby;
         private readonly IUser _creator;
         private readonly IScriptInfo _scriptInfo;
-        
-        private readonly ILoggingAdapter _logger = Context.GetLogger();
 
+        private readonly HashSet<IActorRef> _statusSubscriptions;
+        private readonly ILoggingAdapter _logger = Context.GetLogger();
         
-        public Competitor(Props playerAgentActorFactory, IActorRef playerLobby, IUser creator, IScriptInfo scriptInfo)
+        // ReSharper disable once MemberCanBePrivate.Global
+        // public constructor required for akka
+        public Competitor(
+            Props playerAgentActorFactory
+            , IActorRef playerLobby
+            , IUser creator
+            , IScriptInfo scriptInfo)
         {
             _playerAgentActorFactory = playerAgentActorFactory;
             _playerLobby = playerLobby;
             _creator = creator;
             _scriptInfo = scriptInfo;
+            _statusSubscriptions = new HashSet<IActorRef>();
 
             Receive<RequestCreateAgent>(OnRequestCreateAgentReceived);
-            Receive<RequestPlayerCredentials>(OnRequestPlayerCredentialsReceived);
+            Receive<Subscribe>(msg =>
+            {
+                _statusSubscriptions.Add(Sender);
+            });
         }
 
         public static Props Props(Props factory, IActorRef playerLobby, IUser creator, IScriptInfo info)
@@ -54,11 +66,16 @@ namespace CoreWars.Player
             
             Context.Watch(agentActorRef);
             Sender.Tell(credentialsWrapper);
+            
+            UpdateStatusListeners();
         }
 
-        private void OnRequestPlayerCredentialsReceived(RequestPlayerCredentials obj)
+        private void UpdateStatusListeners()
         {
-            throw new System.NotImplementedException();
+            var status = new CompetitorStatus(CompetitorState.Active, null);
+            var message = new CompetitorStatusChanged(status, _scriptInfo.Id);
+            
+            _statusSubscriptions.ForEach(sub => sub.Tell(message));
         }
     }
 }
