@@ -6,12 +6,6 @@ namespace CoreWars.Common
         ICompetitorStatistics Stats { get; }
     }
 
-    public interface ICompetitorStatistics
-    {
-        int GamesPlayed { get; }
-        int Wins { get; }
-    }
-
     public enum CompetitorState
     {
         Idle

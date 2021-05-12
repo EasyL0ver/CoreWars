@@ -69,9 +69,10 @@ namespace CoreWars.Player
         {
             _logger.Info($"Creating competitor: {script.Name} from {script.ScriptType} script with id: {script.Id}");
             var competitorAgentProps = _competitorFactory.Build(script);
-            var competitorProps = Competitor.Props(competitorAgentProps, _lobby, script.User, script);
+            var winRateCounter = new WinRateCounter(script.Stats.Wins, script.Stats.GamesPlayed);
+            var competitorProps = Competitor.Props(competitorAgentProps, _lobby, script.User, script, winRateCounter);
 
-            Context.ActorOf(competitorProps, $"{script.Name}-{script.Id}");
+            Context.ActorOf(competitorProps, script.Id.ToString());
         }
 
         private void EnsureSubscription(ICanTell repository)

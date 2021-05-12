@@ -15,5 +15,15 @@ namespace CoreWars.WebApp.Actors
             public Guid CompetitorId { get; }
             public string NotificationId { get; }
         }
+
+        public class NotificationUserDisconnected
+        {
+            public NotificationUserDisconnected(string notificationId)
+            {
+                NotificationId = notificationId;
+            }
+
+            public string NotificationId { get; }
+        }
     }
 }

@@ -28,5 +28,16 @@ namespace CoreWars.WebApp.Hubs
 
             return _gameService.NotificationProvider.Ask<Acknowledged>(registerMessage, TimeSpan.FromSeconds(5));
         }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            var connectionId = Context.ConnectionId;
+            var unregisterMessage = new Messages.NotificationUserDisconnected(connectionId);
+
+            await _gameService.NotificationProvider
+                .Ask<Acknowledged>(unregisterMessage, TimeSpan.FromSeconds(5));
+            
+            await base.OnDisconnectedAsync(exception);
+        }
     }
 }

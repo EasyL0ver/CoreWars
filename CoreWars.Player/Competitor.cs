@@ -15,6 +15,7 @@ namespace CoreWars.Player
         private readonly IActorRef _playerLobby;
         private readonly IUser _creator;
         private readonly IScriptInfo _scriptInfo;
+        private readonly WinRateCounter _winRateCounter;
 
         private readonly HashSet<IActorRef> _statusSubscriptions;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
@@ -25,24 +26,42 @@ namespace CoreWars.Player
             Props playerAgentActorFactory
             , IActorRef playerLobby
             , IUser creator
-            , IScriptInfo scriptInfo)
+            , IScriptInfo scriptInfo
+            , WinRateCounter winRateCounter)
         {
             _playerAgentActorFactory = playerAgentActorFactory;
             _playerLobby = playerLobby;
             _creator = creator;
             _scriptInfo = scriptInfo;
+            _winRateCounter = winRateCounter;
             _statusSubscriptions = new HashSet<IActorRef>();
 
             Receive<RequestCreateAgent>(OnRequestCreateAgentReceived);
+            Receive<CompetitionResult>(OnGameConcluded);
             Receive<Subscribe>(msg =>
             {
+                Context.Watch(Sender);
                 _statusSubscriptions.Add(Sender);
+            });
+            Receive<Terminated>(msg =>
+            {
+                _statusSubscriptions.Remove(msg.ActorRef);
             });
         }
 
-        public static Props Props(Props factory, IActorRef playerLobby, IUser creator, IScriptInfo info)
+        private void OnGameConcluded(CompetitionResult obj)
         {
-            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby, creator, info));
+            _winRateCounter.GamesPlayed += 1;
+
+            if (obj == CompetitionResult.Winner)
+                _winRateCounter.Wins += 1;
+            
+            UpdateStatusListeners();
+        }
+
+        public static Props Props(Props factory, IActorRef playerLobby, IUser creator, IScriptInfo info, WinRateCounter counter)
+        {
+            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby, creator, info, counter));
         }
 
         protected override void PreStart()
@@ -66,16 +85,13 @@ namespace CoreWars.Player
             
             Context.Watch(agentActorRef);
             Sender.Tell(credentialsWrapper);
-            
-            UpdateStatusListeners();
         }
 
         private void UpdateStatusListeners()
         {
-            var status = new CompetitorStatus(CompetitorState.Active, null);
-            var message = new CompetitorStatusChanged(status, _scriptInfo.Id);
+            var status = new CompetitorStatus(CompetitorState.Active, _winRateCounter.Copy());
             
-            _statusSubscriptions.ForEach(sub => sub.Tell(message));
+            _statusSubscriptions.ForEach(sub => sub.Tell(status));
         }
     }
 }

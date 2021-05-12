@@ -45,7 +45,7 @@ namespace CoreWars.WebApp
             ResultsHandler = ActorSystem.ActorOf(statsRepositoryProps);
 
             var hubContext = _container.Resolve<IHubContext<CompetitorNotificationHub>>();
-            var notifierProps = Props.Create(() => new CompetitorStatusNotificationActor(hubContext));
+            var notifierProps = Props.Create(() => new NotificationRoot(hubContext));
             NotificationProvider = ActorSystem.ActorOf(notifierProps);
             
             

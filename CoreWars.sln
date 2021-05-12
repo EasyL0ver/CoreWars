@@ -14,8 +14,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrisonerDilemma", "Prisoner
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PrisonerDilemma", "PrisonerDilemma", "{D4015C08-3824-4BCD-A76F-E01255142F1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrisonerDIlemma.Tests", "PrisonerDilemma\PrisonerDIlemma.Tests\PrisonerDIlemma.Tests.csproj", "{C4429057-0291-4D5D-8D70-AFAB76257E16}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Coordination", "CoreWars.Coordination\CoreWars.Coordination.csproj", "{7E3DD35B-A504-45F9-9991-3B0323FAA09C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Player", "CoreWars.Player\CoreWars.Player.csproj", "{85C9A730-D238-4DB6-8851-A75F82D2CB91}"
@@ -58,10 +56,6 @@ Global
 		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C4429057-0291-4D5D-8D70-AFAB76257E16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C4429057-0291-4D5D-8D70-AFAB76257E16}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C4429057-0291-4D5D-8D70-AFAB76257E16}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C4429057-0291-4D5D-8D70-AFAB76257E16}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7E3DD35B-A504-45F9-9991-3B0323FAA09C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7E3DD35B-A504-45F9-9991-3B0323FAA09C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E3DD35B-A504-45F9-9991-3B0323FAA09C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -85,7 +79,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B98EAF33-42A0-4BBD-84A1-BBA3D41B1111} = {D4015C08-3824-4BCD-A76F-E01255142F1A}
-		{C4429057-0291-4D5D-8D70-AFAB76257E16} = {D4015C08-3824-4BCD-A76F-E01255142F1A}
 		{866D464A-8BE0-4F74-B746-50B18F80A4C5} = {45B36E19-BE72-44E4-A7FC-7B03BB8E57DB}
 	EndGlobalSection
 EndGlobal

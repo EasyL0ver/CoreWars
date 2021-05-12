@@ -39,6 +39,7 @@ namespace CoreWars.Data
                 var competitionScripts = context.Scripts
                     .Where(x => x.CompetitionName == msg.CompetitionName)
                     .Include(x => x.User)
+                    .Include(x => x.Stats)
                     .ToList();
                 
                 Sender.Tell(competitionScripts);
