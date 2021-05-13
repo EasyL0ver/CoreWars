@@ -10,6 +10,8 @@ namespace CoreWars.Player.Messages
             Stats = stats;
         }
 
+        public static CompetitorStatus Terminated => new CompetitorStatus(CompetitorState.Faulted, null);
+
         public CompetitorState State { get; }
         public ICompetitorStatistics Stats { get; }
     }

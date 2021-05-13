@@ -25,5 +25,10 @@ namespace CoreWars.WebApp.Actors
 
             public string NotificationId { get; }
         }
+
+        public sealed class GetCurrent
+        {
+            public static GetCurrent Instance = new GetCurrent();
+        }
     }
 }
