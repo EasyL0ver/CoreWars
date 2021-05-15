@@ -71,6 +71,19 @@ namespace CoreWars.Common.TypedActorQuery.Query
             });
         }
         
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(
+                localOnlyDecider: ex =>
+                {
+                    switch (ex)
+                    {
+                        default:
+                            return Directive.Escalate;
+                    }
+                });
+        }
+        
  
 
     }

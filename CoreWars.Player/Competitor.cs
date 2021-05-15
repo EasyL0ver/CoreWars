@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
+using CoreWars.Common.Exceptions;
 using CoreWars.Player.Messages;
 
 namespace CoreWars.Player
@@ -10,7 +11,7 @@ namespace CoreWars.Player
     public class Competitor : ReceiveActor
     {
         private const int RejoinLobbyTimeMilliseconds = 5000;
-        
+
         private readonly Props _playerAgentActorFactory;
         private readonly IActorRef _playerLobby;
         private readonly IUser _creator;
@@ -19,7 +20,7 @@ namespace CoreWars.Player
 
         private readonly HashSet<IActorRef> _statusSubscriptions;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
-        
+
         // ReSharper disable once MemberCanBePrivate.Global
         // public constructor required for akka
         public Competitor(
@@ -43,10 +44,7 @@ namespace CoreWars.Player
                 Context.Watch(Sender);
                 _statusSubscriptions.Add(Sender);
             });
-            Receive<Terminated>(msg =>
-            {
-                _statusSubscriptions.Remove(msg.ActorRef);
-            });
+            Receive<Terminated>(msg => { _statusSubscriptions.Remove(msg.ActorRef); });
         }
 
         private void OnGameConcluded(CompetitionResult obj)
@@ -55,11 +53,12 @@ namespace CoreWars.Player
 
             if (obj == CompetitionResult.Winner)
                 _winRateCounter.Wins += 1;
-            
+
             UpdateStatusListeners();
         }
 
-        public static Props Props(Props factory, IActorRef playerLobby, IUser creator, IScriptInfo info, WinRateCounter counter)
+        public static Props Props(Props factory, IActorRef playerLobby, IUser creator, IScriptInfo info,
+            WinRateCounter counter)
         {
             return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby, creator, info, counter));
         }
@@ -79,19 +78,37 @@ namespace CoreWars.Player
         private void OnRequestCreateAgentReceived(RequestCreateAgent obj)
         {
             _logger.Debug($"Spawning new agent");
-            
+
             var agentActorRef = Context.ActorOf(_playerAgentActorFactory);
             var credentialsWrapper = new AgentActorRef(agentActorRef, _creator, _scriptInfo);
-            
+
             Context.Watch(agentActorRef);
             Sender.Tell(credentialsWrapper);
         }
 
         private void UpdateStatusListeners()
         {
-            var status = new Common.CompetitorStatus(CompetitorState.Active, _winRateCounter.GamesPlayed, _winRateCounter.Wins);
-            
+            var status = new Common.CompetitorStatus(CompetitorState.Active, _winRateCounter.GamesPlayed,
+                _winRateCounter.Wins);
+
             _statusSubscriptions.ForEach(sub => sub.Tell(status));
+        }
+
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(
+                localOnlyDecider: ex =>
+                {
+                    switch (ex)
+                    {
+                        case AgentFailureException:
+                            return Directive.Escalate;
+                        case AgentMethodInvocationException:
+                            return Directive.Stop;
+                        default:
+                            return Directive.Escalate;
+                    }
+                });
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
+using CoreWars.Common.Exceptions;
 using CoreWars.Data.Entities;
 
 namespace CoreWars.Player
@@ -69,7 +70,7 @@ namespace CoreWars.Player
         {
             _logger.Info($"Creating competitor: {script.Name} from {script.ScriptType} script with id: {script.Id}");
             var competitorAgentProps = _competitorFactory.Build(script);
-            var winRateCounter = new WinRateCounter(script.Stats.Wins, script.Stats.GamesPlayed);
+            var winRateCounter = new WinRateCounter(script.Stats?.Wins ?? 0, script.Stats?.GamesPlayed ?? 0);
             var competitorProps = Competitor.Props(competitorAgentProps, _lobby, script.User, script, winRateCounter);
 
             Context.ActorOf(competitorProps, script.Id.ToString());
@@ -83,6 +84,22 @@ namespace CoreWars.Player
                 , repository
                 , Data.Entities.Messages.Subscribe.Instance
                 , Self);
+        }
+        
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(
+                localOnlyDecider: ex =>
+                {
+                    switch (ex)
+                    {
+                        case AgentFailureException:
+                            //todo handle agent failure
+                            return Directive.Stop;
+                        default:
+                            return Directive.Escalate;
+                    }
+                });
         }
     }
 }

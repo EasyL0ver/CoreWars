@@ -1,3 +1,6 @@
+using System.Linq;
+using CoreWars.Common;
+
 namespace CoreWars.Competition
 {
     public sealed class RunMethodMessage
@@ -11,6 +14,11 @@ namespace CoreWars.Competition
         {
             MethodName = methodName;
             MethodParams = methodParams;
+        }
+
+        public override string ToString()
+        {
+            return $"Calling {MethodName} with parameters: {MethodParams.Select(x => x.ToString()).FormatString(", ")}";
         }
     }
 }

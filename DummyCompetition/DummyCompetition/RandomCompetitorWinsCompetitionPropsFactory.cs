@@ -8,7 +8,7 @@ namespace DummyCompetition
     {
         public Props Build(IEnumerable<IAgentActorRef> competitionParticipants)
         {
-            return Props.Create(() => new RandomCompetitorWinsCompetition(competitionParticipants));
+            return Props.Create(() => new BiggestNumberWinsCompetition(competitionParticipants));
         }
     }
 }

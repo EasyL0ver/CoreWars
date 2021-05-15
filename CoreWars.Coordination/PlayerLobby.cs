@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using Akka.Actor;
 using CoreWars.Common;
+using CoreWars.Common.TypedActorQuery;
 using CoreWars.Coordination.Messages;
 using CoreWars.Coordination.PlayerSet;
 using CoreWars.Player.Messages;
@@ -26,12 +28,16 @@ namespace CoreWars.Coordination
                     , new LobbyPlayerTerminated(Sender));
             });
 
+            Receive<OrderPlayersSelection>(msg =>
+            {
+                Sender.Tell(players.Select(lobbyConfiguration.PlayerCount).ToList());
+            });
+
             Receive<OrderAgents>(obj =>
             {
                 try
                 {
-                    var selectedPlayers = players.Select(lobbyConfiguration.PlayerCount);
-                    var orderProps = LobbyOrder.Props(selectedPlayers, Sender);
+                    var orderProps = LobbyOrder.Props(Sender, Self);
                     Context.ActorOf(orderProps);
                 }
                 catch (InvalidOperationException e)
@@ -40,7 +46,7 @@ namespace CoreWars.Coordination
                 }
             });
 
-            Receive<Terminated>(obj =>
+            Receive<LobbyPlayerTerminated>(obj =>
             {
                 players.Remove(obj.ActorRef);
             });
@@ -50,5 +56,23 @@ namespace CoreWars.Coordination
         {
             return Akka.Actor.Props.Create(() => new PlayerLobby(playerSet, lobbyConfiguration));
         }
+        
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(
+                localOnlyDecider: ex =>
+                {
+                    switch (ex)
+                    {
+                        case AskTargetTerminatedException:
+                        case TimeoutException:
+                            return Directive.Restart;
+                        default:
+                            return Directive.Escalate;
+                    }
+                });
+        }
     }
+    
+    
 }

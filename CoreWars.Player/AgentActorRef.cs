@@ -24,6 +24,7 @@ namespace CoreWars.Player
         {
             return _innerRef.Equals(other);
         }
+        
 
         public int CompareTo(IActorRef? other)
         {

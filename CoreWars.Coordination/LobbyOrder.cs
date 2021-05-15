@@ -13,35 +13,55 @@ namespace CoreWars.Coordination
     public class LobbyOrder : ReceiveActor
     {
         private readonly IActorRef _orderedBy;
-        private readonly IReadOnlyList<IActorRef> _players;
+        private readonly IActorRef _playersSource;
 
-        public LobbyOrder(IReadOnlyList<IActorRef> players, IActorRef orderedBy)
+
+        public LobbyOrder(IActorRef orderedBy, IActorRef playersSource)
         {
-            _players = players;
             _orderedBy = orderedBy;
+            _playersSource = playersSource;
+            
+            
+            WaitingForPlayersSelection();
+        }
 
+        public static Props Props(IActorRef orderedBy, IActorRef playersSource)
+        {
+            return Akka.Actor.Props.Create(() => new LobbyOrder(orderedBy, playersSource));
+        }
+
+        protected override void PreStart()
+        {
+            _playersSource.Tell(OrderPlayersSelection.Instance);
+            base.PreStart();
+        }
+        
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(
+                _ => Directive.Escalate);
+        }
+
+        private void WaitingForPlayersSelection()
+        {
+            Receive<IEnumerable<IActorRef>>(players =>
+            {
+                players.QueryFor<IAgentActorRef>(
+                    new RequestCreateAgent()
+                    , Context
+                    , TimeSpan.FromSeconds(30));
+                
+                Become(WaitingForQueryResponse);
+            });
+        }
+
+        private void WaitingForQueryResponse()
+        {
             Receive<TypedQueryResult<IAgentActorRef>>(msg =>
             {
                 var agents = msg.Result.Values;
                 _orderedBy.Tell(new AgentsOrderCompleted(agents));
             });
         }
-
-        public static Props Props(IEnumerable<IActorRef> players, IActorRef orderedBy)
-        {
-            return Akka.Actor.Props.Create<LobbyOrder>(() => new LobbyOrder(players.ToList(), orderedBy));
-        }
-
-        protected override void PreStart()
-        {
-            base.PreStart();
-
-            _players.QueryFor<IAgentActorRef>(
-                new RequestCreateAgent()
-                , Context
-                , TimeSpan.FromSeconds(30));
-        }
-        
-        
     }
 }
