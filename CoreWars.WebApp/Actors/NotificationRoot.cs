@@ -23,7 +23,7 @@ namespace CoreWars.WebApp.Actors
             {
                 if (!subscribedObservers.ContainsKey(msg.NotificationId))
                 {
-                    var notifyClientAction = new Func<ICompetitorStatus, Task>(
+                    var notifyClientAction = new Func<CompetitorStatus, Task>(
                         (x) => NotifyUser(msg.NotificationId, x));
                     
                     var observerProps = Props.Create(
@@ -44,12 +44,10 @@ namespace CoreWars.WebApp.Actors
                 }
                 
                 Sender.Tell(Acknowledged.Instance);
-
             });
         }
 
-        //todo use async with PipeTo
-        private async Task NotifyUser(string connectionId, ICompetitorStatus status)
+        private async Task NotifyUser(string connectionId, CompetitorStatus status)
         {
             await _hubContext.Clients.Client(connectionId).SendAsync("Status", status);
         }

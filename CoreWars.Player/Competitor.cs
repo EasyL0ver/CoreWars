@@ -89,7 +89,7 @@ namespace CoreWars.Player
 
         private void UpdateStatusListeners()
         {
-            var status = new CompetitorStatus(CompetitorState.Active, _winRateCounter.Copy());
+            var status = new Common.CompetitorStatus(CompetitorState.Active, _winRateCounter.GamesPlayed, _winRateCounter.Wins);
             
             _statusSubscriptions.ForEach(sub => sub.Tell(status));
         }

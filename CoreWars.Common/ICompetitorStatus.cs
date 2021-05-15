@@ -1,9 +1,8 @@
 namespace CoreWars.Common
 {
-    public interface ICompetitorStatus
+    public interface ICompetitorStatus : ICompetitorStatistics
     {
         CompetitorState State { get; }
-        ICompetitorStatistics Stats { get; }
     }
 
     public enum CompetitorState

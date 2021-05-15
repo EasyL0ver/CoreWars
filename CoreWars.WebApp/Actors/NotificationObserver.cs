@@ -6,17 +6,18 @@ using CoreWars.Player.Messages;
 
 namespace CoreWars.WebApp.Actors
 {
-    //todo keep win/loss ratio after competitor faulting
-    //todo implement restart after timeout!
     public class NotificationObserver : ReceiveActor
     {
+        private const int IdentityTimeoutMillis = 5000;
+        
         private readonly Guid _competitorId;
-        private readonly Func<ICompetitorStatus, Task> _notify;
+        private readonly Func<CompetitorStatus, Task> _notify;
 
+        private ICancelable _timeoutCancellable;
         private IActorRef _watchedCompetitor;
-        private ICompetitorStatus _currentStatus;
+        private CompetitorStatus _currentStatus;
 
-        public NotificationObserver(Guid competitorId, Func<ICompetitorStatus, Task> notify)
+        public NotificationObserver(Guid competitorId, Func<CompetitorStatus, Task> notify)
         {
             _competitorId = competitorId;
             _notify = notify;
@@ -30,18 +31,26 @@ namespace CoreWars.WebApp.Actors
             var selection = Context.ActorSelection(competitorPath);
             
             selection.Tell(new Identify(_competitorId));
+
+            _timeoutCancellable = Context.System.Scheduler
+                .ScheduleTellOnceCancelable(
+                    TimeSpan.FromMilliseconds(IdentityTimeoutMillis)
+                    , Self
+                    , Messages.IdentityTimeout.Instance
+                    , Self);
         }
 
         private void WaitingForIdentity()
         {
-            //todo throw in timeout
             Receive<ActorIdentity>(msg =>
             {
+                _timeoutCancellable.Cancel();
                 _watchedCompetitor = msg.Subject;
                 _watchedCompetitor.Tell(Subscribe.Instance);
                 Context.Watch(_watchedCompetitor);
                 Become(ListeningForStatus);
             });
+            Receive<Messages.IdentityTimeout>(msg => throw new TimeoutException());
         }
 
         private void ListeningForStatus()
@@ -50,14 +59,14 @@ namespace CoreWars.WebApp.Actors
             {
                 Sender.Tell(_currentStatus);
             });
-            Receive<ICompetitorStatus>(async msg =>
+            Receive<CompetitorStatus>(async msg =>
             {
                 _currentStatus = msg;
                 await _notify(_currentStatus);
             });
             Receive<Terminated>(async msg =>
             {
-                _currentStatus = CompetitorStatus.Terminated;
+                _currentStatus = _currentStatus.Terminated();
                 await _notify(_currentStatus);
             });
         }

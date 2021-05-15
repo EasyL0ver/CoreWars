@@ -30,5 +30,10 @@ namespace CoreWars.WebApp.Actors
         {
             public static GetCurrent Instance = new GetCurrent();
         }
+
+        public sealed class IdentityTimeout
+        {
+            public static IdentityTimeout Instance = new IdentityTimeout();
+        }
     }
 }
