@@ -14,7 +14,7 @@ namespace DummyCompetition
         {
             competitionInfo.Name = "dummy-competition";
             competitionInfo.PlayerCount = Range<int>.Between(2,5);
-            competitionInfo.MaxInstancesCount = 10;
+            competitionInfo.MaxInstancesCount = 1;
         }
     }
 }

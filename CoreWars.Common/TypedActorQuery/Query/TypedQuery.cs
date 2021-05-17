@@ -52,9 +52,9 @@ namespace CoreWars.Common.TypedActorQuery.Query
         {
             Receive<TypedAskResult<TResponse>>(msg =>
             {
-                _aggregatedOperations[msg.Sender].Response = msg.Answer;
+                _aggregatedOperations[msg.Sender].SetResponse(msg.Answer);
 
-                if (_aggregatedOperations.Values.All(x => x.Response != null))
+                if (_aggregatedOperations.Values.All(x => x.Responded))
                     Self.Tell(ConcludeTypedQuery.Instance);
             });
 
@@ -66,7 +66,6 @@ namespace CoreWars.Common.TypedActorQuery.Query
                         , x => x.Value.Response);
                 
                 _resultHandler.Tell(new TypedQueryResult<TResponse>(resultDictionary));
-                
                 Context.Stop(Self);
             });
         }
@@ -74,7 +73,9 @@ namespace CoreWars.Common.TypedActorQuery.Query
         protected override SupervisorStrategy SupervisorStrategy()
         {
             return new OneForOneStrategy(
-                localOnlyDecider: ex =>
+                loggingEnabled: true
+                    , localOnlyDecider: ex =>
+                
                 {
                     switch (ex)
                     {

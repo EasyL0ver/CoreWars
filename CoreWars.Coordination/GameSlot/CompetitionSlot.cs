@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Common.TypedActorQuery.Ask;
 using CoreWars.Coordination.Messages;
+using CoreWars.Player.Messages;
 
 namespace CoreWars.Coordination.GameSlot
 {
@@ -33,16 +35,16 @@ namespace CoreWars.Coordination.GameSlot
             
             When(CompetitionSlotState.Lobby, state =>
             {
-                if (state.FsmEvent is TypedAskResult<AgentsOrderCompleted> agentsOrderCompleted)
+                if (state.FsmEvent is TypedAskResult<IEnumerable<GeneratedAgent>> agentsOrderCompleted)
                 {
-                    var competitorActorProps = competitionActorPropsFactory.Build(agentsOrderCompleted.Answer.Agents);
+                    var competitorActorProps = competitionActorPropsFactory.Build(agentsOrderCompleted.Answer);
                     var competitorActor = Context.ActorOf(competitorActorProps);
                     
                     return GoTo(CompetitionSlotState.Game)
                         .Using(
                             new ActiveGameData(
                                 competitorActor
-                                , agentsOrderCompleted.Answer.Agents.ToList()));
+                                , agentsOrderCompleted.Answer.ToList()));
                 }
 
                 if (state.FsmEvent is NotEnoughPlayers)
@@ -163,7 +165,7 @@ namespace CoreWars.Coordination.GameSlot
             IActorRef competitorSource)
         {
             var query = competitorSource
-                .AskFor<AgentsOrderCompleted>(
+                .AskFor<IEnumerable<GeneratedAgent>>(
                     OrderAgents.Instance
                     , Context);
 

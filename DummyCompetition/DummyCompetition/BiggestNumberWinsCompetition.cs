@@ -12,10 +12,9 @@ namespace DummyCompetition
 {
     public class BiggestNumberWinsCompetition : CompetitionActor
     {
-        private Dictionary<IActorRef, CompetitionResult> _result;
         private IActorRef _winner;
         
-        public BiggestNumberWinsCompetition(IEnumerable<IAgentActorRef> competitorActors) : base(competitorActors)
+        public BiggestNumberWinsCompetition(IEnumerable<GeneratedAgent> competitorActors) : base(competitorActors)
         {
             Receive<TypedQueryResult<int>>(OnNumberPicked);
         }
@@ -26,6 +25,9 @@ namespace DummyCompetition
                 .OrderByDescending(x => x.Value)
                 .First()
                 .Key;
+            
+            
+            Thread.Sleep(TimeSpan.FromSeconds(10));
             
             Conclude();
         }

@@ -44,9 +44,15 @@ namespace CoreWars.Coordination
 
         private void WaitingForPlayersSelection()
         {
+            Receive<NotEnoughPlayers>(msg =>
+            {
+                _orderedBy.Tell(msg);
+                Self.Tell(PoisonPill.Instance);
+            });
+            
             Receive<IEnumerable<IActorRef>>(players =>
             {
-                players.QueryFor<IAgentActorRef>(
+                players.QueryFor<GeneratedAgent>(
                     new RequestCreateAgent()
                     , Context
                     , TimeSpan.FromSeconds(30));
@@ -57,10 +63,12 @@ namespace CoreWars.Coordination
 
         private void WaitingForQueryResponse()
         {
-            Receive<TypedQueryResult<IAgentActorRef>>(msg =>
+            Receive<TypedQueryResult<GeneratedAgent>>(msg =>
             {
                 var agents = msg.Result.Values;
-                _orderedBy.Tell(new AgentsOrderCompleted(agents));
+                _orderedBy.Tell(agents.ToList());
+                
+                Self.Tell(PoisonPill.Instance);
             });
         }
     }

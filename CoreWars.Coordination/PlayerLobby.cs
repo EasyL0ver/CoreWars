@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Akka.Actor;
 using CoreWars.Common;
+using CoreWars.Common.Exceptions;
 using CoreWars.Common.TypedActorQuery;
 using CoreWars.Coordination.Messages;
 using CoreWars.Coordination.PlayerSet;
@@ -15,7 +16,6 @@ namespace CoreWars.Coordination
             ISelectableSet<IActorRef> players
             , ICompetitionInfo lobbyConfiguration)
         {
-
             Receive<RequestLobbyJoin>(obj =>
             {
                 if (players.Contains(Sender))
@@ -30,33 +30,30 @@ namespace CoreWars.Coordination
 
             Receive<OrderPlayersSelection>(msg =>
             {
-                Sender.Tell(players.Select(lobbyConfiguration.PlayerCount).ToList());
-            });
-
-            Receive<OrderAgents>(obj =>
-            {
                 try
                 {
-                    var orderProps = LobbyOrder.Props(Sender, Self);
-                    Context.ActorOf(orderProps);
+                    Sender.Tell(players.Select(lobbyConfiguration.PlayerCount).ToList());
                 }
-                catch (InvalidOperationException e)
+                catch (NotEnoughPlayersException e)
                 {
                     Sender.Tell(NotEnoughPlayers.Instance);
                 }
             });
 
-            Receive<LobbyPlayerTerminated>(obj =>
+            Receive<OrderAgents>(obj =>
             {
-                players.Remove(obj.ActorRef);
+                var orderProps = LobbyOrder.Props(Sender, Self);
+                Context.ActorOf(orderProps);
             });
+
+            Receive<LobbyPlayerTerminated>(obj => { players.Remove(obj.ActorRef); });
         }
 
         public static Props Props(ISelectableSet<IActorRef> playerSet, ICompetitionInfo lobbyConfiguration)
         {
             return Akka.Actor.Props.Create(() => new PlayerLobby(playerSet, lobbyConfiguration));
         }
-        
+
         protected override SupervisorStrategy SupervisorStrategy()
         {
             return new OneForOneStrategy(
@@ -73,6 +70,4 @@ namespace CoreWars.Coordination
                 });
         }
     }
-    
-    
 }

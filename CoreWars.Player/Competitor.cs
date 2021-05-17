@@ -80,7 +80,7 @@ namespace CoreWars.Player
             _logger.Debug($"Spawning new agent");
 
             var agentActorRef = Context.ActorOf(_playerAgentActorFactory);
-            var credentialsWrapper = new AgentActorRef(agentActorRef, _creator, _scriptInfo);
+            var credentialsWrapper = new GeneratedAgent(agentActorRef, _scriptInfo.Id);
 
             Context.Watch(agentActorRef);
             Sender.Tell(credentialsWrapper);

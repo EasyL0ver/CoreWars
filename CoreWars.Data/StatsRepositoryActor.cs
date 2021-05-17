@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Akka.Actor;
 using CoreWars.Common;
@@ -16,8 +17,8 @@ namespace CoreWars.Data
             {
                 msg.CompetitionResults.ForEach(value =>
                 {
-                    var (agent, result) = value;
-                    AdjustScore(agent, result);
+                    var (agentId, result) = value;
+                    AdjustScore(agentId, result);
                 });
                 
                 Sender.Tell(new ResultAcknowledged());
@@ -37,17 +38,16 @@ namespace CoreWars.Data
             });
         }
 
-        private void AdjustScore(IAgentActorRef agentRef, CompetitionResult result)
+        private void AdjustScore(Guid agentId, CompetitionResult result)
         {
-            var scriptId = agentRef.Info.Id;
             var scriptScore = _context.Stats
-                .SingleOrDefault(s => s.ScriptId == scriptId);
+                .SingleOrDefault(s => s.ScriptId == agentId);
 
             if (scriptScore == null)
             {
                 var newStats = new ScriptStatistics()
                 {
-                    ScriptId = scriptId
+                    ScriptId = agentId
                     , Wins = result == CompetitionResult.Winner ? 1 : 0
                     , GamesPlayed = 1
                 };

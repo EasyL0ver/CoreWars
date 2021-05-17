@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -5,14 +6,14 @@ namespace CoreWars.Common
 {
     public sealed class CompetitionResultMessage
     {
-        public CompetitionResultMessage(IReadOnlyDictionary<IAgentActorRef, CompetitionResult> competitionResults)
+        public CompetitionResultMessage(IReadOnlyDictionary<Guid, CompetitionResult> competitionResults)
         {
             CompetitionResults = competitionResults;
         }
 
-        public IReadOnlyDictionary<IAgentActorRef, CompetitionResult> CompetitionResults { get; }
+        public IReadOnlyDictionary<Guid, CompetitionResult> CompetitionResults { get; }
 
-        public static CompetitionResultMessage FromScoreboard(IDictionary<IAgentActorRef, int> scoreBoard)
+        public static CompetitionResultMessage FromScoreboard(IDictionary<Guid, int> scoreBoard)
         {
             var maxScore = scoreBoard.Max(pair => pair.Value);
             var resultsDictionary = scoreBoard

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CoreWars.Common;
+using CoreWars.Common.Exceptions;
 
 namespace CoreWars.Coordination.PlayerSet
 {
@@ -12,9 +13,7 @@ namespace CoreWars.Coordination.PlayerSet
         {
             if (pool.Count < amount.minimum)
             {
-                var notEnoughPlayersMessage =
-                    $"Not enough players in pool to use this strategy, minimum players required: {amount.minimum}";
-                throw new InvalidOperationException(notEnoughPlayersMessage);
+                throw new NotEnoughPlayersException(amount.minimum, pool.Count);
             }
 
             var random = new Random();

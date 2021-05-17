@@ -11,12 +11,9 @@ namespace CoreWars.Common
         
         public BaseAgent()
         {
-            Receive<CompetitionResultMessage>(msg =>
+            Receive<CompetitionResult>(msg =>
             {
-                var myRef = msg.CompetitionResults.Keys.Single(x => x.Equals(Self));
-                var myResult = msg.CompetitionResults[myRef];
-                
-                Context.Parent.Tell(myResult);
+                Context.Parent.Tell(msg);
             });
         }
 

@@ -7,10 +7,10 @@ namespace CoreWars.Competition
 {
     public abstract class CompetitionActor : ReceiveActor
     {
-        private readonly IReadOnlyList<IAgentActorRef> _competitors;
+        private readonly IReadOnlyList<GeneratedAgent> _competitors;
         
         protected CompetitionActor(
-            IEnumerable<IAgentActorRef> competitorActors)
+            IEnumerable<GeneratedAgent> competitorActors)
         {
             _competitors = competitorActors.ToList();
             
@@ -22,18 +22,23 @@ namespace CoreWars.Competition
             CompetitionResultMessage resultMessage)
         {
             Context.Parent.Tell(resultMessage);
-            Competitors.ForEach(c => c.Tell(resultMessage));
+            
+            _competitors.ForEach(competitor =>
+            {
+                var result = resultMessage.CompetitionResults[competitor.ScriptId];
+                competitor.Reference.Tell(result);
+            });
         }
 
         protected void Conclude()
         {
-            var dict = _competitors.ToDictionary(x => x, GetResult);
+            var dict = _competitors.ToDictionary(x => x.ScriptId,y => GetResult(y.Reference));
             var message = new CompetitionResultMessage(dict);
             
             AnnounceResult(message);
         }
 
-        protected IReadOnlyList<IActorRef> Competitors => _competitors;
+        protected IReadOnlyList<IActorRef> Competitors => _competitors.Select(x => x.Reference).ToList();
         
         protected abstract void RunCompetition();
         protected abstract CompetitionResult GetResult(IActorRef playerActor);
