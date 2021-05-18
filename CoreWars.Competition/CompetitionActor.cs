@@ -1,13 +1,18 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
+using Akka.Event;
 using CoreWars.Common;
+using CoreWars.Common.TypedActorQuery;
+using CoreWars.Common.TypedActorQuery.Ask;
 
 namespace CoreWars.Competition
 {
     public abstract class CompetitionActor : ReceiveActor
     {
         private readonly IReadOnlyList<GeneratedAgent> _competitors;
+        private readonly ILoggingAdapter _logger = Context.GetLogger();
         
         protected CompetitionActor(
             IEnumerable<GeneratedAgent> competitorActors)
@@ -42,5 +47,25 @@ namespace CoreWars.Competition
         
         protected abstract void RunCompetition();
         protected abstract CompetitionResult GetResult(IActorRef playerActor);
+        
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(
+                loggingEnabled: false,
+                localOnlyDecider: ex =>
+                {
+                    switch (ex)
+                    {
+                        case TimeoutException _:
+                        case AskTargetTerminatedException _:
+                            _logger.Warning("One of game agents is unresponsive - aborting", ex);
+                            Self.Tell(PoisonPill.Instance);
+                            return Directive.Stop;
+                        default:
+                            return Directive.Escalate;
+                    }
+                });
+        }
+        
     }
 }

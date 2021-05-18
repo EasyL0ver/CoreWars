@@ -30,5 +30,6 @@ namespace CoreWars.Data.Entities
         public virtual Competition Competition { get; set; }
         public virtual Language Language { get; set; }
         public virtual ScriptStatistics Stats { get; set; }
+        public virtual ScriptFailure FailureInfo { get; set; }
     }
 }

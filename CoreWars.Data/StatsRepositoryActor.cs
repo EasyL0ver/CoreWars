@@ -36,13 +36,7 @@ namespace CoreWars.Data
                 Sender.Tell(response);
             });
 
-            
-            Receive<Messages.GetAll>(msg =>
-            {
-                //todo use stream instead!
-                Sender.Tell(_context.Stats.ToList());
-            });
-            
+
             Receive<Messages.GetAllForCompetition>(msg =>
             {
                 //todo use stream instead!

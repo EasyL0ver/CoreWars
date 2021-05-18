@@ -5,6 +5,7 @@ using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Common.Exceptions;
 using CoreWars.Data.Entities;
+using CoreWars.Player.Exceptions;
 
 namespace CoreWars.Player
 {
@@ -96,8 +97,13 @@ namespace CoreWars.Player
                 {
                     switch (ex)
                     {
-                        case AgentFailureException:
-                            //todo handle agent failure
+                        case CompetitorFaultedException competitorFaultedException:
+                            var message = new Data.Entities.Messages.ReportScriptFailure(
+                                competitorFaultedException.CompetitorId
+                                , competitorFaultedException);
+                            
+                            _scriptRepository.Tell(message);
+                            
                             return Directive.Stop;
                         default:
                             return Directive.Escalate;

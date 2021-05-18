@@ -13,7 +13,7 @@ namespace DummyCompetition
         protected override void ConfigureCompetitionInfo(CompetitionInfo competitionInfo)
         {
             competitionInfo.Name = "dummy-competition";
-            competitionInfo.PlayerCount = Range<int>.Between(2,5);
+            competitionInfo.PlayerCount = Range<int>.Between(2,2);
             competitionInfo.MaxInstancesCount = 1;
         }
     }

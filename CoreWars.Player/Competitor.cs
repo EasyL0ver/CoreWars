@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Common.Exceptions;
+using CoreWars.Player.Exceptions;
 using CoreWars.Player.Messages;
 
 namespace CoreWars.Player
@@ -11,6 +12,7 @@ namespace CoreWars.Player
     public class Competitor : ReceiveActor
     {
         private const int RejoinLobbyTimeMilliseconds = 5000;
+        private const int MaxMethodCallsFailures = 3;
 
         private readonly Props _playerAgentActorFactory;
         private readonly IActorRef _playerLobby;
@@ -20,6 +22,8 @@ namespace CoreWars.Player
 
         private readonly HashSet<IActorRef> _statusSubscriptions;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
+
+        private int _methodCallsFailureCount = 0;
 
         // ReSharper disable once MemberCanBePrivate.Global
         // public constructor required for akka
@@ -101,8 +105,20 @@ namespace CoreWars.Player
                     switch (ex)
                     {
                         case AgentFailureException:
-                            return Directive.Escalate;
+                        case ActorInitializationException:
+                            throw new CompetitorFaultedException(
+                                _scriptInfo.Id
+                                , Diagnostics.FormatCompetitorFaultedMessage()
+                                , ex);
                         case AgentMethodInvocationException:
+                            _methodCallsFailureCount += 1;
+
+                            if (_methodCallsFailureCount > MaxMethodCallsFailures)
+                                throw new CompetitorFaultedException(
+                                    _scriptInfo.Id
+                                    , Diagnostics.FormatCompetitorInvalidMethodCallsExceeded(MaxMethodCallsFailures)
+                                    , ex);
+                            
                             return Directive.Stop;
                         default:
                             return Directive.Escalate;

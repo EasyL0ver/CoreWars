@@ -14,10 +14,6 @@ namespace CoreWars.Data.Entities
             public T Content { get; }
         }
 
-        public class GetAll
-        {
-            public static GetAll Instance => new GetAll();
-        }
 
         public class GetAllForCompetition
         {
@@ -68,6 +64,19 @@ namespace CoreWars.Data.Entities
             public int Wins { get; }
             public int GamesPlayed { get; }
             public Guid ScriptId { get; }
+        }
+
+        public sealed class ReportScriptFailure
+        {
+            public ReportScriptFailure(Guid scriptId, Exception exception)
+            {
+                ScriptId = scriptId;
+                Exception = exception;
+            }
+
+            public Guid ScriptId { get; }
+            public Exception Exception { get; }
+            public DateTime FailureDateTime { get; } = DateTime.Now;
         }
     }
 }

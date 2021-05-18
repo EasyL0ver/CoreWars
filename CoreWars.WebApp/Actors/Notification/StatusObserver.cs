@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Akka.Actor;
 using CoreWars.Common;
+using CoreWars.Common.Exceptions;
 using CoreWars.Player.Messages;
 using CoreWars.WebApp.Hubs;
 using Microsoft.AspNetCore.SignalR;
@@ -16,15 +17,17 @@ namespace CoreWars.WebApp.Actors.Notification
         private readonly CompetitorStatusCache _cache;
         private readonly IHubContext<CompetitorNotificationHub> _hubContext;
         private readonly string _connectionId;
-        
+        private readonly IActorRef _orderedBy;
+
         private ICancelable _timeoutCancellable;
         private IActorRef _watchedCompetitor;
         
-        public StatusObserver(Guid competitorId, IHubContext<CompetitorNotificationHub> hubContext, string connectionId)
+        public StatusObserver(Guid competitorId, IHubContext<CompetitorNotificationHub> hubContext, string connectionId, IActorRef orderedBy)
         {
             _competitorId = competitorId;
             _hubContext = hubContext;
             _connectionId = connectionId;
+            _orderedBy = orderedBy;
             _cache = new CompetitorStatusCache();
 
             WaitingForIdentity();
@@ -50,8 +53,17 @@ namespace CoreWars.WebApp.Actors.Notification
             Receive<ActorIdentity>(msg =>
             {
                 _timeoutCancellable.Cancel();
+
+                if (msg.Subject == null)
+                {
+                    var exception = new FailedToIdentifyException();
+                    _orderedBy.Tell(exception);
+                    throw new FailedToIdentifyException();
+                }
+                
                 _watchedCompetitor = msg.Subject;
                 _watchedCompetitor.Tell(Subscribe.Instance);
+                _orderedBy.Tell(Acknowledged.Instance);
                 Context.Watch(_watchedCompetitor);
                 Become(ListeningForStatus);
             });

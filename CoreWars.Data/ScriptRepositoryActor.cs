@@ -28,29 +28,34 @@ namespace CoreWars.Data
                 Sender.Tell(new Acknowledged());
             });
 
-            //todo replace with stream ??
-            Receive<Messages.GetAll>(msg =>
-            {
-                Sender.Tell(context.Scripts.ToList());
-            });
-
             Receive<Messages.GetAllForCompetition>(msg =>
             {
                 var competitionScripts = context.Scripts
-                    .Where(x => x.CompetitionName == msg.CompetitionName)
                     .Include(x => x.User)
                     .Include(x => x.Stats)
+                    .Include(x => x.FailureInfo)
+                    .Where(x => x.CompetitionName == msg.CompetitionName)
+                    .Where(x => x.FailureInfo == null)
                     .ToList();
                 
                 Sender.Tell(competitionScripts);
             });
-
             Receive<Messages.Subscribe>(msg =>
             {
                 _subscribed.Add(Sender);
             });
-            
-            
+            Receive<Messages.ReportScriptFailure>(msg =>
+            {
+                var failureEntity = new ScriptFailure()
+                {
+                    ScriptId = msg.ScriptId
+                    , FailureDateTime = msg.FailureDateTime
+                    , Exception = msg.Exception.ToString()
+                };
+
+                context.Failures.Add(failureEntity);
+                context.Commit();
+            });
         }
         
         public static Props Props(IDataContext ctx) => Akka.Actor.Props.Create(() => new ScriptRepositoryActor(ctx)); 

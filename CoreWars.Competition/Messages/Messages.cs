@@ -9,5 +9,10 @@ namespace CoreWars.Competition
 
         public class RequestContextMessage {}
         public class RequestCompetitorsInfoMessage {}
+
+        public sealed class CompetitionInconclusive
+        {
+            public static CompetitionInconclusive Instance => new CompetitionInconclusive();
+        }
     }
 }

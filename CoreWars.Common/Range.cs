@@ -17,5 +17,6 @@ namespace CoreWars.Common
         {
             return new Range<T>(min, max);
         }
+        
     }
 }

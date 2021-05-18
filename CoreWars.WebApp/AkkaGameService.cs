@@ -95,10 +95,10 @@ namespace CoreWars.WebApp
         private void RegisterNotifications()
         {
             var hubContext = _container.Resolve<IHubContext<CompetitorNotificationHub>>();
-            Func<Messages.RegisterCompetitorNotifications, Props> factory =
-                msg =>
+            Func<Messages.RegisterCompetitorNotifications, IActorRef, Props> factory =
+                (msg, reference)=>
                 {
-                    return Props.Create(() => new StatusObserver(msg.CompetitorId, hubContext, msg.NotificationId));
+                    return Props.Create(() => new StatusObserver(msg.CompetitorId, hubContext, msg.NotificationId, reference));
 
                 };
             var notifierProps = Props.Create(() => new NotificationRoot(factory));

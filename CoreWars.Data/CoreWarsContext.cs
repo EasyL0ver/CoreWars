@@ -10,6 +10,7 @@ namespace CoreWars.Data
         DbSet<Language> Languages { get; }
         DbSet<ScriptStatistics> Stats { get; }
         DbSet<User> Users { get; }
+        DbSet<ScriptFailure> Failures { get; }
     }
     
 
@@ -42,6 +43,10 @@ namespace CoreWars.Data
             modelBuilder.Entity<ScriptStatistics>()
                 .HasOne(x => x.Script)
                 .WithOne(x => x.Stats);
+            
+            modelBuilder.Entity<ScriptFailure>()
+                .HasOne(x => x.Script)
+                .WithOne(x => x.FailureInfo);
 
             modelBuilder.Entity<User>()
                 .HasMany(x => x.Scripts)
@@ -58,6 +63,7 @@ namespace CoreWars.Data
         public DbSet<Language> Languages { get; set; }
         public DbSet<ScriptStatistics> Stats { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<ScriptFailure> Failures { get; set; }
 
         public void Commit()
         {
