@@ -15,6 +15,7 @@ namespace CoreWars.WebApp
         IActorRef ResultsHandler { get; }
         IActorRef ScriptRepository { get; }
         IActorRef NotificationProvider { get; }
+        IActorRef LogProvider { get;  }
     }
 
 }

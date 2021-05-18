@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Akka.Actor;
 using CoreWars.Common;
+using CoreWars.WebApp.Actors.Notification;
 using CoreWars.WebApp.Hubs;
-using Microsoft.AspNetCore.SignalR;
 
-namespace CoreWars.WebApp.Actors.Notification
+namespace CoreWars.WebApp.Actors
 {
     public class NotificationRoot : ReceiveActor
     {
-        private readonly IHubContext<CompetitorNotificationHub> _hubContext;
-
         public NotificationRoot(
-            IHubContext<CompetitorNotificationHub> hubContext)
+            Func<Messages.RegisterCompetitorNotifications, Props> watcherFactory)
         {
-            _hubContext = hubContext;
             IDictionary<string, IActorRef> subscribedObservers 
                 = new Dictionary<string, IActorRef>();
 
@@ -23,12 +20,7 @@ namespace CoreWars.WebApp.Actors.Notification
             {
                 if (!subscribedObservers.ContainsKey(msg.NotificationId))
                 {
-                    var notifyClientAction = new Func<CompetitorStatus, Task>(
-                        (x) => NotifyUser(msg.NotificationId, x));
-                    
-                    var observerProps = Props.Create(
-                        () => new NotificationObserver(msg.CompetitorId, notifyClientAction));
-
+                    var observerProps = watcherFactory.Invoke(msg);
                     subscribedObservers[msg.NotificationId] = Context.ActorOf(observerProps);
                 }
                 
@@ -47,9 +39,6 @@ namespace CoreWars.WebApp.Actors.Notification
             });
         }
 
-        private async Task NotifyUser(string connectionId, CompetitorStatus status)
-        {
-            await _hubContext.Clients.Client(connectionId).SendAsync("Status", status);
-        }
+    
     }
 }

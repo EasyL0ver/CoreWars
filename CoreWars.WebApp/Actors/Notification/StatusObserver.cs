@@ -3,24 +3,28 @@ using System.Threading.Tasks;
 using Akka.Actor;
 using CoreWars.Common;
 using CoreWars.Player.Messages;
+using CoreWars.WebApp.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CoreWars.WebApp.Actors.Notification
 {
-    public class NotificationObserver : ReceiveActor
+    public class StatusObserver : ReceiveActor
     {
         private const int IdentityTimeoutMillis = 5000;
         
         private readonly Guid _competitorId;
-        private readonly Func<CompetitorStatus, Task> _notify;
         private readonly CompetitorStatusCache _cache;
+        private readonly IHubContext<CompetitorNotificationHub> _hubContext;
+        private readonly string _connectionId;
         
         private ICancelable _timeoutCancellable;
         private IActorRef _watchedCompetitor;
         
-        public NotificationObserver(Guid competitorId, Func<CompetitorStatus, Task> notify)
+        public StatusObserver(Guid competitorId, IHubContext<CompetitorNotificationHub> hubContext, string connectionId)
         {
             _competitorId = competitorId;
-            _notify = notify;
+            _hubContext = hubContext;
+            _connectionId = connectionId;
             _cache = new CompetitorStatusCache();
 
             WaitingForIdentity();
@@ -76,8 +80,13 @@ namespace CoreWars.WebApp.Actors.Notification
             Receive<Messages.ScheduleUpdate>(async msg =>
             {
                 var updateMessage = _cache.GetMessage();
-                await _notify(updateMessage);
+                await NotifyUser(_connectionId, updateMessage);
             });
+        }
+        
+        private async Task NotifyUser(string connectionId, object status)
+        {
+            await _hubContext.Clients.Client(connectionId).SendAsync("Status", status);
         }
     }
 }

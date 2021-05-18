@@ -31,4 +31,8 @@
       <ProjectReference Include="..\DummyCompetition\DummyCompetition\DummyCompetition.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Actors\Logs" />
+    </ItemGroup>
+
 </Project>

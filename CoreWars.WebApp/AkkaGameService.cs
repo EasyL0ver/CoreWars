@@ -20,6 +20,7 @@ using CoreWars.WebApp.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using ICompetition = CoreWars.Common.ICompetition;
+using Messages = CoreWars.WebApp.Actors.Messages;
 
 namespace CoreWars.WebApp
 {
@@ -45,9 +46,7 @@ namespace CoreWars.WebApp
             var statsRepositoryProps = Props.Create(() => new StatsRepositoryActor(data));
             ResultsHandler = ActorSystem.ActorOf(statsRepositoryProps);
 
-            var hubContext = _container.Resolve<IHubContext<CompetitorNotificationHub>>();
-            var notifierProps = Props.Create(() => new NotificationRoot(hubContext));
-            NotificationProvider = ActorSystem.ActorOf(notifierProps);
+            RegisterNotifications();
             
             
             var competitorFactory = _container.Resolve<AggregatedCompetitorFactory>();
@@ -78,9 +77,8 @@ namespace CoreWars.WebApp
         public IActorRef ResultsHandler { get; private set; }
         public IActorRef NotificationProvider { get; private set; }
         public IActorRef CompetitorsRoot { get; private set; }
-        
+        public IActorRef LogProvider { get; private set; }
 
-   
         private void AddCompetition(ICompetition competition)
         {
             var playerSet = _container.Resolve<ISelectableSet<IActorRef>>();
@@ -93,6 +91,19 @@ namespace CoreWars.WebApp
             }
             
             CompetitorsRoot.Tell(new AddCompetition(lobby, competition.Info));
+        }
+
+        private void RegisterNotifications()
+        {
+            var hubContext = _container.Resolve<IHubContext<CompetitorNotificationHub>>();
+            Func<Messages.RegisterCompetitorNotifications, Props> factory =
+                msg =>
+                {
+                    return Props.Create(() => new StatusObserver(msg.CompetitorId, hubContext, msg.NotificationId));
+
+                };
+            var notifierProps = Props.Create(() => new NotificationRoot(factory));
+            NotificationProvider = ActorSystem.ActorOf(notifierProps);
         }
 
  
