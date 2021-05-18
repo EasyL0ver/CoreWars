@@ -39,12 +39,18 @@ namespace CoreWars.Player
 
             Receive<RequestCreateAgent>(OnRequestCreateAgentReceived);
             Receive<CompetitionResult>(OnGameConcluded);
+            Receive<GameLog>(OnGameLogReceived);
             Receive<Subscribe>(msg =>
             {
                 Context.Watch(Sender);
                 _statusSubscriptions.Add(Sender);
             });
             Receive<Terminated>(msg => { _statusSubscriptions.Remove(msg.ActorRef); });
+        }
+
+        private void OnGameLogReceived(GameLog obj)
+        {
+            _logger.Info(obj.Message);
         }
 
         private void OnGameConcluded(CompetitionResult obj)
