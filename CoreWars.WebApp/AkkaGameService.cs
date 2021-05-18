@@ -49,9 +49,9 @@ namespace CoreWars.WebApp
             RegisterNotifications();
             
             
-            var competitorFactory = _container.Resolve<AggregatedCompetitorFactory>();
+            CompetitorFactory = _container.Resolve<AggregatedCompetitorFactory>();
             var competitorRootProps =
-                Props.Create(() => new CompetitorsRoot(ScriptRepository, competitorFactory, ResultsHandler));
+                Props.Create(() => new CompetitorsRoot(ScriptRepository, CompetitorFactory, ResultsHandler));
             CompetitorsRoot = ActorSystem.ActorOf(competitorRootProps, "competitors");
 
             InitializeCompetitions();
@@ -76,7 +76,11 @@ namespace CoreWars.WebApp
         public IActorRef ScriptRepository { get; set; }
         public IActorRef ResultsHandler { get; private set; }
         public IActorRef NotificationProvider { get; private set; }
+        public ICompetitorFactory CompetitorFactory { get; private set; }
         public IActorRef CompetitorsRoot { get; private set; }
+        
+        
+        
 
         private void AddCompetition(ICompetition competition)
         {

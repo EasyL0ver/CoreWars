@@ -20,6 +20,8 @@ namespace CoreWars.WebApp.Controllers
             _gameService = gameService;
         }
 
+  
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Post([FromBody] Competitor competitor)
@@ -38,7 +40,7 @@ namespace CoreWars.WebApp.Controllers
                 script
                 , TimeSpan.FromSeconds(5));
 
-            return Ok();
+            return Ok(script.Id);
         }
     }
 }
