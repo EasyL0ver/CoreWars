@@ -6,7 +6,7 @@ using CoreWars.Common;
 using CoreWars.WebApp.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
-namespace CoreWars.WebApp.Actors
+namespace CoreWars.WebApp.Actors.Notification
 {
     public class NotificationRoot : ReceiveActor
     {

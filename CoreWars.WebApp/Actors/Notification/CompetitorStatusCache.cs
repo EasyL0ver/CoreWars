@@ -1,6 +1,6 @@
 using CoreWars.Common;
 
-namespace CoreWars.WebApp.Actors
+namespace CoreWars.WebApp.Actors.Notification
 {
     public class CompetitorStatusCache
     {

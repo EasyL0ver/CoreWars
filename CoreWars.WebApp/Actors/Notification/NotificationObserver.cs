@@ -4,7 +4,7 @@ using Akka.Actor;
 using CoreWars.Common;
 using CoreWars.Player.Messages;
 
-namespace CoreWars.WebApp.Actors
+namespace CoreWars.WebApp.Actors.Notification
 {
     public class NotificationObserver : ReceiveActor
     {

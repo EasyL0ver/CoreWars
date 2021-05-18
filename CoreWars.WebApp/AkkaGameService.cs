@@ -15,6 +15,7 @@ using CoreWars.Data.Entities;
 using CoreWars.Player;
 using CoreWars.Player.Messages;
 using CoreWars.WebApp.Actors;
+using CoreWars.WebApp.Actors.Notification;
 using CoreWars.WebApp.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
