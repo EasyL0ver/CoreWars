@@ -27,7 +27,7 @@ namespace DummyCompetition
                 .Key;
             
             
-            Thread.Sleep(TimeSpan.FromSeconds(10));
+            Thread.Sleep(TimeSpan.FromSeconds(2));
             
             Conclude();
         }

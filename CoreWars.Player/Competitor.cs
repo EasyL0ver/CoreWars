@@ -16,7 +16,7 @@ namespace CoreWars.Player
         private readonly IActorRef _playerLobby;
         private readonly IUser _creator;
         private readonly IScriptInfo _scriptInfo;
-        private readonly WinRateCounter _winRateCounter;
+        private readonly IActorRef _resultRepository;
 
         private readonly HashSet<IActorRef> _statusSubscriptions;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
@@ -28,24 +28,30 @@ namespace CoreWars.Player
             , IActorRef playerLobby
             , IUser creator
             , IScriptInfo scriptInfo
-            , WinRateCounter winRateCounter)
+            , IActorRef resultRepository)
         {
             _playerAgentActorFactory = playerAgentActorFactory;
             _playerLobby = playerLobby;
             _creator = creator;
             _scriptInfo = scriptInfo;
-            _winRateCounter = winRateCounter;
+            _resultRepository = resultRepository;
             _statusSubscriptions = new HashSet<IActorRef>();
 
             Receive<RequestCreateAgent>(OnRequestCreateAgentReceived);
             Receive<CompetitionResult>(OnGameConcluded);
             Receive<GameLog>(OnGameLogReceived);
+            Receive<Data.Entities.Messages.ScriptStatisticsUpdated>(OnStatsUpdated);
             Receive<Subscribe>(msg =>
             {
                 Context.Watch(Sender);
                 _statusSubscriptions.Add(Sender);
             });
             Receive<Terminated>(msg => { _statusSubscriptions.Remove(msg.ActorRef); });
+        }
+
+        private void OnStatsUpdated(Data.Entities.Messages.ScriptStatisticsUpdated obj)
+        {
+            _statusSubscriptions.ForEach(sub => sub.Tell(obj));
         }
 
         private void OnGameLogReceived(GameLog obj)
@@ -55,18 +61,13 @@ namespace CoreWars.Player
 
         private void OnGameConcluded(CompetitionResult obj)
         {
-            _winRateCounter.GamesPlayed += 1;
-
-            if (obj == CompetitionResult.Winner)
-                _winRateCounter.Wins += 1;
-
-            UpdateStatusListeners();
+            var msg = new Data.Entities.Messages.ScriptCompetitionResult(_scriptInfo.Id, obj);
+            _resultRepository.Tell(msg);
         }
 
-        public static Props Props(Props factory, IActorRef playerLobby, IUser creator, IScriptInfo info,
-            WinRateCounter counter)
+        public static Props Props(Props factory, IActorRef playerLobby, IUser creator, IScriptInfo info, IActorRef resultRepository)
         {
-            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby, creator, info, counter));
+            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby, creator, info, resultRepository));
         }
 
         protected override void PreStart()
@@ -90,14 +91,6 @@ namespace CoreWars.Player
 
             Context.Watch(agentActorRef);
             Sender.Tell(credentialsWrapper);
-        }
-
-        private void UpdateStatusListeners()
-        {
-            var status = new Common.CompetitorStatus(CompetitorState.Active, _winRateCounter.GamesPlayed,
-                _winRateCounter.Wins);
-
-            _statusSubscriptions.ForEach(sub => sub.Tell(status));
         }
 
         protected override SupervisorStrategy SupervisorStrategy()

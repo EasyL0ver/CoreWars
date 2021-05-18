@@ -21,13 +21,13 @@ namespace CoreWars.Competition
         private void AnnounceResult(
             CompetitionResultMessage resultMessage)
         {
-            Context.Parent.Tell(resultMessage);
-            
             _competitors.ForEach(competitor =>
             {
                 var result = resultMessage.CompetitionResults[competitor.ScriptId];
                 competitor.Reference.Tell(result);
             });
+            
+            Self.Tell(PoisonPill.Instance);
         }
 
         protected void Conclude()

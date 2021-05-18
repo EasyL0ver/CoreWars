@@ -24,6 +24,18 @@ namespace CoreWars.Data
                 Sender.Tell(new ResultAcknowledged());
             });
 
+            Receive<Messages.ScriptCompetitionResult>(msg =>
+            {
+                var currentScore = AdjustScore(msg.ScriptId, msg.Result);
+                
+                var response = new Messages.ScriptStatisticsUpdated(
+                    currentScore.Wins
+                    , currentScore.GamesPlayed
+                    , currentScore.ScriptId);
+                
+                Sender.Tell(response);
+            });
+
             
             Receive<Messages.GetAll>(msg =>
             {
@@ -38,7 +50,7 @@ namespace CoreWars.Data
             });
         }
 
-        private void AdjustScore(Guid agentId, CompetitionResult result)
+        private ScriptStatistics AdjustScore(Guid agentId, CompetitionResult result)
         {
             var scriptScore = _context.Stats
                 .SingleOrDefault(s => s.ScriptId == agentId);
@@ -53,6 +65,7 @@ namespace CoreWars.Data
                 };
                 
                 _context.Stats.Add(newStats);
+                scriptScore = newStats;
             }
             else
             {
@@ -63,6 +76,8 @@ namespace CoreWars.Data
             }
    
             _context.Commit();
+
+            return scriptScore;
         }
     }
 }

@@ -12,15 +12,16 @@ namespace CoreWars.WebApp.Actors
         
         private readonly Guid _competitorId;
         private readonly Func<CompetitorStatus, Task> _notify;
-
+        private readonly CompetitorStatusCache _cache;
+        
         private ICancelable _timeoutCancellable;
         private IActorRef _watchedCompetitor;
-        private CompetitorStatus _currentStatus;
-
+        
         public NotificationObserver(Guid competitorId, Func<CompetitorStatus, Task> notify)
         {
             _competitorId = competitorId;
             _notify = notify;
+            _cache = new CompetitorStatusCache();
 
             WaitingForIdentity();
         }
@@ -57,17 +58,25 @@ namespace CoreWars.WebApp.Actors
         {
             Receive<Messages.GetCurrent>(msg =>
             {
-                Sender.Tell(_currentStatus);
+                Sender.Tell(_cache);
             });
-            Receive<CompetitorStatus>(async msg =>
+            Receive<Data.Entities.Messages.ScriptStatisticsUpdated>(msg =>
             {
-                _currentStatus = msg;
-                await _notify(_currentStatus);
+                _cache.Wins = msg.Wins;
+                _cache.GamesPlayed = msg.GamesPlayed;
+                
+                Self.Tell(Messages.ScheduleUpdate.Instance);
             });
-            Receive<Terminated>(async msg =>
+            Receive<Terminated>(msg =>
             {
-                _currentStatus = _currentStatus.Terminated();
-                await _notify(_currentStatus);
+                _cache.State = CompetitorState.Faulted;
+                
+                Self.Tell(Messages.ScheduleUpdate.Instance);
+            });
+            Receive<Messages.ScheduleUpdate>(async msg =>
+            {
+                var updateMessage = _cache.GetMessage();
+                await _notify(updateMessage);
             });
         }
     }

@@ -14,18 +14,21 @@ namespace CoreWars.Player
         private readonly IActorRef _lobby;
         private readonly ICompetitionInfo _competitionInfo;
         private readonly ICompetitorFactory _competitorFactory;
+        private readonly IActorRef _resultsRepository;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
         
         public Competition(
             IActorRef scriptRepository
             , ICompetitionInfo competitionInfo
             , IActorRef lobby
-            , ICompetitorFactory competitorFactory)
+            , ICompetitorFactory competitorFactory
+            , IActorRef resultsRepository)
         {
             _scriptRepository = scriptRepository;
             _competitionInfo = competitionInfo;
             _lobby = lobby;
             _competitorFactory = competitorFactory;
+            _resultsRepository = resultsRepository;
 
             EnsureSubscription(_scriptRepository);
 
@@ -38,9 +41,10 @@ namespace CoreWars.Player
             IActorRef scriptRepository
             , ICompetitionInfo competitionInfo
             , IActorRef lobby
-            , ICompetitorFactory factory)
+            , ICompetitorFactory factory
+            , IActorRef resultRepository)
         {
-            return Akka.Actor.Props.Create(() => new Competition(scriptRepository, competitionInfo, lobby, factory));
+            return Akka.Actor.Props.Create(() => new Competition(scriptRepository, competitionInfo, lobby, factory, resultRepository));
         }
 
         private void OnNewScriptAdded(Data.Entities.Messages.AddedEvent<Script> obj)
@@ -70,8 +74,7 @@ namespace CoreWars.Player
         {
             _logger.Info($"Creating competitor: {script.Name} from {script.ScriptType} script with id: {script.Id}");
             var competitorAgentProps = _competitorFactory.Build(script);
-            var winRateCounter = new WinRateCounter(script.Stats?.Wins ?? 0, script.Stats?.GamesPlayed ?? 0);
-            var competitorProps = Competitor.Props(competitorAgentProps, _lobby, script.User, script, winRateCounter);
+            var competitorProps = Competitor.Props(competitorAgentProps, _lobby, script.User, script, _resultsRepository);
 
             Context.ActorOf(competitorProps, script.Id.ToString());
         }

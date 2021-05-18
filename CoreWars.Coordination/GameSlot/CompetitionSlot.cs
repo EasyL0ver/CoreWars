@@ -12,17 +12,14 @@ namespace CoreWars.Coordination.GameSlot
 {
     public class CompetitionSlot : FSM<CompetitionSlotState, ICompetitionSlotFSMData>
     {
-        private readonly IActorRef _competitorSource;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
 
         // ReSharper disable once MemberCanBePrivate.Global
         // public constructor required for akka
         public CompetitionSlot(
             IActorRef competitorSource
-            , IActorRef competitionsResultHandler
             , ICompetitionActorPropsFactory competitionActorPropsFactory)
         {
-            _competitorSource = competitorSource;
             StartWith(CompetitionSlotState.Idle, Uninitialized.Instance);
             
             When(CompetitionSlotState.Idle, state =>
@@ -57,29 +54,14 @@ namespace CoreWars.Coordination.GameSlot
             
             When(CompetitionSlotState.Game, state =>
             {
-                if (state.FsmEvent is CompetitionResultMessage competitionResult)
+                if (state.FsmEvent is LobbyGameTerminated competitionResult)
                 {
-                    var concludedGameState = new ConcludedGameData(Sender, competitionResult);
-                    return GoTo(CompetitionSlotState.Conclude).Using(concludedGameState);
+                    return GoToLobby(competitorSource);
                 }
 
                 return null;
             });
             
-            When(CompetitionSlotState.Conclude, state =>
-            {
-                ConcludedGameData currentData = state.StateData as ConcludedGameData;
-                ConcludedGameData nextStateData = null;
-                
-                if (state.FsmEvent is ResultAcknowledged)
-                    nextStateData = currentData.WithResultAcknowledged;
-                if (state.FsmEvent is LobbyGameTerminated)
-                    nextStateData = currentData.WithGameTerminated;
-
-                return nextStateData.FullyConcluded
-                    ? GoToLobby(competitorSource) 
-                    : Stay().Using(nextStateData);
-            });
             
             OnTransition((initialState, nextState) =>
             {
@@ -93,9 +75,6 @@ namespace CoreWars.Coordination.GameSlot
                         Context.Stop(activeGameData.Game);
                         break;
                     case CompetitionSlotState.Idle:
-                    case CompetitionSlotState.Conclude:
-                        break;
-                    case CompetitionSlotState.Terminate:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(initialState), initialState, null);
@@ -103,9 +82,7 @@ namespace CoreWars.Coordination.GameSlot
 
                 switch (nextState)
                 {
-                    case CompetitionSlotState.Conclude when NextStateData is ConcludedGameData concludedGameData:
-                        competitionsResultHandler.Tell(concludedGameData.Result);
-                        break;
+
                     case CompetitionSlotState.Game when NextStateData is ActiveGameData nextStateGameData:
                         Context.WatchWith(nextStateGameData.Game, new LobbyGameTerminated(nextStateGameData.Game));
                         nextStateGameData.Game.Tell(new Competition.Messages.RunCompetitionMessage());
@@ -118,7 +95,6 @@ namespace CoreWars.Coordination.GameSlot
                             Self);
                         break;
                     case CompetitionSlotState.Lobby:
-                    case CompetitionSlotState.Terminate:
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(nextState), nextState, null);
@@ -129,17 +105,11 @@ namespace CoreWars.Coordination.GameSlot
             Initialize();
         }
 
-        public override void AroundPostRestart(Exception cause, object message)
-        {
-            base.AroundPostRestart(cause, message);
-        }
-
         public static Props Props(
             IActorRef competitorsSource
-            , IActorRef resultHandler
             , ICompetitionActorPropsFactory competitorsPropsFactory)
         {
-            return Akka.Actor.Props.Create(() => new CompetitionSlot(competitorsSource, resultHandler, competitorsPropsFactory));
+            return Akka.Actor.Props.Create(() => new CompetitionSlot(competitorsSource, competitorsPropsFactory));
         }
         
         protected override SupervisorStrategy SupervisorStrategy()

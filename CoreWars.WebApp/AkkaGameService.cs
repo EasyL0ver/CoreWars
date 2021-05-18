@@ -51,7 +51,7 @@ namespace CoreWars.WebApp
             
             var competitorFactory = _container.Resolve<AggregatedCompetitorFactory>();
             var competitorRootProps =
-                Props.Create(() => new CompetitorsRoot(ScriptRepository, competitorFactory));
+                Props.Create(() => new CompetitorsRoot(ScriptRepository, competitorFactory, ResultsHandler));
             CompetitorsRoot = ActorSystem.ActorOf(competitorRootProps, "competitors");
 
             InitializeCompetitions();
@@ -87,7 +87,7 @@ namespace CoreWars.WebApp
           
             for(var i = 0; i < competition.Info.MaxInstancesCount; i++)
             {
-                var props = CompetitionSlot.Props(lobby, ResultsHandler, competition.Factory);
+                var props = CompetitionSlot.Props(lobby, competition.Factory);
                 ActorSystem.ActorOf(props, $"{competition.Info.Name}-slot-{i}");
             }
             

@@ -1,3 +1,5 @@
+using System;
+
 namespace CoreWars.Data.Entities
 {
     public class Messages
@@ -40,6 +42,32 @@ namespace CoreWars.Data.Entities
             }
 
             public T AddedElement { get; }
+        }
+
+        public class ScriptCompetitionResult
+        {
+            public ScriptCompetitionResult(Guid scriptId, Common.CompetitionResult result)
+            {
+                ScriptId = scriptId;
+                Result = result;
+            }
+
+            public Guid ScriptId { get; }
+            public Common.CompetitionResult Result { get; }
+        }
+
+        public sealed class ScriptStatisticsUpdated
+        {
+            public ScriptStatisticsUpdated(int wins, int gamesPlayed, Guid scriptId)
+            {
+                Wins = wins;
+                GamesPlayed = gamesPlayed;
+                ScriptId = scriptId;
+            }
+
+            public int Wins { get; }
+            public int GamesPlayed { get; }
+            public Guid ScriptId { get; }
         }
     }
 }

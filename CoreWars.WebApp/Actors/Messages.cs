@@ -28,12 +28,17 @@ namespace CoreWars.WebApp.Actors
 
         public sealed class GetCurrent
         {
-            public static GetCurrent Instance = new GetCurrent();
+            public static GetCurrent Instance => new GetCurrent();
         }
 
         public sealed class IdentityTimeout
         {
-            public static IdentityTimeout Instance = new IdentityTimeout();
+            public static IdentityTimeout Instance => new IdentityTimeout();
+        }
+
+        public sealed class ScheduleUpdate
+        {
+            public static ScheduleUpdate Instance => new ScheduleUpdate();
         }
     }
 }
