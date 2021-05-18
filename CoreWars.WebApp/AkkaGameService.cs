@@ -77,7 +77,6 @@ namespace CoreWars.WebApp
         public IActorRef ResultsHandler { get; private set; }
         public IActorRef NotificationProvider { get; private set; }
         public IActorRef CompetitorsRoot { get; private set; }
-        public IActorRef LogProvider { get; private set; }
 
         private void AddCompetition(ICompetition competition)
         {
