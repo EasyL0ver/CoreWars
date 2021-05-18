@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CoreWars.Scripting\CoreWars.Scripting.csproj" />
+      <ProjectReference Include="..\..\..\CoreWars.Scripting\CoreWars.Scripting.csproj" />
     </ItemGroup>
 
     <ItemGroup>
