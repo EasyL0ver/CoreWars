@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Akka.Actor;
@@ -18,6 +19,31 @@ namespace CoreWars.WebApp.Controllers
         public CompetitorsController(IGameService gameService)
         {
             _gameService = gameService;
+        }
+        
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Get()
+        {
+            var msg = new Messages.GetAllForUser(UserId);
+
+            var competitors = await _gameService.ScriptRepository.Ask<List<Script>>(
+                msg
+                , TimeSpan.FromSeconds(5));
+
+            var model = competitors.Select(
+                competitor => new ActiveCompetitor()
+            {
+                Alias = competitor.Name
+                , Code = competitor.ScriptFiles[0]
+                , Competition = competitor.CompetitionName
+                , Language =  competitor.ScriptType
+                , GamesPlayed = competitor.Stats?.GamesPlayed ?? 0
+                , GamesWon = competitor.Stats?.Wins ?? 0
+                , Status = competitor.FailureInfo == null ? CompetitorState.Active : CompetitorState.Idle
+            });
+
+            return Ok(model);
         }
 
   

@@ -25,6 +25,16 @@ namespace CoreWars.Data.Entities
             public string CompetitionName { get; }
         }
 
+        public sealed class GetAllForUser
+        {
+            public Guid UserId { get; }
+
+            public GetAllForUser(Guid userId)
+            {
+                UserId = userId;
+            }
+        }
+
         public class Subscribe
         {
             public static Subscribe Instance => new Subscribe();

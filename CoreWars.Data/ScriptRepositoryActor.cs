@@ -40,6 +40,19 @@ namespace CoreWars.Data
                 
                 Sender.Tell(competitionScripts);
             });
+            
+            Receive<Messages.GetAllForUser>(msg =>
+            {
+                var competitionScripts = context.Scripts
+                    .Include(x => x.User)
+                    .Include(x => x.Stats)
+                    .Include(x => x.FailureInfo)
+                    .Where(x => x.UserId == msg.UserId)
+                    .ToList();
+                
+                Sender.Tell(competitionScripts);
+            });
+            
             Receive<Messages.Subscribe>(msg =>
             {
                 _subscribed.Add(Sender);
