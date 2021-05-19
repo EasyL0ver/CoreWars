@@ -34,6 +34,13 @@ namespace CoreWars.WebApp
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CoreWars.WebApp", Version = "v1" });
             });
+            
+            services.AddCors(o => o.AddPolicy("Allow-All", builder =>
+            {
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
 
             services.AddSignalR();
             
@@ -106,6 +113,7 @@ namespace CoreWars.WebApp
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCors("Allow-All");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
