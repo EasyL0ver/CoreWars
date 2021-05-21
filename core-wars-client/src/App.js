@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import LoginView from './LoginView'
 import Dashboard from './Dashboard'
+import Leaderboard from './Leaderboard';
 
 class App extends React.Component {
   render() {
@@ -15,6 +16,7 @@ class App extends React.Component {
             <Switch>
               <Route path="/login" exact component={LoginView} />
               <Route path="/dashboard" exact component={Dashboard} />
+              <Route path="/leaderboard" exact component={Leaderboard} />
             </Switch>
           </div>
         </div>
