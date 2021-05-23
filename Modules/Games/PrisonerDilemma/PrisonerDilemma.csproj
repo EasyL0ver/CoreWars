@@ -6,7 +6,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\CoreWars.Competition\CoreWars.Competition.csproj" />
-      <ProjectReference Include="..\..\CoreWars.Competition\CoreWars.Competition.csproj" />
     </ItemGroup>
 
 </Project>

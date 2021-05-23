@@ -27,6 +27,7 @@
       <ProjectReference Include="..\CoreWars.Coordination\CoreWars.Coordination.csproj" />
       <ProjectReference Include="..\CoreWars.Data\CoreWars.Data.csproj" />
       <ProjectReference Include="..\Modules\Games\DummyCompetition\DummyCompetition.csproj" />
+      <ProjectReference Include="..\Modules\Games\PrisonerDilemma\PrisonerDilemma.csproj" />
       <ProjectReference Include="..\Modules\Scripting\CoreWars.Scripting.Python\CoreWars.Scripting.Python.csproj" />
     </ItemGroup>
 

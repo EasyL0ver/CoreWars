@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PrisonerDilemma;
 
 namespace CoreWars.WebApp
 {
@@ -96,6 +97,7 @@ namespace CoreWars.WebApp
 
             builder.RegisterModule<PythonScriptingModule>();
             builder.RegisterModule<DummyCompetitionModule>();
+            builder.RegisterModule<DilemmaModule>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
