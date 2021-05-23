@@ -8,14 +8,24 @@ class Leaderboard extends React.Component {
     constructor(props) {
         super(props)
 
+        this.changeCompetition = this.changeCompetition.bind(this)
+
         this.state = {
             rows: [],
-            categories: []
+            categories: [],
+            selected: ""
         }
     }
 
     componentDidMount() {
         this.getCompetitionNames();
+    }
+
+    changeCompetition(competition) {
+        this.setState({
+            selected: competition
+        });
+        this.getLeaderboard(competition.value);
     }
 
 
@@ -30,9 +40,10 @@ class Leaderboard extends React.Component {
 
             this.setState({
                 ...this.state,
-                categories: competitionTypes
+                categories: competitionTypes,
             });
-            this.getLeaderboard(competitionTypes[0].value);
+
+            this.changeCompetition(competitionTypes[0])
         } catch (err) {
             console.warn(err);
         }
@@ -59,7 +70,7 @@ class Leaderboard extends React.Component {
     render() {
         return (
         <div> 
-            <Select options={this.state.categories} />
+            <Select options={this.state.categories}  value= {this.state.selected} onChange={this.changeCompetition}/>
             <JsonToTable json={this.state.rows} />
         </div>  
         );
