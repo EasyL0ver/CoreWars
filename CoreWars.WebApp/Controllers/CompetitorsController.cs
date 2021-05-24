@@ -41,6 +41,7 @@ namespace CoreWars.WebApp.Controllers
                 , GamesPlayed = competitor.Stats?.GamesPlayed ?? 0
                 , GamesWon = competitor.Stats?.Wins ?? 0
                 , Status = competitor.FailureInfo == null ? CompetitorState.Active : CompetitorState.Idle
+                , Id = competitor.Id
             });
 
             return Ok(model);
