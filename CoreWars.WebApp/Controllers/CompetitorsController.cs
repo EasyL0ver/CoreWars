@@ -40,7 +40,7 @@ namespace CoreWars.WebApp.Controllers
                 , Language =  competitor.ScriptType
                 , GamesPlayed = competitor.Stats?.GamesPlayed ?? 0
                 , GamesWon = competitor.Stats?.Wins ?? 0
-                , Status = competitor.FailureInfo == null ? CompetitorState.Active : CompetitorState.Idle
+                , Status = competitor.FailureInfo == null ? CompetitorState.Active : CompetitorState.Faulted
                 , Id = competitor.Id
             });
 
