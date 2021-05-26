@@ -7,6 +7,7 @@ class UserStore{
         const decodedToken = decodeToken(token)
 
         this.userId = decodedToken['user-id']
+        this.token = token
 
         console.log(this)
     }

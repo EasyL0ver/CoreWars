@@ -33,7 +33,6 @@ class Leaderboard extends React.Component {
         try {
             const response = await axios.get(
                 "http://localhost:5000/competitions",
-                null,
                 { "Content-Type": "application/json" }
             );
             const competitionTypes = response.data.map(x => new Object({value: x.name, label: x.name}));
