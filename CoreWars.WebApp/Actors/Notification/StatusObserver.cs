@@ -17,17 +17,15 @@ namespace CoreWars.WebApp.Actors.Notification
         private readonly CompetitorStatusCache _cache;
         private readonly IHubContext<CompetitorNotificationHub> _hubContext;
         private readonly string _connectionId;
-        private readonly IActorRef _orderedBy;
 
         private ICancelable _timeoutCancellable;
         private IActorRef _watchedCompetitor;
         
-        public StatusObserver(Guid competitorId, IHubContext<CompetitorNotificationHub> hubContext, string connectionId, IActorRef orderedBy)
+        public StatusObserver(Guid competitorId, IHubContext<CompetitorNotificationHub> hubContext, string connectionId)
         {
             _competitorId = competitorId;
             _hubContext = hubContext;
             _connectionId = connectionId;
-            _orderedBy = orderedBy;
             _cache = new CompetitorStatusCache();
 
             WaitingForIdentity();
@@ -56,18 +54,29 @@ namespace CoreWars.WebApp.Actors.Notification
 
                 if (msg.Subject == null)
                 {
-                    var exception = new FailedToIdentifyException();
-                    _orderedBy.Tell(exception);
-                    throw new FailedToIdentifyException();
+                    _cache.State = CompetitorState.Faulted;
+                    Self.Tell(Messages.ScheduleUpdate.Instance);
+                    return;
                 }
-                
+
                 _watchedCompetitor = msg.Subject;
                 _watchedCompetitor.Tell(Subscribe.Instance);
-                _orderedBy.Tell(Acknowledged.Instance);
+
+                _cache.State = CompetitorState.Active;
+                
                 Context.Watch(_watchedCompetitor);
                 Become(ListeningForStatus);
             });
-            Receive<Messages.IdentityTimeout>(msg => throw new TimeoutException());
+            Receive<Messages.IdentityTimeout>(msg =>
+            {
+                _cache.State = CompetitorState.Faulted;
+                Self.Tell(Messages.ScheduleUpdate.Instance);
+            });
+            Receive<Messages.ScheduleUpdate>(async msg =>
+            {
+                var updateMessage = _cache.GetMessage();
+                await NotifyUser(_connectionId, updateMessage);
+            });
         }
 
         private void ListeningForStatus()
@@ -80,6 +89,7 @@ namespace CoreWars.WebApp.Actors.Notification
             {
                 _cache.Wins = msg.Wins;
                 _cache.GamesPlayed = msg.GamesPlayed;
+                _cache.State = CompetitorState.Active;
                 
                 Self.Tell(Messages.ScheduleUpdate.Instance);
             });

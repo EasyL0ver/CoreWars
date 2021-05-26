@@ -12,7 +12,7 @@ namespace CoreWars.WebApp.Actors
     public class NotificationRoot : ReceiveActor
     {
         public NotificationRoot(
-            Func<Messages.RegisterCompetitorNotifications, IActorRef, Props> watcherFactory)
+            Func<Messages.RegisterCompetitorNotifications, Props> watcherFactory)
         {
             IDictionary<string, IActorRef> subscribedObservers 
                 = new Dictionary<string, IActorRef>();
@@ -21,9 +21,11 @@ namespace CoreWars.WebApp.Actors
             {
                 if (!subscribedObservers.ContainsKey(msg.NotificationId))
                 {
-                    var observerProps = watcherFactory.Invoke(msg, Sender);
+                    var observerProps = watcherFactory.Invoke(msg);
                     subscribedObservers[msg.NotificationId] = Context.ActorOf(observerProps);
                 }
+                
+                Sender.Tell(Acknowledged.Instance);
                 
             });
 
@@ -38,22 +40,5 @@ namespace CoreWars.WebApp.Actors
                 Sender.Tell(Acknowledged.Instance);
             });
         }
-        
-        protected override SupervisorStrategy SupervisorStrategy()
-        {
-            return new OneForOneStrategy(
-                localOnlyDecider: ex =>
-                {
-                    switch (ex)
-                    {
-                        case FailedToIdentifyException fex:
-                            return Directive.Stop;
-                        default:
-                            return Directive.Escalate;
-                    }
-                });
-        }
-
-    
     }
 }
