@@ -38,8 +38,10 @@ namespace CoreWars.WebApp
             
             services.AddCors(o => o.AddPolicy("Allow-All", builder =>
             {
-                builder.AllowAnyOrigin()
+                builder
                     .AllowAnyMethod()
+                    .SetIsOriginAllowed(origin => true)
+                    .AllowCredentials()
                     .AllowAnyHeader();
             }));
 
@@ -114,8 +116,8 @@ namespace CoreWars.WebApp
             //app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
-            app.UseAuthorization();
             app.UseCors("Allow-All");
+            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -4,12 +4,15 @@ using Akka.Actor;
 using CoreWars.Common;
 using CoreWars.Competition;
 using JetBrains.Annotations;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Messages = CoreWars.WebApp.Actors.Messages;
 
 namespace CoreWars.WebApp.Hubs
 {
     [UsedImplicitly]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CompetitorNotificationHub : Hub
     {
         private readonly IGameService _gameService;
