@@ -5,9 +5,11 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import LoginView from './LoginView'
 import Dashboard from './Dashboard'
 import Leaderboard from './Leaderboard';
+import UserStore from './UserStore'
 
 class App extends React.Component {
   render() {
+    UserStore.refresh()
     return (
       <Router>
         <div className="container-fluid">

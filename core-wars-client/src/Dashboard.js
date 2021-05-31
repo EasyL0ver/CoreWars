@@ -11,12 +11,30 @@ class Dashboard extends React.Component {
 
         this.state = {
             competitors: [],
-            selectedBtnId: null
+            selectedBtnId: null,
+            categories: [],
         }
     }
 
     componentDidMount() {
         this.loadCompetitors();
+        this.getCompetitionNames();
+    }
+
+    async getCompetitionNames() {
+        try {
+            const response = await axios.get(
+                "http://localhost:5000/competitions",
+                { "Content-Type": "application/json" }
+            );
+            this.setState({
+                ...this.state,
+                categories: response.data,
+            });
+
+        } catch (err) {
+            console.warn(err);
+        }
     }
 
     async loadCompetitors() {
@@ -42,12 +60,42 @@ class Dashboard extends React.Component {
         }
     }
 
+    async loadCompetitors() {
+        try {
+            let token = UserStore.token;
+            const response = await axios.get(
+                "http://localhost:5000/Competitors/",
+                {
+                    "Content-Type": "application/json",
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            this.setState({
+                ...this.state,
+                competitors: response.data,
+            });
+        } catch (err) {
+            console.warn(err);
+        }
+    }
+
     onButtonEdit(buttonId) {
         console.log(buttonId)
         this.setState({
             ...this.state,
             selectedBtnId: buttonId,
         });
+    }
+
+    onButtonAdd() {
+        this.setState({
+            ...this.state,
+            selectedBtnId: null,
+        });
+
     }
 
     render() {
@@ -59,6 +107,7 @@ class Dashboard extends React.Component {
                     competitionName={competitor.competition}
                     scriptingLanguage={competitor.language}
                     id={competitor.id}
+                    key={competitor.id}
                     gamesPlayed={competitor.gamesPlayed}
                     gamesWon={competitor.gamesWon}
                     status={competitor.status}
@@ -68,12 +117,18 @@ class Dashboard extends React.Component {
             )
         });
 
-        if(this.state.selectedBtnId == null)
-        {
+        if (this.state.selectedBtnId == null) {
+            const categories = this.state.categories.map(x => new Object({value: x.name, label: x.name}))
             return (
                 <div>
-                    <div> {buttons} </div>
-                    <CompetitorEditView />
+                    {buttons}
+                    <button onClick={this.onButtonAdd.bind(this)}> DODAJ ! (podswietlony)</button>
+                    <br></br>
+                    <br></br>
+                    <CompetitorEditView 
+                        alias={""}
+                        code={""}
+                        categories={categories}/>
                 </div>
             );
         }
@@ -84,10 +139,14 @@ class Dashboard extends React.Component {
 
         return (
             <div>
-                <div> {buttons} </div>
-                <CompetitorEditView 
-                    alias = {editedCompetitor.alias}
-                    code = {editedCompetitor.code}/>
+                {buttons} 
+                <button onClick={this.onButtonAdd.bind(this)}> DODAJ ! </button>
+                <br></br>
+                <br></br>
+                <CompetitorEditView
+                    alias={editedCompetitor.alias}
+                    code={editedCompetitor.code}
+                    categories={[{value:editedCompetitor.competition, label:editedCompetitor.competition}]} />
             </div>
         );
     }

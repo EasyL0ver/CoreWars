@@ -10,6 +10,14 @@ class UserStore{
         this.token = token
 
         console.log(this)
+
+        sessionStorage.setItem("token", this.token)
+        sessionStorage.setItem("userid", this.userId)
+    }
+
+    refresh(){
+        this.token = sessionStorage.getItem("token")
+        this.userId = sessionStorage.getItem("userid")
     }
 
 }
