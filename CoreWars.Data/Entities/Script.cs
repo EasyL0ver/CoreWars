@@ -26,6 +26,9 @@ namespace CoreWars.Data.Entities
         [Required]
         public string[] ScriptFiles { get; set; }
         
+        public DateTime DateTimeCreated { get; set; }
+        public DateTime DateTimeUpdated { get; set; }
+        
         public virtual User User { get; set; }
         public virtual Competition Competition { get; set; }
         public virtual Language Language { get; set; }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
@@ -18,6 +19,9 @@ namespace CoreWars.Data
         {
             Receive<Messages.Add<Script>>(msg =>
             {
+                msg.Content.DateTimeCreated = DateTime.Now;
+                msg.Content.DateTimeUpdated = DateTime.Now;
+                
                 context.Scripts.Add(msg.Content);
                 context.Commit();
 
@@ -40,6 +44,7 @@ namespace CoreWars.Data
                 edited.CompetitionName = msg.Content.CompetitionName;
                 edited.ScriptFiles = msg.Content.ScriptFiles;
                 edited.Name = msg.Content.Name;
+                edited.DateTimeUpdated = DateTime.Now;
                 edited.FailureInfo = null;
                 
                 context.Commit();
@@ -69,6 +74,7 @@ namespace CoreWars.Data
                     .Include(x => x.Stats)
                     .Include(x => x.FailureInfo)
                     .Where(x => x.UserId == msg.UserId)
+                    .OrderBy(x => x.DateTimeCreated)
                     .ToList();
                 
                 Sender.Tell(competitionScripts);
