@@ -13,6 +13,16 @@ namespace CoreWars.Data.Entities
 
             public T Content { get; }
         }
+        
+        public class Update<T>
+        {
+            public Update(T content)
+            {
+                Content = content;
+            }
+
+            public T Content { get; }
+        }
 
 
         public class GetAllForCompetition
@@ -43,6 +53,16 @@ namespace CoreWars.Data.Entities
         public class AddedEvent<T>
         {
             public AddedEvent(T addedElement)
+            {
+                AddedElement = addedElement;
+            }
+
+            public T AddedElement { get; }
+        }
+        
+        public class UpdatedEvent<T>
+        {
+            public UpdatedEvent(T addedElement)
             {
                 AddedElement = addedElement;
             }

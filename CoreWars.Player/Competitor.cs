@@ -14,7 +14,6 @@ namespace CoreWars.Player
         private const int RejoinLobbyTimeMilliseconds = 5000;
         private const int MaxMethodCallsFailures = 3;
 
-        private readonly Props _playerAgentActorFactory;
         private readonly IActorRef _playerLobby;
         private readonly IUser _creator;
         private readonly IScriptInfo _scriptInfo;
@@ -23,6 +22,7 @@ namespace CoreWars.Player
         private readonly HashSet<IActorRef> _statusSubscriptions;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
 
+        private Props _playerAgentActorFactory;
         private int _methodCallsFailureCount = 0;
 
         // ReSharper disable once MemberCanBePrivate.Global
@@ -50,7 +50,14 @@ namespace CoreWars.Player
                 Context.Watch(Sender);
                 _statusSubscriptions.Add(Sender);
             });
+            Receive<CompetitorFactoryUpdated>(OnUpdated);
             Receive<Terminated>(msg => { _statusSubscriptions.Remove(msg.ActorRef); });
+        }
+
+        private void OnUpdated(CompetitorFactoryUpdated obj)
+        {
+            _playerAgentActorFactory = obj.NewFactory;
+            _methodCallsFailureCount = 0;
         }
 
         private void OnStatsUpdated(Data.Entities.Messages.ScriptStatisticsUpdated obj)

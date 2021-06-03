@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
+using Akka.Event;
 using Akka.Util.Internal;
 using CoreWars.Common;
 using CoreWars.Data.Entities;
@@ -11,19 +12,39 @@ namespace CoreWars.Data
     public class ScriptRepositoryActor : ReceiveActor
     {
         private readonly HashSet<IActorRef> _subscribed = new();
+        private readonly ILoggingAdapter _logger = Context.GetLogger();
         
         public ScriptRepositoryActor(IDataContext context)
         {
-            Receive<Script>(msg =>
+            Receive<Messages.Add<Script>>(msg =>
             {
-                context.Scripts.Add(msg);
+                context.Scripts.Add(msg.Content);
                 context.Commit();
 
-                var @event = new Messages.AddedEvent<Script>(msg);
-                Extensions.ForEach(_subscribed, sub =>
+                BroadcastEvent(new Messages.AddedEvent<Script>(msg.Content));
+                
+                Sender.Tell(new Acknowledged());
+            });
+
+            Receive<Messages.Update<Script>>(msg =>
+            {
+                var edited = context.Scripts.FirstOrDefault(x => x.Id == msg.Content.Id);
+
+                if (edited == null)
                 {
-                    sub.Tell(@event);
-                });
+                    _logger.Warning("Updated script with id {0} not found!", msg.Content.Id);
+                    return;
+                }
+
+                edited.ScriptType = msg.Content.ScriptType;
+                edited.CompetitionName = msg.Content.CompetitionName;
+                edited.ScriptFiles = msg.Content.ScriptFiles;
+                edited.Name = msg.Content.Name;
+                edited.FailureInfo = null;
+                
+                context.Commit();
+                
+                BroadcastEvent(new Messages.UpdatedEvent<Script>(msg.Content));
                 
                 Sender.Tell(new Acknowledged());
             });
@@ -68,6 +89,14 @@ namespace CoreWars.Data
 
                 context.Failures.Add(failureEntity);
                 context.Commit();
+            });
+        }
+
+        private void BroadcastEvent(object eventParameters)
+        {
+            Extensions.ForEach(_subscribed, sub =>
+            {
+                sub.Tell(eventParameters);
             });
         }
         

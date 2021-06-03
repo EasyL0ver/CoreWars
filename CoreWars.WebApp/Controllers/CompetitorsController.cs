@@ -46,6 +46,31 @@ namespace CoreWars.WebApp.Controllers
 
             return Ok(model);
         }
+        
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> Put([FromBody] Competitor competitor, [FromQuery] string editedCompetitorId)
+        {
+            var id = Guid.Parse(editedCompetitorId);
+            
+            var script = new Script()
+            {
+                Id = id
+                , UserId = UserId
+                , CompetitionName = competitor.Competition
+                , ScriptFiles = new[]{competitor.Code}
+                , ScriptType = competitor.Language
+                , Name = competitor.Alias
+            };
+
+            var message = new Messages.Update<Script>(script);
+
+            await _gameService.ScriptRepository.Ask<Acknowledged>(
+                message
+                , TimeSpan.FromSeconds(5));
+
+            return Ok(script.Id);
+        }
 
   
 
@@ -63,8 +88,11 @@ namespace CoreWars.WebApp.Controllers
                 , Name = competitor.Alias
             };
 
+
+            var message = new Messages.Add<Script>(script);
+
             await _gameService.ScriptRepository.Ask<Acknowledged>(
-                script
+                message
                 , TimeSpan.FromSeconds(5));
 
             return Ok(script.Id);
