@@ -14,6 +14,9 @@ class Dashboard extends React.Component {
             selectedBtnId: null,
             categories: [],
         }
+
+        this.addCompetitor = this.addCompetitor.bind(this)
+        this.editCompetitor = this.editCompetitor.bind(this)
     }
 
     componentDidMount() {
@@ -52,19 +55,19 @@ class Dashboard extends React.Component {
 
             this.setState({
                 ...this.state,
-                competitors: response.data,
-                selectedBtnId: response.data[0].id
+                competitors: response.data
             });
         } catch (err) {
             console.warn(err);
         }
     }
 
-    async loadCompetitors() {
+    async addCompetitor(competitor){
         try {
             let token = UserStore.token;
-            const response = await axios.get(
+            const response = await axios.post(
                 "http://localhost:5000/Competitors/",
+                competitor,
                 {
                     "Content-Type": "application/json",
                     headers: {
@@ -73,10 +76,27 @@ class Dashboard extends React.Component {
                 }
             );
 
-            this.setState({
-                ...this.state,
-                competitors: response.data,
-            });
+            this.loadCompetitors();
+        } catch (err) {
+            console.warn(err);
+        }
+    }
+
+    async editCompetitor(competitor, competitorId){
+        try {
+            let token = UserStore.token;
+            const response = await axios.put(
+                "http://localhost:5000/Competitors?editedCompetitorId=" + competitorId,
+                competitor,
+                {
+                    "Content-Type": "application/json",
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            this.loadCompetitors();
         } catch (err) {
             console.warn(err);
         }
@@ -128,7 +148,8 @@ class Dashboard extends React.Component {
                     <CompetitorEditView 
                         alias={""}
                         code={""}
-                        categories={categories}/>
+                        categories={categories}
+                        submit={this.addCompetitor}/>
                 </div>
             );
         }
@@ -146,6 +167,8 @@ class Dashboard extends React.Component {
                 <CompetitorEditView
                     alias={editedCompetitor.alias}
                     code={editedCompetitor.code}
+                    id={editedCompetitor.id}
+                    submit={(competitor) => this.editCompetitor(competitor, editedCompetitor.id)}
                     categories={[{value:editedCompetitor.competition, label:editedCompetitor.competition}]} />
             </div>
         );

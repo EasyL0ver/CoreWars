@@ -59,21 +59,20 @@ class CompetitorButton extends React.Component {
     }
 
     render() {
-        let hightlightedIndicator = "niepodswietlony"
+        let hightlightedIndicator = "EDYTUJ"
 
         if(this.props.highlight)
-            hightlightedIndicator = "podswietlony"
+            hightlightedIndicator = "EDYTUJESZ!"
 
         return (
             <div >
                 <span> {this.props.alias} </span>
                 <span> {this.props.competitionName} </span>
                 <span> {this.props.scriptingLanguage} </span>
-                <span> GAMES PLAYED: {this.state.competitorState.gamesPlayed} </span>
-                <span> WINS: {this.state.competitorState.wins} </span>
+                <span> P: {this.state.competitorState.gamesPlayed} </span>
+                <span> W: {this.state.competitorState.wins} </span>
                 <span> STATUS: {this.state.competitorState.state} </span>
-                <span> HIGHTLIGHTED: {hightlightedIndicator} </span>
-                <button onClick={this.onButtonClicked.bind(this)}> EDYTUJ! </button>
+                <button onClick={this.onButtonClicked.bind(this)}> {hightlightedIndicator} </button>
             </div>
         );
     }
