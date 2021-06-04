@@ -17,7 +17,6 @@ namespace CoreWars.Player
         private readonly ICompetitionInfo _competitionInfo;
         private readonly ICompetitorFactory _competitorFactory;
         private readonly IActorRef _resultsRepository;
-        private readonly Dictionary<Guid, IActorRef> _childrenCompetitors = new();
         private readonly ILoggingAdapter _logger = Context.GetLogger();
         
         public Competition(
@@ -38,14 +37,10 @@ namespace CoreWars.Player
             Receive<IEnumerable<Script>>(OnScriptBatchReceived);
             Receive<Data.Entities.Messages.AddedEvent<Script>>(OnNewScriptAdded);
             Receive<Data.Entities.Messages.UpdatedEvent<Script>>(OnScriptUpdated);
-            Receive<CompetitorTerminated>(OnCompetitorTerminated);
 
         }
 
-        private void OnCompetitorTerminated(CompetitorTerminated obj)
-        {
-            _childrenCompetitors.Remove(obj.CompetitorId);
-        }
+    
 
         public static Props Props(
             IActorRef scriptRepository
@@ -62,18 +57,11 @@ namespace CoreWars.Player
             if (obj.AddedElement.CompetitionName != _competitionInfo.Name)
                 return;
 
-            if (_childrenCompetitors.ContainsKey(obj.AddedElement.Id))
-            {
-                var competitorAgentProps = _competitorFactory.Build(obj.AddedElement);
-                var competitorProps = Competitor.Props(competitorAgentProps, _lobby, obj.AddedElement.User, obj.AddedElement, _resultsRepository);
-                var message = new CompetitorFactoryUpdated(competitorProps);
-                
-                _childrenCompetitors[obj.AddedElement.Id].Tell(message);
-            }
-            else
-            {
-                CreateCompetitor(obj.AddedElement);
-            }
+            var competitorAgentProps = _competitorFactory.Build(obj.AddedElement);
+            var competitorProps = Competitor.Props(competitorAgentProps, _lobby, obj.AddedElement.User, obj.AddedElement, _resultsRepository);
+            var message = new CompetitorFactoryUpdated(competitorProps);
+            
+            Context.ActorSelection($"{obj.AddedElement.Id}").Tell(message);
         }
 
         private void OnNewScriptAdded(Data.Entities.Messages.AddedEvent<Script> obj)
@@ -105,10 +93,7 @@ namespace CoreWars.Player
             var competitorAgentProps = _competitorFactory.Build(script);
             var competitorProps = Competitor.Props(competitorAgentProps, _lobby, script.User, script, _resultsRepository);
 
-            var competitor = Context.ActorOf(competitorProps, script.Id.ToString());
-            Context.WatchWith(competitor, new CompetitorTerminated(script.Id));
-
-            _childrenCompetitors[script.Id] = competitor;
+            Context.ActorOf(competitorProps, script.Id.ToString());
         }
 
         private void EnsureSubscription(ICanTell repository)

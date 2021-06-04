@@ -17,6 +17,7 @@ namespace CoreWars.Data.Entities
 
         [ForeignKey("Language")]
         public string ScriptType { get; set; }
+
         [ForeignKey("Competition")]
         public string CompetitionName { get; set; }
         [ForeignKey("User")]
@@ -34,5 +35,7 @@ namespace CoreWars.Data.Entities
         public virtual Language Language { get; set; }
         public virtual ScriptStatistics Stats { get; set; }
         public virtual ScriptFailure FailureInfo { get; set; }
+        
+        [NotMapped] public bool Faulted => FailureInfo != null;
     }
 }

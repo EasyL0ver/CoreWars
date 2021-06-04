@@ -5,9 +5,9 @@ namespace CoreWars.Common
         CompetitorState State { get; }
     }
 
-    public enum CompetitorState
+    public enum CompetitorState : short
     {
-        Idle
+        Inconclusive
         , Active
         , Faulted
     }

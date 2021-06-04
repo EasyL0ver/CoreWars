@@ -45,13 +45,18 @@ namespace CoreWars.Data
                 edited.ScriptFiles = msg.Content.ScriptFiles;
                 edited.Name = msg.Content.Name;
                 edited.DateTimeUpdated = DateTime.Now;
-                edited.FailureInfo = null;
-                
                 context.Commit();
                 
+                Self.Tell(new Messages.ClearScriptError(msg.Content.Id));
                 BroadcastEvent(new Messages.UpdatedEvent<Script>(msg.Content));
-                
                 Sender.Tell(new Acknowledged());
+            });
+
+            Receive<Messages.ClearScriptError>(msg =>
+            {
+                var failureEntities = context.Failures.Where(x => x.ScriptId == msg.ScriptId).ToArray();
+                context.Failures.RemoveRange(failureEntities);
+                context.Commit();
             });
 
             Receive<Messages.GetAllForCompetition>(msg =>
@@ -61,7 +66,6 @@ namespace CoreWars.Data
                     .Include(x => x.Stats)
                     .Include(x => x.FailureInfo)
                     .Where(x => x.CompetitionName == msg.CompetitionName)
-                    .Where(x => x.FailureInfo == null)
                     .ToList();
                 
                 Sender.Tell(competitionScripts);
@@ -84,6 +88,7 @@ namespace CoreWars.Data
             {
                 _subscribed.Add(Sender);
             });
+            
             Receive<Messages.ReportScriptFailure>(msg =>
             {
                 var failureEntity = new ScriptFailure()

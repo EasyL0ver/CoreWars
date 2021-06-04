@@ -18,12 +18,17 @@ namespace CoreWars.Player
         private readonly IUser _creator;
         private readonly IScriptInfo _scriptInfo;
         private readonly IActorRef _resultRepository;
+        private readonly Counter _methodCallsFailureCounter;
 
         private readonly HashSet<IActorRef> _statusSubscriptions;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
 
         private Props _playerAgentActorFactory;
-        private int _methodCallsFailureCount = 0;
+        private CompetitorState _state;
+        private ICancelable _connectToLobbyCancellable;
+
+        //todo something better!
+        private AgentFailure _failureInfo;
 
         // ReSharper disable once MemberCanBePrivate.Global
         // public constructor required for akka
@@ -40,24 +45,93 @@ namespace CoreWars.Player
             _scriptInfo = scriptInfo;
             _resultRepository = resultRepository;
             _statusSubscriptions = new HashSet<IActorRef>();
+            _methodCallsFailureCounter = new Counter(MaxMethodCallsFailures);
+            _state = scriptInfo.Faulted ? CompetitorState.Faulted : CompetitorState.Active;
 
-            Receive<RequestCreateAgent>(OnRequestCreateAgentReceived);
+
+            if (_scriptInfo.Faulted)
+                Faulted();
+            else
+                Active();
+        }
+
+        private void Active()
+        {
+            ReactingToStatusMessages();
+
+            Receive<RequestCreateAgent>(msg =>
+            {
+                _logger.Debug($"Spawning new agent");
+
+                var agentActorRef = Context.ActorOf(_playerAgentActorFactory);
+                var credentialsWrapper = new GeneratedAgent(agentActorRef, _scriptInfo.Id);
+
+                Context.Watch(agentActorRef);
+                Sender.Tell(credentialsWrapper);
+            });
+
+            Receive<AgentFailure>(msg =>
+            {
+                _failureInfo = msg;
+                
+                DisconnectFromLobby();
+                UpdateState(CompetitorState.Faulted);
+                Become(Faulted);
+
+                throw new CompetitorFaultedException(
+                    Self
+                    , "agent failure"
+                    , _failureInfo.Exception
+                    , _scriptInfo.Id);
+            });
+            
+            Receive<CompetitorFactoryUpdated>(msg =>
+            {
+                _playerAgentActorFactory = msg.NewFactory;
+                _methodCallsFailureCounter.Reset();
+                UpdateState(CompetitorState.Inconclusive);
+            });
+            
             Receive<CompetitionResult>(OnGameConcluded);
+        }
+
+        private void Faulted()
+        {
+            ReactingToStatusMessages();
+            
+            Receive<CompetitorFactoryUpdated>(msg =>
+            {
+                UpdateState(CompetitorState.Inconclusive);
+                ConnectToLobby();
+            });
+
+            Receive<RequestCreateAgent>(msg =>
+            {
+                var ex = new CompetitorFaultedException(
+                    Self
+                    , "Unable to create agent- competitor is faulted critically"
+                    , _failureInfo.Exception
+                    , _scriptInfo.Id);
+                
+                Sender.Tell(ex);
+            });
+        }
+
+        private void ReactingToStatusMessages()
+        {
             Receive<GameLog>(OnGameLogReceived);
             Receive<Data.Entities.Messages.ScriptStatisticsUpdated>(OnStatsUpdated);
             Receive<Subscribe>(msg =>
             {
                 Context.Watch(Sender);
                 _statusSubscriptions.Add(Sender);
+                
+                Sender.Tell(_state);
+                _resultRepository.Tell(
+                    new Data.Entities.Messages.GetAllForCompetitor(_scriptInfo.Id)
+                    , Sender);
             });
-            Receive<CompetitorFactoryUpdated>(OnUpdated);
             Receive<Terminated>(msg => { _statusSubscriptions.Remove(msg.ActorRef); });
-        }
-
-        private void OnUpdated(CompetitorFactoryUpdated obj)
-        {
-            _playerAgentActorFactory = obj.NewFactory;
-            _methodCallsFailureCount = 0;
         }
 
         private void OnStatsUpdated(Data.Entities.Messages.ScriptStatisticsUpdated obj)
@@ -72,20 +146,22 @@ namespace CoreWars.Player
 
         private void OnGameConcluded(CompetitionResult obj)
         {
+            UpdateState(CompetitorState.Active);
             var msg = new Data.Entities.Messages.ScriptCompetitionResult(_scriptInfo.Id, obj);
             _resultRepository.Tell(msg);
         }
 
-        public static Props Props(Props factory, IActorRef playerLobby, IUser creator, IScriptInfo info, IActorRef resultRepository)
+        private void UpdateState(CompetitorState newState)
         {
-            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby, creator, info, resultRepository));
+            _state = newState;
+            _statusSubscriptions.ForEach(sub => sub.Tell(_state));
         }
 
-        protected override void PreStart()
+        private void ConnectToLobby()
         {
-            base.PreStart();
-
-            Context.System.Scheduler.ScheduleTellRepeatedly(
+            _connectToLobbyCancellable?.Cancel();
+            
+            _connectToLobbyCancellable = Context.System.Scheduler.ScheduleTellRepeatedlyCancelable(
                 TimeSpan.Zero
                 , TimeSpan.FromMilliseconds(RejoinLobbyTimeMilliseconds)
                 , _playerLobby
@@ -93,39 +169,44 @@ namespace CoreWars.Player
                 , Self);
         }
 
-        private void OnRequestCreateAgentReceived(RequestCreateAgent obj)
+        private void DisconnectFromLobby()
         {
-            _logger.Debug($"Spawning new agent");
+            _connectToLobbyCancellable?.Cancel();
+            _playerLobby.Tell(RequestLobbyQuit.Instance);
+        }
 
-            var agentActorRef = Context.ActorOf(_playerAgentActorFactory);
-            var credentialsWrapper = new GeneratedAgent(agentActorRef, _scriptInfo.Id);
+        public static Props Props(Props factory, IActorRef playerLobby, IUser creator, IScriptInfo info,
+            IActorRef resultRepository)
+        {
+            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby, creator, info, resultRepository));
+        }
 
-            Context.Watch(agentActorRef);
-            Sender.Tell(credentialsWrapper);
+        protected override void PreStart()
+        {
+            base.PreStart();
+            
+            if(!_scriptInfo.Faulted)
+                ConnectToLobby();
         }
 
         protected override SupervisorStrategy SupervisorStrategy()
         {
-            return new OneForOneStrategy(
+            return new AllForOneStrategy(
                 localOnlyDecider: ex =>
                 {
                     switch (ex)
                     {
                         case AgentFailureException:
                         case ActorInitializationException:
-                            throw new CompetitorFaultedException(
-                                _scriptInfo.Id
-                                , Diagnostics.FormatCompetitorFaultedMessage()
-                                , ex);
+                            Self.Tell(new AgentFailure(ex));
+                            return Directive.Stop;
                         case AgentMethodInvocationException:
-                            _methodCallsFailureCount += 1;
+                            _methodCallsFailureCounter.Increment();
 
-                            if (_methodCallsFailureCount > MaxMethodCallsFailures)
-                                throw new CompetitorFaultedException(
-                                    _scriptInfo.Id
-                                    , Diagnostics.FormatCompetitorInvalidMethodCallsExceeded(MaxMethodCallsFailures)
-                                    , ex);
+                            if (!_methodCallsFailureCounter.Exceeded)
+                                return Directive.Resume;
                             
+                            Self.Tell(new AgentFailure(ex));
                             return Directive.Stop;
                         default:
                             return Directive.Escalate;

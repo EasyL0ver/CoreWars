@@ -34,6 +34,17 @@ namespace CoreWars.Data.Entities
 
             public string CompetitionName { get; }
         }
+        
+        public sealed class GetAllForCompetitor
+        {
+            public GetAllForCompetitor(Guid competitorId)
+            {
+                CompetitorId = competitorId;
+            }
+
+            public Guid CompetitorId { get; }
+        }
+
 
         public sealed class GetAllForUser
         {
@@ -107,6 +118,16 @@ namespace CoreWars.Data.Entities
             public Guid ScriptId { get; }
             public Exception Exception { get; }
             public DateTime FailureDateTime { get; } = DateTime.Now;
+        }
+
+        public sealed class ClearScriptError
+        {
+            public ClearScriptError(Guid scriptId)
+            {
+                ScriptId = scriptId;
+            }
+
+            public Guid ScriptId { get; }
         }
     }
 }

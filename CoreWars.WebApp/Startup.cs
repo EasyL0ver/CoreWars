@@ -1,4 +1,7 @@
+using System;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Akka.Actor;
 using Autofac;
 using CoreWars.Coordination.PlayerSet;
@@ -9,6 +12,7 @@ using DummyCompetition;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -115,14 +119,36 @@ namespace CoreWars.WebApp
 
             //app.UseHttpsRedirection();
             app.UseRouting();
+            app.Use(async (context, next) => await AuthQueryStringToHeader(context, next));
             app.UseAuthentication();
             app.UseCors("Allow-All");
             app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<CompetitorNotificationHub>("/competitor/status");
             });
+        }
+        
+        
+        private async Task AuthQueryStringToHeader(HttpContext context, Func<Task> next)
+        {
+            var qs = context.Request.QueryString;
+
+            if (string.IsNullOrWhiteSpace(context.Request.Headers["Authorization"]) && qs.HasValue)
+            {
+                var token = (from pair in qs.Value.TrimStart('?').Split('&')
+                    where pair.StartsWith("access_token=")
+                    select pair.Substring(13)).FirstOrDefault();
+
+                if (!string.IsNullOrWhiteSpace(token) && !context.Request.Headers.ContainsKey("Authorization"))
+                {
+                    context.Request.Headers.Add("Authorization", "Bearer " + token);
+                }
+            }
+
+            await next?.Invoke();
         }
 
     }

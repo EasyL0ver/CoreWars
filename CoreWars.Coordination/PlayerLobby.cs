@@ -6,6 +6,7 @@ using CoreWars.Common.Exceptions;
 using CoreWars.Common.TypedActorQuery;
 using CoreWars.Coordination.Messages;
 using CoreWars.Coordination.PlayerSet;
+using CoreWars.Player.Exceptions;
 using CoreWars.Player.Messages;
 
 namespace CoreWars.Coordination
@@ -26,6 +27,12 @@ namespace CoreWars.Coordination
                 Context.WatchWith(
                     Sender
                     , new LobbyPlayerTerminated(Sender));
+            });
+
+            Receive<RequestLobbyQuit>(obj =>
+            {
+                Context.Unwatch(Sender);
+                players.Remove(Sender);
             });
 
             Receive<OrderPlayersSelection>(msg =>
@@ -63,6 +70,9 @@ namespace CoreWars.Coordination
                     {
                         case AskTargetTerminatedException:
                         case TimeoutException:
+                            return Directive.Restart;
+                        case CompetitorFaultedException cfe:
+                            Self.Tell(RequestLobbyQuit.Instance, cfe.CompetitorRef);
                             return Directive.Restart;
                         default:
                             return Directive.Escalate;

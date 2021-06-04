@@ -38,6 +38,7 @@ namespace CoreWars.Common.TypedActorQuery.Ask
             
             Receive<TimeElapsed>(ex => throw new TimeoutException());
             Receive<Terminated>(msg => throw new AskTargetTerminatedException(msg.ActorRef, "watched ask target terminated"));
+            Receive<Exception>(msg => throw msg);
             ReceiveAny(msg =>
             {
                 var unhandledMessageType =
