@@ -26,7 +26,7 @@ namespace CoreWars.WebApp.Actors.Notification
             _competitorId = competitorId;
             _hubContext = hubContext;
             _connectionId = connectionId;
-            _cache = new CompetitorStatusCache();
+            _cache = new CompetitorStatusCache(){CompetitorId = _competitorId};
 
             WaitingForIdentity();
         }

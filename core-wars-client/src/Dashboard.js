@@ -4,6 +4,8 @@ import axios from "axios";
 import CompetitorButton from './CompetitorButton'
 import UserStore from './UserStore'
 import CompetitorEditView from "./CompetitorEditView";
+import {HubConnectionBuilder, LogLevel} from "@microsoft/signalr"
+
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -20,8 +22,55 @@ class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-        this.loadCompetitors();
-        this.getCompetitionNames();
+        this.initializeCompetitors()
+        this.getCompetitionNames()
+    }
+
+    async initializeCompetitors(){
+        await this.loadCompetitors();
+        this.setUpNotifications();
+    }
+
+    async start() {
+        try {
+            await this.connection.start();
+            console.log("SignalR Connected.");
+
+            this.state.competitors.forEach(competitor => {
+                this.connection.invoke("Register", null, competitor.id).catch(function (err) {
+                    return console.error(err.toString());
+                });
+            })
+     
+        } catch (err) {
+            console.log(err);
+            setTimeout(this.start, 5000);
+        }
+    };
+
+    setUpNotifications() {
+        this.connection = new HubConnectionBuilder()
+            .withUrl("http://localhost:5000/competitor/status", {accessTokenFactory: () => UserStore.token})
+            .configureLogging(LogLevel.Information)
+            .build();
+
+        this.connection.on("Status", (message) => {
+            console.log(message)
+            let newcompetitors = this.state.competitors
+            let changedCompetitorIndex  = newcompetitors.findIndex(x => x.id == message.competitorId)
+
+            newcompetitors[changedCompetitorIndex].status = message.state
+            newcompetitors[changedCompetitorIndex].gamesPlayed = message.gamesPlayed
+            newcompetitors[changedCompetitorIndex].gamesWon = message.wins
+            this.setState({
+                ...this.state,
+                competitors : newcompetitors
+            });
+
+        });
+
+        this.connection.onclose(this.start);
+        this.start();
     }
 
     async getCompetitionNames() {
@@ -123,16 +172,9 @@ class Dashboard extends React.Component {
             let competitorSelected = competitor.id == this.state.selectedBtnId
             return (
                 <CompetitorButton
-                    alias={competitor.alias}
-                    competitionName={competitor.competition}
-                    scriptingLanguage={competitor.language}
                     id={competitor.id}
-                    key={competitor.id}
-                    gamesPlayed={competitor.gamesPlayed}
-                    gamesWon={competitor.gamesWon}
-                    status={competitor.status}
                     onClicked={this.onButtonEdit.bind(this)}
-                    highlight={competitorSelected}
+                    competitor={competitor}
                 />
             )
         });

@@ -14,15 +14,20 @@ namespace CoreWars.WebApp.Actors
         public NotificationRoot(
             Func<Messages.RegisterCompetitorNotifications, Props> watcherFactory)
         {
-            IDictionary<string, IActorRef> subscribedObservers 
-                = new Dictionary<string, IActorRef>();
+            IDictionary<string, Dictionary<Guid, IActorRef>> subscribedObservers 
+                = new Dictionary<string, Dictionary<Guid, IActorRef>>();
 
             Receive<Messages.RegisterCompetitorNotifications>(msg =>
             {
                 if (!subscribedObservers.ContainsKey(msg.NotificationId))
+                    subscribedObservers[msg.NotificationId] = new Dictionary<Guid, IActorRef>();
+
+                var clientSubscriptions = subscribedObservers[msg.NotificationId];
+                
+                if (!clientSubscriptions.ContainsKey(msg.CompetitorId))
                 {
                     var observerProps = watcherFactory.Invoke(msg);
-                    subscribedObservers[msg.NotificationId] = Context.ActorOf(observerProps);
+                    clientSubscriptions[msg.CompetitorId] = Context.ActorOf(observerProps);
                 }
                 
                 Sender.Tell(Acknowledged.Instance);
@@ -31,9 +36,9 @@ namespace CoreWars.WebApp.Actors
 
             Receive<Messages.NotificationUserDisconnected>(msg =>
             {
-                if (subscribedObservers.TryGetValue(msg.NotificationId, out var actor))
+                if (subscribedObservers.TryGetValue(msg.NotificationId, out var actorRefs))
                 {
-                    actor.Tell(PoisonPill.Instance);
+                    actorRefs.Values.ForEach(r => r.Tell(PoisonPill.Instance));
                     subscribedObservers.Remove(msg.NotificationId);
                 }
                 
