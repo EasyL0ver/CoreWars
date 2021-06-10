@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Akka.Actor;
+using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Common.Exceptions;
 using CoreWars.Player.Messages;
@@ -17,6 +18,7 @@ namespace CoreWars.WebApp.Actors.Notification
         private readonly CompetitorStatusCache _cache;
         private readonly IHubContext<CompetitorNotificationHub> _hubContext;
         private readonly string _connectionId;
+        private readonly ILoggingAdapter _logger = Context.GetLogger();
 
         private ICancelable _timeoutCancellable;
         private IActorRef _watchedCompetitor;
@@ -56,11 +58,12 @@ namespace CoreWars.WebApp.Actors.Notification
 
                 Become(ListeningForStatus);
             });
-            Receive<Messages.IdentityTimeout>(msg => throw new TimeoutException());
-            ReceiveAny(msg =>
+            Receive<Messages.IdentityTimeout>(msg =>
             {
-                var a = 1;
+                _logger.Warning("Failed to identify competitor with id: {0} ", _competitorId);
+                throw new FailedNotificationHookException(_connectionId, _competitorId);
             });
+    
         }
 
         private void ListeningForStatus()

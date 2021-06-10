@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
 using Akka.Event;
+using Akka.IO;
 using Akka.Util.Internal;
 using CoreWars.Common;
 using CoreWars.Data.Entities;
@@ -52,6 +53,30 @@ namespace CoreWars.Data
                 Sender.Tell(new Acknowledged());
             });
 
+            Receive<Messages.Delete<Script>>(msg =>
+            {
+                var deleted = context.Scripts
+                    .FirstOrDefault(x => x.Id == msg.DeletedObjectId);
+
+                if (deleted == null )
+                {
+                    _logger.Warning("Updated script with id {0} not found!", msg.DeletedObjectId);
+                    return;
+                }
+
+                if (deleted.UserId != msg.UserRequestedId)
+                {
+                    _logger.Warning("Insufficient rights to delete script with id {0}", msg.DeletedObjectId);
+                    return;
+                }
+
+                deleted.IsArchived = true;
+                context.Commit();
+                
+                BroadcastEvent(new Messages.DeletedEvent<Script>(deleted));
+                Sender.Tell(new Acknowledged());
+            });
+
             Receive<Messages.ClearScriptError>(msg =>
             {
                 var failureEntities = context.Failures.Where(x => x.ScriptId == msg.ScriptId).ToArray();
@@ -66,6 +91,7 @@ namespace CoreWars.Data
                     .Include(x => x.Stats)
                     .Include(x => x.FailureInfo)
                     .Where(x => x.CompetitionName == msg.CompetitionName)
+                    .Where(x => !x.IsArchived)
                     .ToList();
                 
                 Sender.Tell(competitionScripts);
@@ -78,6 +104,7 @@ namespace CoreWars.Data
                     .Include(x => x.Stats)
                     .Include(x => x.FailureInfo)
                     .Where(x => x.UserId == msg.UserId)
+                    .Where(x => !x.IsArchived)
                     .OrderBy(x => x.DateTimeCreated)
                     .ToList();
                 

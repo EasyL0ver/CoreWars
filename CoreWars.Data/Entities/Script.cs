@@ -23,6 +23,8 @@ namespace CoreWars.Data.Entities
         [ForeignKey("User")]
         public Guid UserId { get; set; }
         
+        public bool IsArchived { get; set; }
+        
         //todo create file entity ?
         [Required]
         public string[] ScriptFiles { get; set; }

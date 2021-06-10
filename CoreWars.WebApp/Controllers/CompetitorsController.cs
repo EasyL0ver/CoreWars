@@ -71,8 +71,21 @@ namespace CoreWars.WebApp.Controllers
 
             return Ok(script.Id);
         }
+        
+        
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> Delete([FromQuery] string deletedCompetitorId)
+        {
+            var id = Guid.Parse(deletedCompetitorId);
+            var message = new Messages.Delete<Script>(id, UserId);
 
-  
+            await _gameService.ScriptRepository.Ask<Acknowledged>(
+                message
+                , TimeSpan.FromSeconds(5));
+
+            return Ok();
+        }
 
         [HttpPost]
         [Authorize]

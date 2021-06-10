@@ -141,7 +141,7 @@ namespace CoreWars.Player
 
         private void OnGameLogReceived(GameLog obj)
         {
-            _logger.Info(obj.Message);
+            _logger.Debug(obj.Message);
         }
 
         private void OnGameConcluded(CompetitionResult obj)
@@ -187,6 +187,13 @@ namespace CoreWars.Player
             
             if(!_scriptInfo.Faulted)
                 ConnectToLobby();
+        }
+        
+        protected override void PostStop()
+        {
+            base.PostStop();
+            DisconnectFromLobby();
+            _logger.Info("Competitor {0} with id: {1} stops", _scriptInfo.Name, _scriptInfo.Id);
         }
 
         protected override SupervisorStrategy SupervisorStrategy()

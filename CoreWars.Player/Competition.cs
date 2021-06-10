@@ -37,10 +37,18 @@ namespace CoreWars.Player
             Receive<IEnumerable<Script>>(OnScriptBatchReceived);
             Receive<Data.Entities.Messages.AddedEvent<Script>>(OnNewScriptAdded);
             Receive<Data.Entities.Messages.UpdatedEvent<Script>>(OnScriptUpdated);
+            Receive<Data.Entities.Messages.DeletedEvent<Script>>(OnScriptDeleted);
 
         }
 
-    
+        private void OnScriptDeleted(Data.Entities.Messages.DeletedEvent<Script> obj)
+        {
+            if (obj.DeletedElement.CompetitionName != _competitionInfo.Name)
+                return;
+            
+            _logger.Info($"Deleting competitor: {obj.DeletedElement.Name} from {obj.DeletedElement.ScriptType} script with id: {obj.DeletedElement.Id}");
+            Context.ActorSelection($"{obj.DeletedElement.Id}").Tell(PoisonPill.Instance);
+        }
 
         public static Props Props(
             IActorRef scriptRepository
@@ -56,6 +64,9 @@ namespace CoreWars.Player
         {
             if (obj.AddedElement.CompetitionName != _competitionInfo.Name)
                 return;
+            
+            _logger.Info($"Updating competitor: {obj.AddedElement.Name} from {obj.AddedElement.ScriptType} script with id: {obj.AddedElement.Id}");
+
 
             var competitorAgentProps = _competitorFactory.Build(obj.AddedElement);
             var competitorProps = Competitor.Props(competitorAgentProps, _lobby, obj.AddedElement.User, obj.AddedElement, _resultsRepository);

@@ -24,6 +24,18 @@ namespace CoreWars.Data.Entities
             public T Content { get; }
         }
 
+        public class Delete<T>
+        {
+            public Delete(Guid deletedObjectId, Guid userRequestedId)
+            {
+                DeletedObjectId = deletedObjectId;
+                UserRequestedId = userRequestedId;
+            }
+
+            public Guid DeletedObjectId { get; }
+            public Guid UserRequestedId { get; }
+        }
+
 
         public class GetAllForCompetition
         {
@@ -79,6 +91,16 @@ namespace CoreWars.Data.Entities
             }
 
             public T AddedElement { get; }
+        }
+        
+        public class DeletedEvent<T>
+        {
+            public DeletedEvent(T deletedElement)
+            {
+                DeletedElement = deletedElement;
+            }
+
+            public T DeletedElement { get; }
         }
 
         public class ScriptCompetitionResult

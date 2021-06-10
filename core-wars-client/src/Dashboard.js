@@ -15,6 +15,7 @@ class Dashboard extends React.Component {
             competitors: [],
             selectedBtnId: null,
             categories: [],
+            addKey: null
         }
 
         this.addCompetitor = this.addCompetitor.bind(this)
@@ -58,6 +59,9 @@ class Dashboard extends React.Component {
             console.log(message)
             let newcompetitors = this.state.competitors
             let changedCompetitorIndex  = newcompetitors.findIndex(x => x.id == message.competitorId)
+
+            if(changedCompetitorIndex == -1)
+                return
 
             newcompetitors[changedCompetitorIndex].status = message.state
             newcompetitors[changedCompetitorIndex].gamesPlayed = message.gamesPlayed
@@ -125,7 +129,13 @@ class Dashboard extends React.Component {
                 }
             );
 
-            this.loadCompetitors();
+
+            this.setState({
+                ...this.state,
+                selectedBtnId: response.data,
+            });
+
+            this.initializeCompetitors();
         } catch (err) {
             console.warn(err);
         }
@@ -145,7 +155,33 @@ class Dashboard extends React.Component {
                 }
             );
 
-            this.loadCompetitors();
+            this.initializeCompetitors()
+        } catch (err) {
+            console.warn(err);
+        }
+    }
+
+    async deleteCompetitor(competitorId){
+        try {
+            let token = UserStore.token;
+            const response = await axios.delete(
+                "http://localhost:5000/Competitors?deletedCompetitorId=" + competitorId,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            if(this.state.selectedBtnId == competitorId)
+            {
+                this.setState({
+                    ...this.state,
+                    selectedBtnId: null,
+                });
+            }
+
+            this.initializeCompetitors()
         } catch (err) {
             console.warn(err);
         }
@@ -163,6 +199,7 @@ class Dashboard extends React.Component {
         this.setState({
             ...this.state,
             selectedBtnId: null,
+            addKey: Math.random()
         });
 
     }
@@ -175,11 +212,15 @@ class Dashboard extends React.Component {
                     id={competitor.id}
                     onClicked={this.onButtonEdit.bind(this)}
                     competitor={competitor}
+                    highlight={competitorSelected}
                 />
             )
         });
 
-        if (this.state.selectedBtnId == null) {
+        const editedCompetitor = this.state.competitors
+            .find((competitor) => competitor.id === this.state.selectedBtnId)
+
+        if (editedCompetitor == null) {
             const categories = this.state.categories.map(x => new Object({value: x.name, label: x.name}))
             return (
                 <div>
@@ -190,15 +231,12 @@ class Dashboard extends React.Component {
                     <CompetitorEditView 
                         alias={""}
                         code={""}
+                        key={this.state.addKey}
                         categories={categories}
                         submit={this.addCompetitor}/>
                 </div>
             );
         }
-
-        const editedCompetitor = this.state.competitors
-            .find((competitor) => competitor.id === this.state.selectedBtnId)
-
 
         return (
             <div>
@@ -210,7 +248,9 @@ class Dashboard extends React.Component {
                     alias={editedCompetitor.alias}
                     code={editedCompetitor.code}
                     id={editedCompetitor.id}
+                    key={editedCompetitor.id}
                     submit={(competitor) => this.editCompetitor(competitor, editedCompetitor.id)}
+                    delete={(competitor) => this.deleteCompetitor(editedCompetitor.id)}
                     categories={[{value:editedCompetitor.competition, label:editedCompetitor.competition}]} />
             </div>
         );

@@ -38,12 +38,12 @@ namespace CoreWars.WebApp
             var actorSystemConfig = HoconLoader.FromFile("./akka.hocon");
             ActorSystem = ActorSystem.Create("core-wars", actorSystemConfig);
 
-            var data = _container.Resolve<IDataContext>();
-            var scriptRepositoryProps = ScriptRepositoryActor.Props(data);
+            var scriptRepositoryProps = ScriptRepositoryActor.Props(_container.Resolve<IDataContext>());
             ScriptRepository = ActorSystem.ActorOf(scriptRepositoryProps);
             
 
-            var statsRepositoryProps = Props.Create(() => new StatsRepositoryActor(data));
+            
+            var statsRepositoryProps = Props.Create(() => new StatsRepositoryActor(_container.Resolve<IDataContext>()));
             ResultsHandler = ActorSystem.ActorOf(statsRepositoryProps);
 
             RegisterNotifications();

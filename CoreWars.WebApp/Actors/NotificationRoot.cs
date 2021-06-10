@@ -11,18 +11,19 @@ namespace CoreWars.WebApp.Actors
 {
     public class NotificationRoot : ReceiveActor
     {
+        private readonly IDictionary<string, Dictionary<Guid, IActorRef>> _subscribedObservers =
+            new Dictionary<string, Dictionary<Guid, IActorRef>>();
+        
+        
         public NotificationRoot(
             Func<Messages.RegisterCompetitorNotifications, Props> watcherFactory)
         {
-            IDictionary<string, Dictionary<Guid, IActorRef>> subscribedObservers 
-                = new Dictionary<string, Dictionary<Guid, IActorRef>>();
-
             Receive<Messages.RegisterCompetitorNotifications>(msg =>
             {
-                if (!subscribedObservers.ContainsKey(msg.NotificationId))
-                    subscribedObservers[msg.NotificationId] = new Dictionary<Guid, IActorRef>();
+                if (!_subscribedObservers.ContainsKey(msg.NotificationId))
+                    _subscribedObservers[msg.NotificationId] = new Dictionary<Guid, IActorRef>();
 
-                var clientSubscriptions = subscribedObservers[msg.NotificationId];
+                var clientSubscriptions = _subscribedObservers[msg.NotificationId];
                 
                 if (!clientSubscriptions.ContainsKey(msg.CompetitorId))
                 {
@@ -36,14 +37,31 @@ namespace CoreWars.WebApp.Actors
 
             Receive<Messages.NotificationUserDisconnected>(msg =>
             {
-                if (subscribedObservers.TryGetValue(msg.NotificationId, out var actorRefs))
+                if (_subscribedObservers.TryGetValue(msg.NotificationId, out var actorRefs))
                 {
                     actorRefs.Values.ForEach(r => r.Tell(PoisonPill.Instance));
-                    subscribedObservers.Remove(msg.NotificationId);
+                    _subscribedObservers.Remove(msg.NotificationId);
                 }
                 
                 Sender.Tell(Acknowledged.Instance);
             });
+        }
+        
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(
+                localOnlyDecider: ex =>
+                {
+                    switch (ex)
+                    {
+                        case FailedNotificationHookException hookException:
+                            var registrations = _subscribedObservers[hookException.ConnectionId];
+                            registrations.Remove(hookException.CompetitorId);
+                            return Directive.Stop;
+                        default:
+                            return Directive.Escalate;
+                    }
+                });
         }
     }
 }

@@ -19,7 +19,7 @@ class CompetitorEditView extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if(prevProps.categories != this.props.categories)
+        if(prevProps.categories.join() != this.props.categories.join())
             this.setState({
                 ...this.state,
                 selected: null,
@@ -61,6 +61,13 @@ class CompetitorEditView extends React.Component {
         if(selected == null && this.props.categories.length == 1)
             selected = this.props.categories[0]
 
+        let deleteButton = (<div></div>)
+
+        if(this.props.delete != null)
+        {
+            deleteButton = (<button onClick={this.props.delete}>delete !</button>)
+        }
+
         return ( 
         <div> 
             <form onSubmit={this.handleSubmit} key={this.props.id}>
@@ -69,6 +76,7 @@ class CompetitorEditView extends React.Component {
                 <textarea defaultValue={this.props.code} ref={this.codeTextArea}></textarea>
                 <input type="submit" value="Wyślij" />
             </form>
+            {deleteButton}
         </div>)
     }
 
