@@ -81,6 +81,11 @@ namespace CoreWars.WebApp.Actors.Notification
                 _cache.State = msg;
                 Self.Tell(Messages.ScheduleUpdate.Instance);
             });
+            Receive<AgentFailureState>(msg =>
+            {
+                _cache.Exception = msg.Exception;
+                Self.Tell(Messages.ScheduleUpdate.Instance);
+            });
             Receive<Messages.ScheduleUpdate>(async msg =>
             {
                 var updateMessage = _cache.GetMessage();

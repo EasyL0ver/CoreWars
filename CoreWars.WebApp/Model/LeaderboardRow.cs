@@ -1,3 +1,5 @@
+using System;
+
 namespace CoreWars.WebApp.Model
 {
     public class LeaderboardRow
@@ -8,5 +10,8 @@ namespace CoreWars.WebApp.Model
         public int GamesPlayed { get; init; }
         public int Wins { get; init; }
         public double WinRate { get; init; }
+        
+        public Guid CreatorId { get; init; }
+        public Guid ScriptId { get; init; }
     }
 }

@@ -1,6 +1,6 @@
 import React from "react";
 
-import Select from 'react-select'
+import CoreSelect from './CoreSelect'
 
 
 
@@ -72,11 +72,12 @@ class CompetitorEditView extends React.Component {
         <div> 
             <form onSubmit={this.handleSubmit} key={this.props.id}>
                 <input type="text" defaultValue={this.props.alias} ref={this.aliasTextBox}/>
-                <Select options={this.props.categories} value={selected} onChange={this.changeCompetition.bind(this)}/>
+                <CoreSelect options={this.props.categories} value={selected} onChange={this.changeCompetition.bind(this)}/>
                 <textarea defaultValue={this.props.code} ref={this.codeTextArea}></textarea>
                 <input type="submit" value="Wyślij" />
             </form>
             {deleteButton}
+            <span>{this.props.exception}</span>
         </div>)
     }
 

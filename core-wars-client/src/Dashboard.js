@@ -3,6 +3,7 @@ import axios from "axios";
 
 import CompetitorButton from './CompetitorButton'
 import UserStore from './UserStore'
+import CoreSelect from './CoreSelect'
 import CompetitorEditView from "./CompetitorEditView";
 import {HubConnectionBuilder, LogLevel} from "@microsoft/signalr"
 
@@ -66,6 +67,7 @@ class Dashboard extends React.Component {
             newcompetitors[changedCompetitorIndex].status = message.state
             newcompetitors[changedCompetitorIndex].gamesPlayed = message.gamesPlayed
             newcompetitors[changedCompetitorIndex].gamesWon = message.wins
+            newcompetitors[changedCompetitorIndex].exception = message.exceptionString
             this.setState({
                 ...this.state,
                 competitors : newcompetitors
@@ -249,6 +251,7 @@ class Dashboard extends React.Component {
                     code={editedCompetitor.code}
                     id={editedCompetitor.id}
                     key={editedCompetitor.id}
+                    exception={editedCompetitor.exception}
                     submit={(competitor) => this.editCompetitor(competitor, editedCompetitor.id)}
                     delete={(competitor) => this.deleteCompetitor(editedCompetitor.id)}
                     categories={[{value:editedCompetitor.competition, label:editedCompetitor.competition}]} />

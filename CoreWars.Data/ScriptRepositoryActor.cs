@@ -122,7 +122,7 @@ namespace CoreWars.Data
                 {
                     ScriptId = msg.ScriptId
                     , FailureDateTime = msg.FailureDateTime
-                    , Exception = msg.Exception.ToString()
+                    , Exception = msg.Exception.GetBaseException().Message
                 };
 
                 context.Failures.Add(failureEntity);

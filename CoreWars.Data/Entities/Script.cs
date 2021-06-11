@@ -39,5 +39,6 @@ namespace CoreWars.Data.Entities
         public virtual ScriptFailure FailureInfo { get; set; }
         
         [NotMapped] public bool Faulted => FailureInfo != null;
+        [NotMapped] public string Exception => FailureInfo?.Exception;
     }
 }

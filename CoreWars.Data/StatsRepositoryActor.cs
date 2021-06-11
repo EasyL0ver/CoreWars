@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoreWars.Data
 {
@@ -57,9 +58,13 @@ namespace CoreWars.Data
 
             Receive<Messages.GetAllForCompetition>(msg =>
             {
-                //todo use stream instead!
-                Sender.Tell(_context.Stats.Where(stats => stats.Script.CompetitionName == msg.CompetitionName)
-                    .ToList());
+                var stats = _context.Stats
+                    .Include(s => s.Script)
+                    .Include("Script.User")
+                    .Where(s => s.Script.CompetitionName == msg.CompetitionName)
+                    .ToList();
+                
+                Sender.Tell(stats);
             });
         }
 

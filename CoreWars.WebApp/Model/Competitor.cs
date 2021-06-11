@@ -9,5 +9,6 @@ namespace CoreWars.WebApp.Model
         public string Code { get; set; }
         public string Language { get; set; }
         public string Competition { get; set; }
+        public string Exception { get; set; }
     }
 }

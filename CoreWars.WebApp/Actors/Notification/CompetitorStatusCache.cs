@@ -9,10 +9,11 @@ namespace CoreWars.WebApp.Actors.Notification
         public int Wins { get; set; }
         public int GamesPlayed { get; set; }
         public CompetitorState State { get; set; }
+        public Exception Exception { get; set; }
 
         public CompetitorStatus GetMessage()
         {
-            return new CompetitorStatus(State, GamesPlayed, Wins, CompetitorId);
+            return new CompetitorStatus(State, GamesPlayed, Wins, CompetitorId, Exception?.GetBaseException().Message);
         }
     }
 }

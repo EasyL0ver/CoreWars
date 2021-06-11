@@ -46,6 +46,8 @@ namespace CoreWars.WebApp.Controllers
                 , GamesPlayed = statistics.GamesPlayed
                 , WinRate = statistics.Wins / (double) statistics.GamesPlayed
                 , Language = statistics.Script.ScriptType
+                , ScriptId = statistics.Script.Id
+                , CreatorId = statistics.Script.UserId
             };
         }
     }

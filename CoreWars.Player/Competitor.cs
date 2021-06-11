@@ -28,7 +28,7 @@ namespace CoreWars.Player
         private ICancelable _connectToLobbyCancellable;
 
         //todo something better!
-        private AgentFailure _failureInfo;
+        private AgentFailureState _failureStateInfo;
 
         // ReSharper disable once MemberCanBePrivate.Global
         // public constructor required for akka
@@ -46,11 +46,15 @@ namespace CoreWars.Player
             _resultRepository = resultRepository;
             _statusSubscriptions = new HashSet<IActorRef>();
             _methodCallsFailureCounter = new Counter(MaxMethodCallsFailures);
-            _state = scriptInfo.Faulted ? CompetitorState.Faulted : CompetitorState.Active;
+            _state = _scriptInfo.Exception != null ? CompetitorState.Faulted : CompetitorState.Active;
 
 
-            if (_scriptInfo.Faulted)
+
+            if (_scriptInfo.Exception != null)
+            {
+                _failureStateInfo = new AgentFailureState(new DeserializedException(_scriptInfo.Exception));
                 Faulted();
+            }
             else
                 Active();
         }
@@ -70,10 +74,9 @@ namespace CoreWars.Player
                 Sender.Tell(credentialsWrapper);
             });
 
-            Receive<AgentFailure>(msg =>
+            Receive<AgentFailureState>(msg =>
             {
-                _failureInfo = msg;
-                
+                UpdateFailure(msg);
                 DisconnectFromLobby();
                 UpdateState(CompetitorState.Faulted);
                 Become(Faulted);
@@ -81,7 +84,7 @@ namespace CoreWars.Player
                 throw new CompetitorFaultedException(
                     Self
                     , "agent failure"
-                    , _failureInfo.Exception
+                    , _failureStateInfo.Exception
                     , _scriptInfo.Id);
             });
             
@@ -89,6 +92,7 @@ namespace CoreWars.Player
             {
                 _playerAgentActorFactory = msg.NewFactory;
                 _methodCallsFailureCounter.Reset();
+                UpdateFailure(AgentFailureState.Ok());
                 UpdateState(CompetitorState.Inconclusive);
             });
             
@@ -101,8 +105,11 @@ namespace CoreWars.Player
             
             Receive<CompetitorFactoryUpdated>(msg =>
             {
+                UpdateFailure(AgentFailureState.Ok());
                 UpdateState(CompetitorState.Inconclusive);
                 ConnectToLobby();
+                
+                Become(Active);
             });
 
             Receive<RequestCreateAgent>(msg =>
@@ -110,7 +117,7 @@ namespace CoreWars.Player
                 var ex = new CompetitorFaultedException(
                     Self
                     , "Unable to create agent- competitor is faulted critically"
-                    , _failureInfo.Exception
+                    , _failureStateInfo.Exception
                     , _scriptInfo.Id);
                 
                 Sender.Tell(ex);
@@ -125,6 +132,9 @@ namespace CoreWars.Player
             {
                 Context.Watch(Sender);
                 _statusSubscriptions.Add(Sender);
+                
+                if(_failureStateInfo != null)
+                    Sender.Tell(_failureStateInfo);
                 
                 Sender.Tell(_state);
                 _resultRepository.Tell(
@@ -154,7 +164,18 @@ namespace CoreWars.Player
         private void UpdateState(CompetitorState newState)
         {
             _state = newState;
-            _statusSubscriptions.ForEach(sub => sub.Tell(_state));
+            BroadcastToSubscribers(_state);
+        }
+
+        private void UpdateFailure(AgentFailureState newState)
+        {
+            _failureStateInfo = newState;
+            BroadcastToSubscribers(_failureStateInfo);
+        }
+
+        private void BroadcastToSubscribers(object payload)
+        {
+            _statusSubscriptions.ForEach(sub => sub.Tell(payload));
         }
 
         private void ConnectToLobby()
@@ -185,7 +206,7 @@ namespace CoreWars.Player
         {
             base.PreStart();
             
-            if(!_scriptInfo.Faulted)
+            if(_scriptInfo.Exception == null)
                 ConnectToLobby();
         }
         
@@ -205,7 +226,7 @@ namespace CoreWars.Player
                     {
                         case AgentFailureException:
                         case ActorInitializationException:
-                            Self.Tell(new AgentFailure(ex));
+                            Self.Tell(new AgentFailureState(ex));
                             return Directive.Stop;
                         case AgentMethodInvocationException:
                             _methodCallsFailureCounter.Increment();
@@ -213,7 +234,7 @@ namespace CoreWars.Player
                             if (!_methodCallsFailureCounter.Exceeded)
                                 return Directive.Resume;
                             
-                            Self.Tell(new AgentFailure(ex));
+                            Self.Tell(new AgentFailureState(ex));
                             return Directive.Stop;
                         default:
                             return Directive.Escalate;

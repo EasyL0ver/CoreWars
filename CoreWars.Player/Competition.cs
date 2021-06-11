@@ -127,7 +127,7 @@ namespace CoreWars.Player
                         case CompetitorFaultedException competitorFaultedException:
                             var message = new Data.Entities.Messages.ReportScriptFailure(
                                 competitorFaultedException.CompetitorId
-                                , competitorFaultedException);
+                                , competitorFaultedException.GetBaseException());
                             
                             _scriptRepository.Tell(message);
                             

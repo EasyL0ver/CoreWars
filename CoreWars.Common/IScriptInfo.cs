@@ -7,6 +7,6 @@ namespace CoreWars.Common
         Guid Id { get; }
         string Name { get; }
         string ScriptType { get; set; }
-        bool Faulted { get; }
+        string Exception { get;  }
     }
 }
