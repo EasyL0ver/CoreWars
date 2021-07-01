@@ -67,10 +67,8 @@ namespace CoreWars.Player
             
             _logger.Info($"Updating competitor: {obj.AddedElement.Name} from {obj.AddedElement.ScriptType} script with id: {obj.AddedElement.Id}");
 
-
             var competitorAgentProps = _competitorFactory.Build(obj.AddedElement);
-            var competitorProps = Competitor.Props(competitorAgentProps, _lobby, obj.AddedElement.User, obj.AddedElement, _resultsRepository);
-            var message = new CompetitorFactoryUpdated(competitorProps);
+            var message = new CompetitorFactoryUpdated(competitorAgentProps);
             
             Context.ActorSelection($"{obj.AddedElement.Id}").Tell(message);
         }
@@ -131,7 +129,7 @@ namespace CoreWars.Player
                             
                             _scriptRepository.Tell(message);
                             
-                            return Directive.Stop;
+                            return Directive.Resume;
                         default:
                             return Directive.Escalate;
                     }

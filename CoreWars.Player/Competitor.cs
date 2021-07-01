@@ -48,15 +48,21 @@ namespace CoreWars.Player
             _methodCallsFailureCounter = new Counter(MaxMethodCallsFailures);
             _state = _scriptInfo.Exception != null ? CompetitorState.Faulted : CompetitorState.Active;
 
-
-
-            if (_scriptInfo.Exception != null)
+            try
             {
-                _failureStateInfo = new AgentFailureState(new DeserializedException(_scriptInfo.Exception));
-                Faulted();
+                if (_scriptInfo.Exception != null)
+                {
+                    _failureStateInfo = new AgentFailureState(new DeserializedException(_scriptInfo.Exception));
+                    Faulted();
+                }
+                else
+                    Active();
             }
-            else
-                Active();
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         private void Active()
@@ -67,11 +73,11 @@ namespace CoreWars.Player
             {
                 _logger.Debug($"Spawning new agent");
 
-                var agentActorRef = Context.ActorOf(_playerAgentActorFactory);
-                var credentialsWrapper = new GeneratedAgent(agentActorRef, _scriptInfo.Id);
+                var agent = Context.ActorOf(_playerAgentActorFactory);
+                var message = new GeneratedAgent(agent, _scriptInfo.Id);
 
-                Context.Watch(agentActorRef);
-                Sender.Tell(credentialsWrapper);
+                Context.Watch(agent);
+                Sender.Tell(message);
             });
 
             Receive<AgentFailureState>(msg =>
@@ -97,6 +103,7 @@ namespace CoreWars.Player
             });
             
             Receive<CompetitionResult>(OnGameConcluded);
+            ReceiveAny(msg => _logger.Error("Unknown messege received"));
         }
 
         private void Faulted()
@@ -105,6 +112,9 @@ namespace CoreWars.Player
             
             Receive<CompetitorFactoryUpdated>(msg =>
             {
+                _playerAgentActorFactory = msg.NewFactory;
+                _methodCallsFailureCounter.Reset();
+                
                 UpdateFailure(AgentFailureState.Ok());
                 UpdateState(CompetitorState.Inconclusive);
                 ConnectToLobby();
@@ -122,6 +132,8 @@ namespace CoreWars.Player
                 
                 Sender.Tell(ex);
             });
+            
+            ReceiveAny(msg => _logger.Error("Unknown messege received"));
         }
 
         private void ReactingToStatusMessages()
@@ -219,27 +231,30 @@ namespace CoreWars.Player
 
         protected override SupervisorStrategy SupervisorStrategy()
         {
-            return new AllForOneStrategy(
-                localOnlyDecider: ex =>
+            var decider = new LocalOnlyDecider(ex =>
+            {
+                switch (ex)
                 {
-                    switch (ex)
-                    {
-                        case AgentFailureException:
-                        case ActorInitializationException:
-                            Self.Tell(new AgentFailureState(ex));
-                            return Directive.Stop;
-                        case AgentMethodInvocationException:
-                            _methodCallsFailureCounter.Increment();
+                    case AgentFailureException:
+                    case ActorInitializationException:
+                        _logger.Info("Agent {0} with id {1} failed with exception {2}", _scriptInfo.Name, _scriptInfo.Id, ex);
+                        Self.Tell(new AgentFailureState(ex));
+                        return Directive.Stop;
+                    case AgentMethodInvocationException:
+                        _methodCallsFailureCounter.Increment();
 
-                            if (!_methodCallsFailureCounter.Exceeded)
-                                return Directive.Resume;
-                            
-                            Self.Tell(new AgentFailureState(ex));
-                            return Directive.Stop;
-                        default:
-                            return Directive.Escalate;
-                    }
-                });
+                        if (!_methodCallsFailureCounter.Exceeded)
+                            return Directive.Resume;
+
+                        Self.Tell(new AgentFailureState(ex));
+                        return Directive.Stop;
+                    default:
+                        _logger.Error("Unhandled exception thrown thrown within game agent: {0}", ex);
+                        return Directive.Escalate;
+                }
+            });
+            
+            return new AllForOneStrategy(-1,-1, decider, false);
         }
     }
 }

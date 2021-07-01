@@ -43,7 +43,7 @@ namespace CoreWars.Data
 
                 if (scriptScore == null)
                 {
-                    _logger.Warning("Cannot find stats for competitor with id: {0}", msg.CompetitorId);
+                    _logger.Info("Cannot find stats for competitor with id: {0}", msg.CompetitorId);
                     return;
                 }
 
