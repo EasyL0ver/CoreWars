@@ -62,6 +62,7 @@ namespace CoreWars.Data
                     .Include(s => s.Script)
                     .Include("Script.User")
                     .Where(s => s.Script.CompetitionName == msg.CompetitionName)
+                    .Where(s => !s.Script.IsArchived)
                     .ToList();
                 
                 Sender.Tell(stats);
