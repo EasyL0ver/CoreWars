@@ -2,7 +2,6 @@ import React from "react";
 import axios from "axios";
 
 import Select from 'react-select'
-import UserStore from './UserStore'
 import CoreSelect from './CoreSelect'
 
 class Leaderboard extends React.Component {
@@ -72,7 +71,7 @@ class Leaderboard extends React.Component {
         const tableRows = this.state.rows.map(row => {
             let rowClass = "rowEntry"
 
-            if (row.creatorId == UserStore.userId)
+            if (this.props.user != null && row.creatorId == this.props.user.id)
                 rowClass = "userRowEntry"
 
             return (

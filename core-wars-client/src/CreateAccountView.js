@@ -3,12 +3,13 @@ import axios from "axios";
 import { decodeToken } from "react-jwt";
 
 
-class LoginView extends React.Component {
+class CreateAccountView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             email: "",
             password: "",
+            passwordConfirm: ""
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -22,23 +23,13 @@ class LoginView extends React.Component {
 
         axios
             .post(
-                "http://localhost:5000/Authentication",
+                "http://localhost:5000/Users",
                 {
                     username: state.email,
                     password: state.password
                 },
                 { headers: headers }
             )
-            .then((response) => {
-
-                const token = response.data.token
-                const decodedToken = decodeToken(token)
-                const user = {
-                    email: decodedToken['email'],
-                    id: decodedToken['user-id']
-                }
-                this.props.loginAction(user, token)
-            })
             .catch((error) => {
                 console.log(error);
             });
@@ -76,14 +67,19 @@ class LoginView extends React.Component {
                         value={this.state.password}
                         onChange={this.handleChange}
                     />
+                    <label className="login_form__label">powtórz hasło</label>
+                    <input
+                        className="login_form__input"
+                        name="passwordConfirm"
+                        type="passwordConfirm"
+                        value={this.state.passwordConfirm}
+                        onChange={this.handleChange}
+                    />
                     <input className="login_form__submit" type="submit" value="Zaloguj" />
-                    <p className="login_form__info">
-                        Potrzebujesz konta? <a href="/register">Zarejestruj się</a>
-                    </p>
                 </form>
             </div>
         );
     }
 }
 
-export default LoginView;
+export default CreateAccountView;

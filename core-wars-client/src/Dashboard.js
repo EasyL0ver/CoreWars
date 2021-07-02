@@ -2,8 +2,6 @@ import React from "react";
 import axios from "axios";
 
 import CompetitorButton from './CompetitorButton'
-import UserStore from './UserStore'
-import CoreSelect from './CoreSelect'
 import CompetitorEditView from "./CompetitorEditView";
 import {HubConnectionBuilder, LogLevel} from "@microsoft/signalr"
 
@@ -52,7 +50,7 @@ class Dashboard extends React.Component {
 
     setUpNotifications() {
         this.connection = new HubConnectionBuilder()
-            .withUrl("http://localhost:5000/competitor/status", {accessTokenFactory: () => UserStore.token})
+            .withUrl("http://localhost:5000/competitor/status", {accessTokenFactory: () => this.props.token})
             .configureLogging(LogLevel.Information)
             .build();
 
@@ -97,13 +95,12 @@ class Dashboard extends React.Component {
 
     async loadCompetitors() {
         try {
-            let token = UserStore.token;
             const response = await axios.get(
                 "http://localhost:5000/Competitors/",
                 {
                     "Content-Type": "application/json",
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${this.props.token}`
                     }
                 }
             );
@@ -119,14 +116,13 @@ class Dashboard extends React.Component {
 
     async addCompetitor(competitor){
         try {
-            let token = UserStore.token;
             const response = await axios.post(
                 "http://localhost:5000/Competitors/",
                 competitor,
                 {
                     "Content-Type": "application/json",
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${this.props.token}`
                     }
                 }
             );
@@ -145,14 +141,13 @@ class Dashboard extends React.Component {
 
     async editCompetitor(competitor, competitorId){
         try {
-            let token = UserStore.token;
             const response = await axios.put(
                 "http://localhost:5000/Competitors?editedCompetitorId=" + competitorId,
                 competitor,
                 {
                     "Content-Type": "application/json",
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${this.props.token}`
                     }
                 }
             );
@@ -165,12 +160,11 @@ class Dashboard extends React.Component {
 
     async deleteCompetitor(competitorId){
         try {
-            let token = UserStore.token;
             const response = await axios.delete(
                 "http://localhost:5000/Competitors?deletedCompetitorId=" + competitorId,
                 {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${this.props.token}`
                     }
                 }
             );
