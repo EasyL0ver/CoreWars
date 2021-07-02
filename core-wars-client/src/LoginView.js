@@ -2,6 +2,8 @@ import React from "react";
 import axios from "axios";
 import { decodeToken } from "react-jwt";
 
+import "./LoginView.css"
+
 
 class LoginView extends React.Component {
     constructor(props) {
@@ -58,27 +60,28 @@ class LoginView extends React.Component {
 
     render() {
         return (
-            <div className="container_login">
-                <form className="login_form" onSubmit={this.handleSubmit}>
-                    <label className="login_form__label">adres email</label>
+            <div className="login-container core-popup">
+                <h1>Sign in</h1>
+                <form onSubmit={this.handleSubmit}>
+                    <label className="login-form-label">email address</label>
                     <input
-                        className="login_form__input"
+                        className="core-form-input"
                         name="email"
                         type="email"
                         value={this.state.email}
                         onChange={this.handleChange}
                     />
-                    <label className="login_form__label">hasło</label>
+                    <label className="login-form-label">password</label>
                     <input
-                        className="login_form__input"
+                        className="core-form-input"
                         name="password"
                         type="password"
                         value={this.state.password}
                         onChange={this.handleChange}
                     />
-                    <input className="login_form__submit" type="submit" value="Zaloguj" />
-                    <p className="login_form__info">
-                        Potrzebujesz konta? <a href="/register">Zarejestruj się</a>
+                    <input className="core-submit-button" type="submit" value="Submit" />
+                    <p className="login-form-info">
+                        Need an account? <a href="/createAccount">Sign up</a>
                     </p>
                 </form>
             </div>

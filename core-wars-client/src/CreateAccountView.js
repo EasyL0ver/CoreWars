@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
-import { decodeToken } from "react-jwt";
+
+import "./LoginView.css"
 
 
 class CreateAccountView extends React.Component {
@@ -49,33 +50,34 @@ class CreateAccountView extends React.Component {
 
     render() {
         return (
-            <div className="container_login">
-                <form className="login_form" onSubmit={this.handleSubmit}>
-                    <label className="login_form__label">adres email</label>
+            <div className="login-container core-popup">
+                <h1>Create account</h1>
+                <form onSubmit={this.handleSubmit}>
+                    <label className="login-form-label">email address</label>
                     <input
-                        className="login_form__input"
+                        className="core-form-input"
                         name="email"
                         type="email"
                         value={this.state.email}
                         onChange={this.handleChange}
                     />
-                    <label className="login_form__label">hasło</label>
+                    <label className="login-form-label">password</label>
                     <input
-                        className="login_form__input"
+                        className="core-form-input"
                         name="password"
                         type="password"
                         value={this.state.password}
                         onChange={this.handleChange}
                     />
-                    <label className="login_form__label">powtórz hasło</label>
+                    <label className="login-form-label">confirm password</label>
                     <input
-                        className="login_form__input"
+                        className="core-form-input"
                         name="passwordConfirm"
-                        type="passwordConfirm"
+                        type="password"
                         value={this.state.passwordConfirm}
                         onChange={this.handleChange}
                     />
-                    <input className="login_form__submit" type="submit" value="Zaloguj" />
+                    <input className="core-submit-button" type="submit" value="Submit" />
                 </form>
             </div>
         );
