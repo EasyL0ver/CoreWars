@@ -12,8 +12,30 @@ code {
     monospace;
 }
 
+h1 {
+  font-size: 50px;
+}
+
+
+.content-container{
+  padding-top:50px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
 .background-bar{
   background-color: #333;
+}
+
+.highlight-color{
+  color: #04AA6D;
+}
+
+.navigation-bar{
+  position: fixed;
+  top:0;
+  width: 100%;
+  height: 50px;
 }
 
 .nav-bar-list {
@@ -41,6 +63,10 @@ code {
   display: block;
 }
 
+.select-label {
+  padding-left: 12px;
+  margin-bottom: 20px;
+}
 
 .nav-left-aligned {
   float: left;

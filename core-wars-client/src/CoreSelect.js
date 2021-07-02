@@ -1,5 +1,7 @@
 import React from "react";
 
+import './CoreSelect.css'
+
 class CoreSelect extends React.Component {
     constructor(props) {
         super(props)

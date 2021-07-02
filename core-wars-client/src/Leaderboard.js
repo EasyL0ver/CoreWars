@@ -4,6 +4,8 @@ import axios from "axios";
 import Select from 'react-select'
 import CoreSelect from './CoreSelect'
 
+import './Leaderboard.css'
+
 class Leaderboard extends React.Component {
     constructor(props) {
         super(props)
@@ -69,28 +71,38 @@ class Leaderboard extends React.Component {
     render() {
 
         const tableRows = this.state.rows.map(row => {
-            let rowClass = "rowEntry"
+            let rowClass = ""
 
             if (this.props.user != null && row.creatorId == this.props.user.id)
-                rowClass = "userRowEntry"
+                rowClass = "highlight-color"
 
             return (
-                <tr className={rowClass} key={row.scriptId}>
+                <tr key={row.scriptId}>
                     <th>{row.alias}</th>
-                    <th>{row.creator}</th>
+                    <th className={rowClass}>{row.creator}</th>
                     <th>{row.language}</th>
                     <th>{row.gamesPlayed}</th>
                     <th>{row.wins}</th>
-                    <th>{row.winRate}</th>
+                    <th>{(parseFloat(row.winRate) * 100).toFixed(1)}%</th>
                 </tr>
             )
         })
 
         return (
             <div>
-                <CoreSelect options={this.state.categories} value={this.state.selected} onChange={this.changeCompetition} />
+                {/* <div className="rightLayoutArea">
+                    <CoreSelect options={this.state.categories} value={this.state.selected} onChange={this.changeCompetition} style={{float: 'right'}} />
 
-                <table>
+                    <span>jakis tekst kurde blablabla</span>
+                </div> */}
+                <div className="leaderboardHeaderArea">
+                    <h1>Leaderboard</h1>
+
+                    <span className="select-label">Choose category:</span> <br/>
+                    <CoreSelect options={this.state.categories} value={this.state.selected} onChange={this.changeCompetition} />
+                </div>
+
+                <table className="leaderboardTableArea">
                     <thead>
                         <tr>
                             <th>Alias</th>

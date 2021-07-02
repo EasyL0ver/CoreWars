@@ -22,6 +22,12 @@ class App extends React.Component {
 
     this.loginUser = this.loginUser.bind(this)
     this.logoutUser = this.logoutUser.bind(this)
+    this.onRouteEnter = this.onRouteEnter.bind(this)
+  }
+
+  onRouteEnter(event){
+    console.log("EVENT")
+    console.log(event)
   }
 
   storageLoadUser(){
@@ -80,6 +86,7 @@ class App extends React.Component {
     });
   }
 
+
   render() {
 
     const routes = []
@@ -106,16 +113,12 @@ class App extends React.Component {
     return (
       <Router>
         <div>
-          <NavigationBar loggedIn={this.state.loggedIn} user={this.state.user} logoutAction={this.logoutUser}/>
-          {/* <AccountControl user={this.state.user} logoutAction={this.logoutUser}/> */}
-          <div>
+          <NavigationBar className="background-bar" loggedIn={this.state.loggedIn} user={this.state.user} logoutAction={this.logoutUser}/>
+          <div className="content-container">
             <Switch>
               {routes}
-              <Route path="/leaderboard">
+              <Route path="/leaderboard" onEnter={this.onRouteEnter}>
                 <Leaderboard user={this.state.user}/>
-              </Route>
-              <Route path="/test">
-                TEST
               </Route>
             </Switch>
           </div>
