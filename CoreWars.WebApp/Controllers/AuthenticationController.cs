@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using CoreWars.Common;
 using CoreWars.Data;
+using CoreWars.Data.Entities;
 using CoreWars.WebApp.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
