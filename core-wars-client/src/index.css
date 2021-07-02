@@ -11,3 +11,83 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.background-bar{
+  background-color: #333;
+}
+
+.nav-bar-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.nav-bar-link {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  width: 120px;
+  text-decoration: none;
+}
+
+.nav-bar-username{
+  color: white;
+  float: right;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+
+.nav-left-aligned {
+  float: left;
+  border-right:1px solid #bbb;
+}
+
+.nav-right-aligned{
+  float: right;
+  border-left:1px solid #bbb;
+}
+
+.nav-bar-list:last-child {
+  border-right: none;
+}
+
+.nav-bar-link:hover:not(.active) {
+  background-color: #111;
+}
+
+.account-control {
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.account-control span{
+  color: white;
+  padding-left: 10px ;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  color: white;
+  text-align: center;
+}
+
+.logout-button {
+  background: none!important;
+  border: none;
+  padding: 0!important;
+  margin-left: 10px;
+}
+
+.active {
+  background-color: #04AA6D;
+}

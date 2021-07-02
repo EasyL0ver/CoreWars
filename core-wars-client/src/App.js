@@ -7,7 +7,6 @@ import Dashboard from './Dashboard'
 import Leaderboard from './Leaderboard';
 import NavigationBar from './NavigationBar'
 import Footer from './Footer'
-import AccountControl from './AccountControl';
 import CreateAccountView from './CreateAccountView'
 
 
@@ -106,10 +105,10 @@ class App extends React.Component {
 
     return (
       <Router>
-        <div className="container-fluid">
-          <NavigationBar loggedIn={this.state.loggedIn}/>
-          <AccountControl user={this.state.user} logoutAction={this.logoutUser}/>
-          <div className="jumbotron">
+        <div>
+          <NavigationBar loggedIn={this.state.loggedIn} user={this.state.user} logoutAction={this.logoutUser}/>
+          {/* <AccountControl user={this.state.user} logoutAction={this.logoutUser}/> */}
+          <div>
             <Switch>
               {routes}
               <Route path="/leaderboard">
@@ -120,7 +119,7 @@ class App extends React.Component {
               </Route>
             </Switch>
           </div>
-          <Footer />
+          <Footer className="footer"/>
         </div>
       </Router>
     );
