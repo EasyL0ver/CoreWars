@@ -4,6 +4,5 @@ namespace CoreWars.Common
     {
         ICompetitionInfo Info { get; }
         ICompetitionActorPropsFactory Factory { get; }
-        IPythonCodeTemplate CodeTemplate { get; }
     }
 }
