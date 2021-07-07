@@ -8,25 +8,23 @@ class CompetitorButton extends React.Component {
 
     }
 
-    onButtonClicked(){
+    onButtonClicked() {
         this.props.onClicked(this.props.id)
     }
 
     render() {
-        let hightlightedIndicator = "EDYTUJ"
-
-        if(this.props.highlight)
-            hightlightedIndicator = "EDYTUJESZ!"
-
         return (
-            <div >
-                <span> {this.props.competitor.alias} </span>
-                <span> {this.props.competitor.competitionName} </span>
-                <span> {this.props.competitor.scriptingLanguage} </span>
-                <span> P: {this.props.competitor.gamesPlayed} </span>
-                <span> W: {this.props.competitor.gamesWon} </span>
-                <span> STATUS: {this.props.competitor.status} </span>
-                <button onClick={this.onButtonClicked.bind(this)}> {hightlightedIndicator} </button>
+            <div onClick={this.onButtonClicked.bind(this)}
+                className={"highlighted-" + this.props.highlight + " competitor-button dashboard-burger-choice"} >
+                <span className="alias"> {this.props.competitor.alias} </span>
+                <div className="results">
+                    <span style={{ color: 'green' }}> {this.props.competitor.gamesWon}</span>
+                    <span>/</span>
+                    <span style={{ color: 'brown' }}>{this.props.competitor.gamesPlayed} </span>
+                </div>
+                <div className='status-dot-container'>
+                    <div className={'status-dot status-' + this.props.competitor.status}></div>
+                </div>
             </div>
         );
     }

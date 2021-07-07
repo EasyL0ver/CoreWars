@@ -3,7 +3,11 @@ import axios from "axios";
 
 import CompetitorButton from './CompetitorButton'
 import CompetitorEditView from "./CompetitorEditView";
-import {HubConnectionBuilder, LogLevel} from "@microsoft/signalr"
+import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr"
+
+import './Dashboard.css'
+import './CompetitorButton.css'
+import './LoginView.css'
 
 
 class Dashboard extends React.Component {
@@ -14,7 +18,7 @@ class Dashboard extends React.Component {
             competitors: [],
             selectedBtnId: null,
             categories: [],
-            addKey: null
+            addKey: Math.random()
         }
 
         this.addCompetitor = this.addCompetitor.bind(this)
@@ -26,7 +30,7 @@ class Dashboard extends React.Component {
         this.getCompetitionNames()
     }
 
-    async initializeCompetitors(){
+    async initializeCompetitors() {
         await this.loadCompetitors();
         this.setUpNotifications();
     }
@@ -41,7 +45,7 @@ class Dashboard extends React.Component {
                     return console.error(err.toString());
                 });
             })
-     
+
         } catch (err) {
             console.log(err);
             setTimeout(this.start, 5000);
@@ -50,16 +54,16 @@ class Dashboard extends React.Component {
 
     setUpNotifications() {
         this.connection = new HubConnectionBuilder()
-            .withUrl("http://localhost:5000/competitor/status", {accessTokenFactory: () => this.props.token})
+            .withUrl("http://localhost:5000/competitor/status", { accessTokenFactory: () => this.props.token })
             .configureLogging(LogLevel.Information)
             .build();
 
         this.connection.on("Status", (message) => {
             console.log(message)
             let newcompetitors = this.state.competitors
-            let changedCompetitorIndex  = newcompetitors.findIndex(x => x.id == message.competitorId)
+            let changedCompetitorIndex = newcompetitors.findIndex(x => x.id == message.competitorId)
 
-            if(changedCompetitorIndex == -1)
+            if (changedCompetitorIndex == -1)
                 return
 
             newcompetitors[changedCompetitorIndex].status = message.state
@@ -68,7 +72,7 @@ class Dashboard extends React.Component {
             newcompetitors[changedCompetitorIndex].exception = message.exceptionString
             this.setState({
                 ...this.state,
-                competitors : newcompetitors
+                competitors: newcompetitors
             });
 
         });
@@ -114,7 +118,7 @@ class Dashboard extends React.Component {
         }
     }
 
-    async addCompetitor(competitor){
+    async addCompetitor(competitor) {
         try {
             const response = await axios.post(
                 "http://localhost:5000/Competitors/",
@@ -139,7 +143,7 @@ class Dashboard extends React.Component {
         }
     }
 
-    async editCompetitor(competitor, competitorId){
+    async editCompetitor(competitor, competitorId) {
         try {
             const response = await axios.put(
                 "http://localhost:5000/Competitors?editedCompetitorId=" + competitorId,
@@ -158,7 +162,7 @@ class Dashboard extends React.Component {
         }
     }
 
-    async deleteCompetitor(competitorId){
+    async deleteCompetitor(competitorId) {
         try {
             const response = await axios.delete(
                 "http://localhost:5000/Competitors?deletedCompetitorId=" + competitorId,
@@ -169,8 +173,7 @@ class Dashboard extends React.Component {
                 }
             );
 
-            if(this.state.selectedBtnId == competitorId)
-            {
+            if (this.state.selectedBtnId == competitorId) {
                 this.setState({
                     ...this.state,
                     selectedBtnId: null,
@@ -197,11 +200,10 @@ class Dashboard extends React.Component {
             selectedBtnId: null,
             addKey: Math.random()
         });
-
     }
 
-    render() {
-        const buttons = this.state.competitors.map((competitor) => {
+    renderButtons() {
+        return this.state.competitors.map((competitor) => {
             let competitorSelected = competitor.id == this.state.selectedBtnId
             return (
                 <CompetitorButton
@@ -212,43 +214,68 @@ class Dashboard extends React.Component {
                 />
             )
         });
+    }
 
+    getEditedCompetitor() {
         const editedCompetitor = this.state.competitors
             .find((competitor) => competitor.id === this.state.selectedBtnId)
 
-        if (editedCompetitor == null) {
-            const categories = this.state.categories.map(x => new Object({value: x.name, label: x.name}))
-            return (
-                <div>
-                    {buttons}
-                    <button onClick={this.onButtonAdd.bind(this)}> DODAJ ! (podswietlony)</button>
-                    <br></br>
-                    <br></br>
-                    <CompetitorEditView 
-                        alias={""}
-                        code={""}
-                        key={this.state.addKey}
-                        categories={categories}
-                        submit={this.addCompetitor}/>
-                </div>
-            );
+        if (editedCompetitor != null) return editedCompetitor
+
+        return {
+            alias: '',
+            code: '',
+            id: this.state.addKey,
+            competitorType: 'default'
+        }
+    }
+
+    render() {
+        const competitor = this.getEditedCompetitor()
+        const isEditMode = competitor.competitorType === undefined
+
+        let categories = null
+        let submitAction = null
+        let deleteAction = null
+
+        if (!isEditMode) {
+            submitAction = this.addCompetitor
+            categories = this.state.categories.map(x => new Object({ value: x.name, label: x.name }))
+        } else {
+            submitAction = (c) => this.editCompetitor(c, competitor.id)
+            deleteAction = (c) => this.deleteCompetitor(competitor.id)
+            categories = [{ value: competitor.competition, label: competitor.competition }]
         }
 
         return (
-            <div>
-                {buttons} 
-                <button onClick={this.onButtonAdd.bind(this)}> DODAJ ! </button>
-                <br></br>
-                <br></br>
-                <CompetitorEditView
-                    alias={editedCompetitor.alias}
-                    code={editedCompetitor.code}
-                    id={editedCompetitor.id}
-                    key={editedCompetitor.id}
-                    exception={editedCompetitor.exception}
-                    submit={(competitor) => this.editCompetitor(competitor, editedCompetitor.id)}
-                    delete={(competitor) => this.deleteCompetitor(editedCompetitor.id)}
-                    categories={[{value:editedCompetitor.competition, label:editedCompetitor.competition}]} />
+            <div className="dashboard-container">
+                <div className="burger-content">
+                    <CompetitorEditView
+                        alias={competitor.alias}
+                        code={competitor.code}
+                        id={competitor.id}
+                        key={competitor.id}
+                        exception={competitor.exception}
+                        submit={submitAction}
+                        delete={deleteAction}
+                        categories={categories} />
+
+                </div>
+                <div className="burger-menu">
+                    <div className="title-container">
+                        <h1 className="burger-menu-title">Active agents</h1>
+                    </div>
+                    <div className="buttons-container">
+                        {this.renderButtons()}
+                    </div>
+                    <div className={"competitor-button add-button highlighted-" + !isEditMode}
+                        onClick={this.onButtonAdd.bind(this)}>
+                        <span className="add-label">Add new agent</span>
+                        <div className="plus-sign-container">
+                            <span className="plus-sign">+</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

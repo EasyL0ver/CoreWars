@@ -1,13 +1,12 @@
 import React from "react";
 
-import './CoreSelect.css'
 
 class CoreSelect extends React.Component {
     constructor(props) {
         super(props)
     }
 
-    selectChanged(event){
+    selectChanged(event) {
         const value = event.target.value
         this.props.onChange(value)
     }
@@ -20,9 +19,11 @@ class CoreSelect extends React.Component {
         })
 
         return (
-            <select value={this.props.value} onChange={this.selectChanged.bind(this)}>
-                {options}
-            </select>
+            <div className="core-select-container">
+                <select value={this.props.value} onChange={this.selectChanged.bind(this)}>
+                    {options}
+                </select>
+            </div>
         )
     }
 }

@@ -1,0 +1,77 @@
+.highlighted-true {
+    background-color: red !important;
+}
+
+.highlighted-false {
+    background-color: white;
+}
+
+.competitor-button {
+    height: 48px;
+    width: 100%;
+    border: 1px solid black;
+    margin-bottom: 3px;
+    display: grid;
+    border-radius: 4px;
+    grid-template-columns: 80% 20%;
+    grid-template-rows: 28px 20px;
+    grid-template-areas: "alias status" "result status"
+
+}
+
+.competitor-button:hover{
+    background-color: pink;
+    cursor: pointer;
+}
+
+.competitor-info {
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    padding-left: 5px;
+    grid-area: alias;
+}
+
+.status-dot-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-area: status;
+}
+
+.status-dot {
+    border: 2px solid black;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+}
+
+.alias {
+    width: 100%;
+    height: 100%;
+    font-size: 20px;
+    padding-left: 8px;
+    vertical-align: bottom;
+    grid-area: alias;
+    white-space: nowrap;
+}
+
+.results {
+    padding-left: 8px;
+    font-size: 16px;
+    grid-area: result;
+    vertical-align: text-top;
+}
+
+.status-0 {
+    background-color: yellow;
+}
+
+.status-1 {
+    background-color: green;
+}
+
+.status-2 {
+    background-color: red;
+}
+
