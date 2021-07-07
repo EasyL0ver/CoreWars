@@ -132,16 +132,23 @@ class CompetitorEditView extends React.Component {
                         </div>
                     </div>
                     <div className="code-text-area-wrapper">
-                        <Editor value={this.state.code} 
-                                onValueChange={this.onCodeChanged}
-                                highlight={(code) => highlight(code, languages.py)}
-                                padding={10}
-                                style={{
-                                    fontFamily: '"Courier New", Courier, monospace',
-                                    fontSize: '26px',
-                                    height: '100%',
-                                    border: '1px solid #ccc',
-                                }}/>
+                        <label className="login-form-label name-input">Agent source code:</label>
+                        <div className="editor-wrapper">
+                            <Editor value={this.state.code} 
+                                    onValueChange={this.onCodeChanged}
+                                    className="editor"
+                                    highlight={(code) => highlight(code, languages.py)}
+                                    padding={10}
+                                    style={{
+                                        fontFamily: '"Courier New", Courier, monospace',
+                                        fontSize: '26px',
+                                        minHeight: '480px',
+                                        border: '0px solid #ccc',
+                                        outline: 'none'
+                                        // display: 'block',
+                                        // overflowY: 'auto'
+                                    }}/>
+                        </div>
                         {/* <textarea className="code-text-area" defaultValue={this.props.code} ref={this.codeTextArea}></textarea> */}
                     </div>
                     <div className="bottom-area">
