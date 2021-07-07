@@ -16,10 +16,5 @@ namespace DummyCompetition
             competitionInfo.PlayerCount = Range<int>.Between(2,2);
             competitionInfo.MaxInstancesCount = 1;
         }
-
-        protected override string GetTemplateName()
-        {
-            return "dummy.py";
-        }
     }
 }

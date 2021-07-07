@@ -7,14 +7,14 @@ namespace CoreWars.Player
 {
     public class CompetitorsRoot : ReceiveActor
     {
-        private readonly List<ICompetition> _supportedCompetitions = new();
+        private readonly List<ICompetitionInfo> _supportedCompetitions = new();
         public CompetitorsRoot(IActorRef scriptRepository, ICompetitorFactory competitorFactory, IActorRef resultRepository)
         {
             Receive<AddCompetition>(msg =>
             {
-                var competitionProps = Competition.Props(scriptRepository, msg.Competition.Info, msg.Lobby, competitorFactory, resultRepository);
-                _supportedCompetitions.Add(msg.Competition);
-                Context.ActorOf(competitionProps, msg.Competition.Info.Name);
+                var competitionProps = Competition.Props(scriptRepository, msg.Info, msg.Lobby, competitorFactory, resultRepository);
+                _supportedCompetitions.Add(msg.Info);
+                Context.ActorOf(competitionProps, msg.Info.Name);
             });
 
             Receive<GetCompetitions>(msg =>

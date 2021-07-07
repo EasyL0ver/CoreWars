@@ -29,7 +29,7 @@ namespace CoreWars.WebApp.Controllers
         [Route("/competitions")]
         public async Task<IActionResult> GetCompetitionsLanguages()
         {
-            var competitions = await _gameService.CompetitorsRoot.Ask<ICompetition[]>(
+            var competitions = await _gameService.CompetitorsRoot.Ask<ICompetitionInfo[]>(
                 GetCompetitions.Instance
                 , TimeSpan.FromSeconds(5));
             
