@@ -32,7 +32,7 @@ class Dashboard extends React.Component {
 
     async initializeCompetitors() {
         await this.loadCompetitors();
-        this.setUpNotifications();
+        //this.setUpNotifications();
     }
 
     async start() {

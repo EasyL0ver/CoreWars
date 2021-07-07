@@ -1,4 +1,10 @@
 import React from "react";
+import Editor from "react-simple-code-editor";
+
+
+import { highlight, languages } from "prismjs/components/prism-core";
+import "prismjs/components/prism-python";
+import "prismjs/themes/prism.css"; //
 
 import CoreSelect from './CoreSelect'
 
@@ -12,12 +18,13 @@ class CompetitorEditView extends React.Component {
         super(props)
         this.state = {
             selected: this.getDefaultCategory(),
+            code: props.code,
+            alias: props.alias
         }
 
         this.handleSubmit = this.handleSubmit.bind(this)
-
-        this.aliasTextBox = React.createRef()
-        this.codeTextArea = React.createRef()
+        this.onCodeChanged = this.onCodeChanged.bind(this)
+        this.onAliasChanged = this.onAliasChanged.bind(this)
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -35,8 +42,8 @@ class CompetitorEditView extends React.Component {
 
     submitCompetitor() {
         const competitor = {
-            alias: this.aliasTextBox.current.value,
-            code: this.codeTextArea.current.value,
+            alias: this.state.alias,
+            code: this.state.code,
             competition: this.state.selected.value,
             language: "python"
         }
@@ -70,6 +77,22 @@ class CompetitorEditView extends React.Component {
         });
     }
 
+    onCodeChanged(event){
+        console.log(event)
+        this.setState({
+            ...this.state,
+            code: event,
+        });
+    }
+
+    onAliasChanged(event){
+        console.log(event)
+        this.setState({
+            ...this.state,
+            alias: event.target.value,
+        });
+    }
+
     render() {
         let deleteButton = (<div></div>)
 
@@ -84,7 +107,7 @@ class CompetitorEditView extends React.Component {
                     <div className="form-head-container">
                         <div className="name-edit-container">
                             <label className="login-form-label name-input">Agent name:</label>
-                            <input className="core-form-input name-input name-text-box" type="text" defaultValue={this.props.alias} ref={this.aliasTextBox} />
+                            <input className="core-form-input name-input name-text-box" type="text" value={this.state.alias} onChange={this.onAliasChanged} />
                         </div>
                         <div className="type-edit-container">
                             <label className="login-form-label name-input">Competition:</label>
@@ -92,7 +115,17 @@ class CompetitorEditView extends React.Component {
                         </div>
                     </div>
                     <div className="code-text-area-wrapper">
-                        <textarea className="code-text-area" defaultValue={this.props.code} ref={this.codeTextArea}></textarea>
+                        <Editor value={this.state.code} 
+                                onValueChange={this.onCodeChanged}
+                                highlight={(code) => highlight(code, languages.py)}
+                                padding={10}
+                                style={{
+                                    fontFamily: '"Courier New", Courier, monospace',
+                                    fontSize: '26px',
+                                    height: '100%',
+                                    border: '1px solid #ccc'
+                                }}/>
+                        {/* <textarea className="code-text-area" defaultValue={this.props.code} ref={this.codeTextArea}></textarea> */}
                     </div>
                     <div className="bottom-area">
                         <div className="button-panel submit-button">
