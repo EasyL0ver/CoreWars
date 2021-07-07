@@ -27,12 +27,16 @@ class CompetitorEditView extends React.Component {
         this.onAliasChanged = this.onAliasChanged.bind(this)
     }
 
+    componentDidMount(){
+        console.log("COMPONTENT MOUNT!")
+        if(!this.state.code && this.state.selected){
+            this.fetchTemplate(this.state.selected.value)
+        }
+    }
+
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.categories.join() != this.props.categories.join()) {
-            this.setState({
-                ...this.state,
-                selected: this.getDefaultCategory(),
-            });
+            this.changeCompetition(this.getDefaultCategory().value)
         }
     }
 
@@ -75,7 +79,20 @@ class CompetitorEditView extends React.Component {
             ...this.state,
             selected: competition,
         });
+
+        this.fetchTemplate(competition)
     }
+
+    async fetchTemplate(competitionName) {
+        const templatePath = process.env.PUBLIC_URL + "/templates/" + competitionName + ".py"
+        const res = await fetch(templatePath);
+        const data = await res.text();
+        console.log(data);
+        this.setState({
+            ...this.state,
+            code: data,
+        });
+      }
 
     onCodeChanged(event){
         console.log(event)
@@ -123,7 +140,7 @@ class CompetitorEditView extends React.Component {
                                     fontFamily: '"Courier New", Courier, monospace',
                                     fontSize: '26px',
                                     height: '100%',
-                                    border: '1px solid #ccc'
+                                    border: '1px solid #ccc',
                                 }}/>
                         {/* <textarea className="code-text-area" defaultValue={this.props.code} ref={this.codeTextArea}></textarea> */}
                     </div>
