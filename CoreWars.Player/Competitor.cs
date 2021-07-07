@@ -37,7 +37,8 @@ namespace CoreWars.Player
             , IActorRef playerLobby
             , IUser creator
             , IScriptInfo scriptInfo
-            , IActorRef resultRepository)
+            , IActorRef resultRepository
+            , CompetitorState initialState)
         {
             _playerAgentActorFactory = playerAgentActorFactory;
             _playerLobby = playerLobby;
@@ -46,7 +47,7 @@ namespace CoreWars.Player
             _resultRepository = resultRepository;
             _statusSubscriptions = new HashSet<IActorRef>();
             _methodCallsFailureCounter = new Counter(MaxMethodCallsFailures);
-            _state = _scriptInfo.Exception != null ? CompetitorState.Faulted : CompetitorState.Active;
+            _state = initialState;
 
             try
             {
@@ -209,9 +210,9 @@ namespace CoreWars.Player
         }
 
         public static Props Props(Props factory, IActorRef playerLobby, IUser creator, IScriptInfo info,
-            IActorRef resultRepository)
+            IActorRef resultRepository, CompetitorState initialState)
         {
-            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby, creator, info, resultRepository));
+            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby, creator, info, resultRepository, initialState));
         }
 
         protected override void PreStart()

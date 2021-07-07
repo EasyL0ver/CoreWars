@@ -31,20 +31,7 @@ namespace CoreWars.WebApp.Controllers
                 msg
                 , TimeSpan.FromSeconds(5));
 
-            var model = competitors.Select(
-                competitor => new ActiveCompetitor()
-            {
-                Alias = competitor.Name
-                , Code = competitor.ScriptFiles[0]
-                , Competition = competitor.CompetitionName
-                , Language =  competitor.ScriptType
-                , GamesPlayed = competitor.Stats?.GamesPlayed ?? 0
-                , GamesWon = competitor.Stats?.Wins ?? 0
-                , Status = competitor.FailureInfo == null ? CompetitorState.Active : CompetitorState.Faulted
-                , Id = competitor.Id
-                , Exception = competitor.FailureInfo?.Exception
-            });
-
+            var model = competitors.Select(MapModel);
             return Ok(model);
         }
         
@@ -66,11 +53,11 @@ namespace CoreWars.WebApp.Controllers
 
             var message = new Messages.Update<Script>(script);
 
-            await _gameService.ScriptRepository.Ask<Acknowledged>(
+            var edited = await _gameService.ScriptRepository.Ask<Script>(
                 message
                 , TimeSpan.FromSeconds(5));
 
-            return Ok(script.Id);
+            return Ok(MapModel(edited));
         }
         
         
@@ -102,14 +89,25 @@ namespace CoreWars.WebApp.Controllers
                 , Name = competitor.Alias
             };
 
-
             var message = new Messages.Add<Script>(script);
 
-            await _gameService.ScriptRepository.Ask<Acknowledged>(
+            var addedScript = await _gameService.ScriptRepository.Ask<Script>(
                 message
                 , TimeSpan.FromSeconds(5));
 
-            return Ok(script.Id);
+            return Ok(MapModel(addedScript));
+        }
+
+        private static ActiveCompetitor MapModel(Script competitor)
+        {
+            return new()
+            {
+                Alias = competitor.Name, Code = competitor.ScriptFiles[0], Competition = competitor.CompetitionName,
+                Language = competitor.ScriptType, GamesPlayed = competitor.Stats?.GamesPlayed ?? 0,
+                GamesWon = competitor.Stats?.Wins ?? 0,
+                Status = competitor.FailureInfo == null ? CompetitorState.Active : CompetitorState.Faulted,
+                Id = competitor.Id, Exception = competitor.FailureInfo?.Exception
+            };
         }
     }
 }

@@ -79,7 +79,7 @@ namespace CoreWars.Player
                 return;
             
             
-            CreateCompetitor(obj.AddedElement);
+            CreateCompetitor(obj.AddedElement, CompetitorState.Inconclusive);
         }
 
         private void OnScriptBatchReceived(IEnumerable<Script> obj)
@@ -87,7 +87,13 @@ namespace CoreWars.Player
             //ensure children ale deleted
             Context.GetChildren().ForEach(child => child.Tell(PoisonPill.Instance));
             
-            obj.ForEach(CreateCompetitor);
+            obj.ForEach(script =>
+            {
+                var scriptActive = script.Stats != null && script.Stats.GamesPlayed > 0;
+                var scriptStatus = scriptActive ? CompetitorState.Active : CompetitorState.Inconclusive;
+                
+                CreateCompetitor(script, scriptStatus);
+            });
         }
 
         protected override void PreStart()
@@ -96,11 +102,11 @@ namespace CoreWars.Player
             _scriptRepository.Tell(new Data.Entities.Messages.GetAllForCompetition(_competitionInfo.Name));
         }
 
-        private void CreateCompetitor(Script script)
+        private void CreateCompetitor(Script script, CompetitorState initialState = CompetitorState.Inconclusive)
         {
             _logger.Info($"Creating competitor: {script.Name} from {script.ScriptType} script with id: {script.Id}");
             var competitorAgentProps = _competitorFactory.Build(script);
-            var competitorProps = Competitor.Props(competitorAgentProps, _lobby, script.User, script, _resultsRepository);
+            var competitorProps = Competitor.Props(competitorAgentProps, _lobby, script.User, script, _resultsRepository, initialState);
 
             Context.ActorOf(competitorProps, script.Id.ToString());
         }

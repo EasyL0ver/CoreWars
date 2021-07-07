@@ -11,9 +11,8 @@ namespace CoreWars.WebApp.Actors
 {
     public class NotificationRoot : ReceiveActor
     {
-        private readonly IDictionary<string, Dictionary<Guid, IActorRef>> _subscribedObservers =
-            new Dictionary<string, Dictionary<Guid, IActorRef>>();
-        
+        private readonly IDictionary<string, Dictionary<Guid, ObserverSubscription>> _subscribedObservers =
+            new Dictionary<string, Dictionary<Guid, ObserverSubscription>>();
         
         public NotificationRoot(
             Func<Messages.RegisterCompetitorNotifications, Props> watcherFactory)
@@ -21,14 +20,14 @@ namespace CoreWars.WebApp.Actors
             Receive<Messages.RegisterCompetitorNotifications>(msg =>
             {
                 if (!_subscribedObservers.ContainsKey(msg.NotificationId))
-                    _subscribedObservers[msg.NotificationId] = new Dictionary<Guid, IActorRef>();
+                    _subscribedObservers[msg.NotificationId] = new Dictionary<Guid, ObserverSubscription>();
 
                 var clientSubscriptions = _subscribedObservers[msg.NotificationId];
                 
                 if (!clientSubscriptions.ContainsKey(msg.CompetitorId))
                 {
                     var observerProps = watcherFactory.Invoke(msg);
-                    clientSubscriptions[msg.CompetitorId] = Context.ActorOf(observerProps);
+                    clientSubscriptions[msg.CompetitorId] = new ObserverSubscription(Context.ActorOf(observerProps));
                 }
                 
                 Sender.Tell(Acknowledged.Instance);
@@ -39,7 +38,7 @@ namespace CoreWars.WebApp.Actors
             {
                 if (_subscribedObservers.TryGetValue(msg.NotificationId, out var actorRefs))
                 {
-                    actorRefs.Values.ForEach(r => r.Tell(PoisonPill.Instance));
+                    actorRefs.Values.ForEach(r => r.Actor.Tell(PoisonPill.Instance));
                     _subscribedObservers.Remove(msg.NotificationId);
                 }
                 
@@ -55,13 +54,22 @@ namespace CoreWars.WebApp.Actors
                     switch (ex)
                     {
                         case FailedNotificationHookException hookException:
+                            var subscription =
+                                _subscribedObservers[hookException.ConnectionId][hookException.CompetitorId];
+
+                            if (subscription.FailureCount < 4)
+                            {
+                                subscription.FailureCount++;
+                                return Directive.Restart;
+                            }
+                            
                             var registrations = _subscribedObservers[hookException.ConnectionId];
                             registrations.Remove(hookException.CompetitorId);
                             return Directive.Stop;
                         default:
                             return Directive.Escalate;
                     }
-                });
+                }, false);
         }
     }
 }

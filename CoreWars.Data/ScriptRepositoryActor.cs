@@ -23,24 +23,27 @@ namespace CoreWars.Data
                 msg.Content.DateTimeCreated = DateTime.Now;
                 msg.Content.DateTimeUpdated = DateTime.Now;
                 
-                context.Scripts.Add(msg.Content);
+                var entry = context.Scripts.Add(msg.Content);
                 context.Commit();
 
                 BroadcastEvent(new Messages.AddedEvent<Script>(msg.Content));
                 
-                Sender.Tell(new Acknowledged());
+                Sender.Tell(entry.Entity);
             });
 
             Receive<Messages.Update<Script>>(msg =>
             {
-                var edited = context.Scripts.FirstOrDefault(x => x.Id == msg.Content.Id);
+                var edited = context.Scripts
+                    .Include(x => x.User)
+                    .Include(x => x.Stats)
+                    .Include(x => x.FailureInfo)
+                    .FirstOrDefault(x => x.Id == msg.Content.Id);
 
                 if (edited == null)
                 {
                     _logger.Warning("Updated script with id {0} not found!", msg.Content.Id);
                     return;
                 }
-
                 edited.ScriptType = msg.Content.ScriptType;
                 edited.CompetitionName = msg.Content.CompetitionName;
                 edited.ScriptFiles = msg.Content.ScriptFiles;
@@ -50,7 +53,7 @@ namespace CoreWars.Data
                 
                 Self.Tell(new Messages.ClearScriptError(msg.Content.Id));
                 BroadcastEvent(new Messages.UpdatedEvent<Script>(msg.Content));
-                Sender.Tell(new Acknowledged());
+                Sender.Tell(edited);
             });
 
             Receive<Messages.Delete<Script>>(msg =>

@@ -12,7 +12,7 @@ namespace CoreWars.WebApp.Actors.Notification
 {
     public class StatusObserver : ReceiveActor
     {
-        private const int IdentityTimeoutMillis = 5000;
+        private const int IdentityTimeoutMillis = 1000;
 
         private readonly Guid _competitorId;
         private readonly CompetitorStatusCache _cache;

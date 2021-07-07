@@ -41,9 +41,7 @@ class Dashboard extends React.Component {
             console.log("SignalR Connected.");
 
             this.state.competitors.forEach(competitor => {
-                this.connection.invoke("Register", null, competitor.id).catch(function (err) {
-                    return console.error(err.toString());
-                });
+                this.registerCompetitor(competitor.id)
             })
 
         } catch (err) {
@@ -52,6 +50,12 @@ class Dashboard extends React.Component {
         }
     };
 
+    registerCompetitor(id) {
+        this.connection.invoke("Register", null, id).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+
     setUpNotifications() {
         this.connection = new HubConnectionBuilder()
             .withUrl("http://localhost:5000/competitor/status", { accessTokenFactory: () => this.props.token })
@@ -59,7 +63,7 @@ class Dashboard extends React.Component {
             .build();
 
         this.connection.on("Status", (message) => {
-            console.log(message)
+            //console.log(message)
             let newcompetitors = this.state.competitors
             let changedCompetitorIndex = newcompetitors.findIndex(x => x.id == message.competitorId)
 
@@ -131,13 +135,17 @@ class Dashboard extends React.Component {
                 }
             );
 
+            let newCompetitors = this.state.competitors
+            newCompetitors.push(response.data)
 
             this.setState({
                 ...this.state,
-                selectedBtnId: response.data,
+                selectedBtnId: response.data.id,
+                competitors: newCompetitors
             });
 
-            this.initializeCompetitors();
+            this.registerCompetitor(response.data.id)
+
         } catch (err) {
             console.warn(err);
         }
@@ -156,7 +164,18 @@ class Dashboard extends React.Component {
                 }
             );
 
-            this.initializeCompetitors()
+            let newCompetitors = this.state.competitors
+            let changedCompetitorIndex = newCompetitors.findIndex(x => x.id == response.data.id)
+
+            if (changedCompetitorIndex == -1)
+                return
+
+            newCompetitors[changedCompetitorIndex] = response.data
+
+            this.setState({
+                ...this.state,
+                competitors: newCompetitors
+            });
         } catch (err) {
             console.warn(err);
         }
@@ -173,6 +192,19 @@ class Dashboard extends React.Component {
                 }
             );
 
+            let newCompetitors = this.state.competitors
+            let changedCompetitorIndex = newCompetitors.findIndex(x => x.id == competitorId)
+
+            if (changedCompetitorIndex == -1)
+                return
+
+            newCompetitors.splice(changedCompetitorIndex, 1)
+
+            this.setState({
+                ...this.state,
+                competitors: newCompetitors
+            });
+
             if (this.state.selectedBtnId == competitorId) {
                 this.setState({
                     ...this.state,
@@ -180,7 +212,6 @@ class Dashboard extends React.Component {
                 });
             }
 
-            this.initializeCompetitors()
         } catch (err) {
             console.warn(err);
         }
