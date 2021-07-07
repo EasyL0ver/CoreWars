@@ -5,13 +5,13 @@ namespace CoreWars.Player.Messages
 {
     public class AddCompetition
     {
-        public AddCompetition(IActorRef lobby, ICompetitionInfo competitionInfo)
+        public AddCompetition(IActorRef lobby, ICompetition competition)
         {
             Lobby = lobby;
-            Info = competitionInfo;
+            Competition = competition;
         }
 
         public IActorRef Lobby { get; }
-        public ICompetitionInfo Info { get; }
+        public ICompetition Competition { get; }
     }
 }

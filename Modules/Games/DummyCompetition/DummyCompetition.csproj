@@ -8,4 +8,10 @@
       <ProjectReference Include="..\..\..\CoreWars.Competition\CoreWars.Competition.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="dummy.py">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

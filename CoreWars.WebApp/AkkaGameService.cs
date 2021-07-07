@@ -93,7 +93,7 @@ namespace CoreWars.WebApp
                 ActorSystem.ActorOf(props, $"{competition.Info.Name}-slot-{i}");
             }
             
-            CompetitorsRoot.Tell(new AddCompetition(lobby, competition.Info));
+            CompetitorsRoot.Tell(new AddCompetition(lobby, competition));
         }
 
         private void RegisterNotifications()
