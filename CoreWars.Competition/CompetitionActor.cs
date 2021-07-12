@@ -59,7 +59,11 @@ namespace CoreWars.Competition
                         case TimeoutException _:
                         case AskTargetTerminatedException _:
                             _logger.Warning("One of game agents is unresponsive - aborting", ex);
+                            
+                            //kill all competitors
+                            _competitors.ForEach(c => c.Reference.Tell(PoisonPill.Instance));
                             Self.Tell(PoisonPill.Instance);
+                            
                             return Directive.Stop;
                         default:
                             return Directive.Escalate;

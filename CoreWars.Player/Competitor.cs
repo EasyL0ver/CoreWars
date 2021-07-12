@@ -78,7 +78,6 @@ namespace CoreWars.Player
                 var agent = Context.ActorOf(props);
                 var message = new GeneratedAgent(agent, _script.Id);
 
-                Context.Watch(agent);
                 Sender.Tell(message);
             });
 
@@ -104,7 +103,15 @@ namespace CoreWars.Player
                 UpdateState(CompetitorState.Inconclusive);
             });
             
-            Receive<CompetitionResult>(OnGameConcluded);
+            Receive<CompetitionResult>(msg =>
+            {
+                UpdateState(CompetitorState.Active);
+                var result = new Data.Entities.Messages.ScriptCompetitionResult(_script.Id, msg);
+                _resultRepository.Tell(result);
+                
+                Sender.Tell(PoisonPill.Instance);
+            });
+            
             ReceiveAny(msg => _logger.Error("Unknown messege received"));
         }
 
@@ -133,6 +140,12 @@ namespace CoreWars.Player
                     , _script.Id);
                 
                 Sender.Tell(ex);
+            });
+            
+            Receive<CompetitionResult>(msg =>
+            {
+                //just in case 
+                Sender.Tell(PoisonPill.Instance);
             });
             
             ReceiveAny(msg => _logger.Error("Unknown messege received"));
