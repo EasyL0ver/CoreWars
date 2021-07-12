@@ -67,8 +67,7 @@ namespace CoreWars.Player
             
             _logger.Info($"Updating competitor: {obj.AddedElement.Name} from {obj.AddedElement.ScriptType} script with id: {obj.AddedElement.Id}");
 
-            var competitorAgentProps = _competitorFactory.Build(obj.AddedElement);
-            var message = new CompetitorFactoryUpdated(competitorAgentProps);
+            var message = new CompetitorScriptUpdated(obj.AddedElement);
             
             Context.ActorSelection($"{obj.AddedElement.Id}").Tell(message);
         }
@@ -105,8 +104,7 @@ namespace CoreWars.Player
         private void CreateCompetitor(Script script, CompetitorState initialState = CompetitorState.Inconclusive)
         {
             _logger.Info($"Creating competitor: {script.Name} from {script.ScriptType} script with id: {script.Id}");
-            var competitorAgentProps = _competitorFactory.Build(script);
-            var competitorProps = Competitor.Props(competitorAgentProps, _lobby, script.User, script, _resultsRepository, initialState);
+            var competitorProps = Competitor.Props(_competitorFactory, _lobby, script.User, script, _resultsRepository, initialState);
 
             Context.ActorOf(competitorProps, script.Id.ToString());
         }

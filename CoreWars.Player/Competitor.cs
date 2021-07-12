@@ -16,14 +16,14 @@ namespace CoreWars.Player
 
         private readonly IActorRef _playerLobby;
         private readonly IUser _creator;
-        private readonly IScriptInfo _scriptInfo;
         private readonly IActorRef _resultRepository;
         private readonly Counter _methodCallsFailureCounter;
 
         private readonly HashSet<IActorRef> _statusSubscriptions;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
-
-        private Props _playerAgentActorFactory;
+        private readonly ICompetitorFactory _playerAgentActorFactory;
+        
+        private IScript _script;
         private CompetitorState _state;
         private ICancelable _connectToLobbyCancellable;
 
@@ -33,17 +33,17 @@ namespace CoreWars.Player
         // ReSharper disable once MemberCanBePrivate.Global
         // public constructor required for akka
         public Competitor(
-            Props playerAgentActorFactory
+            ICompetitorFactory playerAgentActorFactory
             , IActorRef playerLobby
             , IUser creator
-            , IScriptInfo scriptInfo
+            , IScript script
             , IActorRef resultRepository
             , CompetitorState initialState)
         {
             _playerAgentActorFactory = playerAgentActorFactory;
             _playerLobby = playerLobby;
             _creator = creator;
-            _scriptInfo = scriptInfo;
+            _script = script;
             _resultRepository = resultRepository;
             _statusSubscriptions = new HashSet<IActorRef>();
             _methodCallsFailureCounter = new Counter(MaxMethodCallsFailures);
@@ -51,9 +51,9 @@ namespace CoreWars.Player
 
             try
             {
-                if (_scriptInfo.Exception != null)
+                if (_script.Exception != null)
                 {
-                    _failureStateInfo = new AgentFailureState(new DeserializedException(_scriptInfo.Exception));
+                    _failureStateInfo = new AgentFailureState(new DeserializedException(_script.Exception));
                     Faulted();
                 }
                 else
@@ -74,8 +74,9 @@ namespace CoreWars.Player
             {
                 _logger.Debug($"Spawning new agent");
 
-                var agent = Context.ActorOf(_playerAgentActorFactory);
-                var message = new GeneratedAgent(agent, _scriptInfo.Id);
+                var props = _playerAgentActorFactory.Build(_script);
+                var agent = Context.ActorOf(props);
+                var message = new GeneratedAgent(agent, _script.Id);
 
                 Context.Watch(agent);
                 Sender.Tell(message);
@@ -92,12 +93,12 @@ namespace CoreWars.Player
                     Self
                     , "agent failure"
                     , _failureStateInfo.Exception
-                    , _scriptInfo.Id);
+                    , _script.Id);
             });
             
-            Receive<CompetitorFactoryUpdated>(msg =>
+            Receive<CompetitorScriptUpdated>(msg =>
             {
-                _playerAgentActorFactory = msg.NewFactory;
+                _script = msg.NewScript;
                 _methodCallsFailureCounter.Reset();
                 UpdateFailure(AgentFailureState.Ok());
                 UpdateState(CompetitorState.Inconclusive);
@@ -111,9 +112,9 @@ namespace CoreWars.Player
         {
             ReactingToStatusMessages();
             
-            Receive<CompetitorFactoryUpdated>(msg =>
+            Receive<CompetitorScriptUpdated>(msg =>
             {
-                _playerAgentActorFactory = msg.NewFactory;
+                _script = msg.NewScript;
                 _methodCallsFailureCounter.Reset();
                 
                 UpdateFailure(AgentFailureState.Ok());
@@ -129,7 +130,7 @@ namespace CoreWars.Player
                     Self
                     , "Unable to create agent- competitor is faulted critically"
                     , _failureStateInfo.Exception
-                    , _scriptInfo.Id);
+                    , _script.Id);
                 
                 Sender.Tell(ex);
             });
@@ -151,7 +152,7 @@ namespace CoreWars.Player
                 
                 Sender.Tell(_state);
                 _resultRepository.Tell(
-                    new Data.Entities.Messages.GetAllForCompetitor(_scriptInfo.Id)
+                    new Data.Entities.Messages.GetAllForCompetitor(_script.Id)
                     , Sender);
             });
             Receive<Terminated>(msg => { _statusSubscriptions.Remove(msg.ActorRef); });
@@ -170,7 +171,7 @@ namespace CoreWars.Player
         private void OnGameConcluded(CompetitionResult obj)
         {
             UpdateState(CompetitorState.Active);
-            var msg = new Data.Entities.Messages.ScriptCompetitionResult(_scriptInfo.Id, obj);
+            var msg = new Data.Entities.Messages.ScriptCompetitionResult(_script.Id, obj);
             _resultRepository.Tell(msg);
         }
 
@@ -209,17 +210,17 @@ namespace CoreWars.Player
             _playerLobby.Tell(RequestLobbyQuit.Instance);
         }
 
-        public static Props Props(Props factory, IActorRef playerLobby, IUser creator, IScriptInfo info,
+        public static Props Props(ICompetitorFactory factory, IActorRef playerLobby, IUser creator, IScript script,
             IActorRef resultRepository, CompetitorState initialState)
         {
-            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby, creator, info, resultRepository, initialState));
+            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby, creator, script, resultRepository, initialState));
         }
 
         protected override void PreStart()
         {
             base.PreStart();
             
-            if(_scriptInfo.Exception == null)
+            if(_script.Exception == null)
                 ConnectToLobby();
         }
         
@@ -227,7 +228,7 @@ namespace CoreWars.Player
         {
             base.PostStop();
             DisconnectFromLobby();
-            _logger.Info("Competitor {0} with id: {1} stops", _scriptInfo.Name, _scriptInfo.Id);
+            _logger.Info("Competitor {0} with id: {1} stops", _script.Name, _script.Id);
         }
 
         protected override SupervisorStrategy SupervisorStrategy()
@@ -238,7 +239,7 @@ namespace CoreWars.Player
                 {
                     case AgentFailureException:
                     case ActorInitializationException:
-                        _logger.Info("Agent {0} with id {1} failed with exception {2}", _scriptInfo.Name, _scriptInfo.Id, ex);
+                        _logger.Info("Agent {0} with id {1} failed with exception {2}", _script.Name, _script.Id, ex);
                         Self.Tell(new AgentFailureState(ex));
                         return Directive.Stop;
                     case AgentMethodInvocationException:
