@@ -91,10 +91,7 @@ namespace CoreWars.WebApp.Actors.Notification
                 var updateMessage = _cache.GetMessage();
                 await NotifyUser(_connectionId, updateMessage);
             });
-            ReceiveAny(msg =>
-            {
-                var a = 1;
-            });
+            ReceiveAny(msg => throw new InvalidOperationException($"Unknown message type received. Received object: {msg}"));
         }
 
         private async Task NotifyUser(string connectionId, object status)

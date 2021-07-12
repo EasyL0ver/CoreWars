@@ -22,7 +22,7 @@ namespace CoreWars.Player
         private readonly HashSet<IActorRef> _statusSubscriptions;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
         private readonly ICompetitorFactory _playerAgentActorFactory;
-        
+
         private IScript _script;
         private CompetitorState _state;
         private ICancelable _connectToLobbyCancellable;
@@ -49,21 +49,13 @@ namespace CoreWars.Player
             _methodCallsFailureCounter = new Counter(MaxMethodCallsFailures);
             _state = initialState;
 
-            try
+            if (_script.Exception != null)
             {
-                if (_script.Exception != null)
-                {
-                    _failureStateInfo = new AgentFailureState(new DeserializedException(_script.Exception));
-                    Faulted();
-                }
-                else
-                    Active();
+                _failureStateInfo = new AgentFailureState(new DeserializedException(_script.Exception));
+                Faulted();
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            else
+                Active();
         }
 
         private void Active()
@@ -94,7 +86,7 @@ namespace CoreWars.Player
                     , _failureStateInfo.Exception
                     , _script.Id);
             });
-            
+
             Receive<CompetitorScriptUpdated>(msg =>
             {
                 _script = msg.NewScript;
@@ -102,32 +94,33 @@ namespace CoreWars.Player
                 UpdateFailure(AgentFailureState.Ok());
                 UpdateState(CompetitorState.Inconclusive);
             });
-            
+
             Receive<CompetitionResult>(msg =>
             {
                 UpdateState(CompetitorState.Active);
                 var result = new Data.Entities.Messages.ScriptCompetitionResult(_script.Id, msg);
                 _resultRepository.Tell(result);
-                
+
                 Sender.Tell(PoisonPill.Instance);
             });
-            
-            ReceiveAny(msg => _logger.Error("Unknown messege received"));
+
+            ReceiveAny(msg =>
+                throw new InvalidOperationException($"Unknown message type received. Received object: {msg}"));
         }
 
         private void Faulted()
         {
             ReactingToStatusMessages();
-            
+
             Receive<CompetitorScriptUpdated>(msg =>
             {
                 _script = msg.NewScript;
                 _methodCallsFailureCounter.Reset();
-                
+
                 UpdateFailure(AgentFailureState.Ok());
                 UpdateState(CompetitorState.Inconclusive);
                 ConnectToLobby();
-                
+
                 Become(Active);
             });
 
@@ -138,17 +131,18 @@ namespace CoreWars.Player
                     , "Unable to create agent- competitor is faulted critically"
                     , _failureStateInfo.Exception
                     , _script.Id);
-                
+
                 Sender.Tell(ex);
             });
-            
+
             Receive<CompetitionResult>(msg =>
             {
                 //just in case 
                 Sender.Tell(PoisonPill.Instance);
             });
-            
-            ReceiveAny(msg => _logger.Error("Unknown messege received"));
+
+            ReceiveAny(msg =>
+                throw new InvalidOperationException($"Unknown message type received. Received object: {msg}"));
         }
 
         private void ReactingToStatusMessages()
@@ -159,10 +153,10 @@ namespace CoreWars.Player
             {
                 Context.Watch(Sender);
                 _statusSubscriptions.Add(Sender);
-                
-                if(_failureStateInfo != null)
+
+                if (_failureStateInfo != null)
                     Sender.Tell(_failureStateInfo);
-                
+
                 Sender.Tell(_state);
                 _resultRepository.Tell(
                     new Data.Entities.Messages.GetAllForCompetitor(_script.Id)
@@ -179,13 +173,6 @@ namespace CoreWars.Player
         private void OnGameLogReceived(GameLog obj)
         {
             _logger.Debug(obj.Message);
-        }
-
-        private void OnGameConcluded(CompetitionResult obj)
-        {
-            UpdateState(CompetitorState.Active);
-            var msg = new Data.Entities.Messages.ScriptCompetitionResult(_script.Id, obj);
-            _resultRepository.Tell(msg);
         }
 
         private void UpdateState(CompetitorState newState)
@@ -208,7 +195,7 @@ namespace CoreWars.Player
         private void ConnectToLobby()
         {
             _connectToLobbyCancellable?.Cancel();
-            
+
             _connectToLobbyCancellable = Context.System.Scheduler.ScheduleTellRepeatedlyCancelable(
                 TimeSpan.Zero
                 , TimeSpan.FromMilliseconds(RejoinLobbyTimeMilliseconds)
@@ -226,17 +213,18 @@ namespace CoreWars.Player
         public static Props Props(ICompetitorFactory factory, IActorRef playerLobby, IUser creator, IScript script,
             IActorRef resultRepository, CompetitorState initialState)
         {
-            return Akka.Actor.Props.Create(() => new Competitor(factory, playerLobby, creator, script, resultRepository, initialState));
+            return Akka.Actor.Props.Create(() =>
+                new Competitor(factory, playerLobby, creator, script, resultRepository, initialState));
         }
 
         protected override void PreStart()
         {
             base.PreStart();
-            
-            if(_script.Exception == null)
+
+            if (_script.Exception == null)
                 ConnectToLobby();
         }
-        
+
         protected override void PostStop()
         {
             base.PostStop();
@@ -268,8 +256,8 @@ namespace CoreWars.Player
                         return Directive.Escalate;
                 }
             });
-            
-            return new AllForOneStrategy(-1,-1, decider, false);
+
+            return new AllForOneStrategy(-1, -1, decider, false);
         }
     }
 }

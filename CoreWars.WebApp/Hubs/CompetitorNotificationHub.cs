@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Threading.Tasks;
 using Akka.Actor;
@@ -31,7 +32,7 @@ namespace CoreWars.WebApp.Hubs
             return _gameService.NotificationProvider.Ask<Acknowledged>(registerMessage, TimeSpan.FromSeconds(5));
         }
 
-        public override async Task OnDisconnectedAsync(Exception? exception)
+        public override async Task OnDisconnectedAsync(Exception?  exception)
         {
             var connectionId = Context.ConnectionId;
             var unregisterMessage = new Messages.NotificationUserDisconnected(connectionId);
