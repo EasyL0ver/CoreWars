@@ -64,7 +64,7 @@ namespace CoreWars.Coordination.GameSlot
             
             OnTransition((initialState, nextState) =>
             {
-                _logger.Debug("Changed state from {0} to {1}", initialState, nextState);
+                _logger.Info("Changed state from {0} to {1}", initialState, nextState);
                 switch (initialState)
                 {
                     case CompetitionSlotState.Lobby when StateData is QueryData queryStateData:
@@ -119,9 +119,11 @@ namespace CoreWars.Coordination.GameSlot
                 {
                     switch (ex)
                     {
+                        case AskTypeMismatchException {MismatchedResponse: NotEnoughPlayers} mismatchException:
+                            Self.Tell(mismatchException.MismatchedResponse);
+                            return Directive.Stop;
                         case TimeoutException:
-                        case AskTypeMismatchException {MismatchedResponse: NotEnoughPlayers}:
-                            _logger.Debug(ex,"Cannot start game because of exception - restarting");
+                            _logger.Info(ex,"Cannot start game because of exception - restarting");
                             return Directive.Restart;
                         default:
                             _logger.Error(ex, "Unhandled competition slot error");
