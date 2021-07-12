@@ -16,6 +16,7 @@ import './CompetitorEditView.css'
 class CompetitorEditView extends React.Component {
     constructor(props) {
         super(props)
+
         this.state = {
             selected: this.getDefaultCategory(),
             code: props.code,
@@ -30,25 +31,26 @@ class CompetitorEditView extends React.Component {
     componentDidMount(){
         console.log("COMPONTENT MOUNT!")
         if(!this.state.code && this.state.selected){
-            this.fetchTemplate(this.state.selected.value)
+            this.fetchTemplate(this.state.selected)
         }
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.categories.join() != this.props.categories.join()) {
-            this.changeCompetition(this.getDefaultCategory().value)
+            this.changeCompetition(this.getDefaultCategory())
         }
     }
 
     getDefaultCategory() {
-        return this.props.categories[0]
+        if(!this.props.categories[0]) return null
+        return this.props.categories[0].value
     }
 
     submitCompetitor() {
         const competitor = {
             alias: this.state.alias,
             code: this.state.code,
-            competition: this.state.selected.value,
+            competition: this.state.selected,
             language: "python"
         }
 
