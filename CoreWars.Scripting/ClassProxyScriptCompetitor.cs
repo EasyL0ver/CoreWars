@@ -3,7 +3,6 @@ using Akka.Actor;
 using CoreWars.Common;
 using CoreWars.Common.Exceptions;
 using CoreWars.Competition;
-using CoreWars.Scripting.Messages;
 
 namespace CoreWars.Scripting
 {

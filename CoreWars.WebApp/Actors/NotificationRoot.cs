@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Akka.Actor;
 using CoreWars.Common;
 using CoreWars.Common.Exceptions;
 using CoreWars.WebApp.Actors.Notification;
-using CoreWars.WebApp.Hubs;
 
 namespace CoreWars.WebApp.Actors
 {

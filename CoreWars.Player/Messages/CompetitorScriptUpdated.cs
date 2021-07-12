@@ -1,4 +1,3 @@
-using Akka.Actor;
 using CoreWars.Data.Entities;
 
 namespace CoreWars.Player.Messages

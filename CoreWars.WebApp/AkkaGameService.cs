@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Akka.Actor;
@@ -11,7 +10,6 @@ using CoreWars.Coordination;
 using CoreWars.Coordination.GameSlot;
 using CoreWars.Coordination.PlayerSet;
 using CoreWars.Data;
-using CoreWars.Data.Entities;
 using CoreWars.Player;
 using CoreWars.Player.Messages;
 using CoreWars.WebApp.Actors;

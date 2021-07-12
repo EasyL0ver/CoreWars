@@ -6,7 +6,6 @@ using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Common.TypedActorQuery.Ask;
 using CoreWars.Coordination.Messages;
-using CoreWars.Player.Messages;
 
 namespace CoreWars.Coordination.GameSlot
 {

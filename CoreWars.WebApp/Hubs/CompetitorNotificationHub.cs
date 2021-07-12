@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Akka.Actor;
 using CoreWars.Common;
-using CoreWars.Competition;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

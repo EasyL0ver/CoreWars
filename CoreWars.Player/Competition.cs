@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
-using CoreWars.Common.Exceptions;
 using CoreWars.Data.Entities;
 using CoreWars.Player.Exceptions;
 using CoreWars.Player.Messages;

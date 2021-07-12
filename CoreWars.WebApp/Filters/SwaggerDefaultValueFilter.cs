@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Reflection;
-using Community.CsharpSqlite;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 

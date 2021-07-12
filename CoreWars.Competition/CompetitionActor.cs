@@ -5,7 +5,6 @@ using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Common.TypedActorQuery;
-using CoreWars.Common.TypedActorQuery.Ask;
 
 namespace CoreWars.Competition
 {

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Akka.Actor;
 
 namespace CoreWars.WebApp.Actors.Notification
