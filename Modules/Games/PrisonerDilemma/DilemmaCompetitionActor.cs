@@ -23,10 +23,14 @@ namespace PrisonerDilemma
 
         protected override CompetitionResult GetResult(IActorRef playerActor)
         {
-            var maxScore = _playersScore.Values.Max();
-            var winner = _playersScore[playerActor] == maxScore;
+            var minScore = _playersScore.Values.Min();
+            var winners = _playersScore.Where(x => x.Value == minScore).ToList();
 
-            return winner ? CompetitionResult.Winner : CompetitionResult.Loser;
+            if (winners.Count > 1) return CompetitionResult.Inconclusive;
+            if (winners.All(w => w.Key == playerActor))
+                return CompetitionResult.Winner;
+            
+            return CompetitionResult.Loser;
         }
 
         public DilemmaCompetitionActor(
