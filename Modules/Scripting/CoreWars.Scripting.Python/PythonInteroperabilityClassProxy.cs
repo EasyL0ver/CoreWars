@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Scripting.Hosting;
 
 namespace CoreWars.Scripting.Python
@@ -6,17 +7,19 @@ namespace CoreWars.Scripting.Python
     {
         private readonly string _classDefinitionPythonScript;
         private readonly string _proxiedClassName;
+        private readonly ScriptEngine _scriptEngine;
         
-        private ScriptEngine _scriptEngine;
         private ScriptScope _scriptScope;
         private dynamic _instance;
 
         public PythonInteroperabilityClassProxy(
-            string classDefinitionPythonScript
+            ScriptEngine pythonScriptEngine
+            , string classDefinitionPythonScript
             , string proxiedClassName = "GameController")
         {
             _classDefinitionPythonScript = classDefinitionPythonScript;
             _proxiedClassName = proxiedClassName;
+            _scriptEngine = pythonScriptEngine;
         }
 
         private ObjectOperations Operations => _scriptEngine.Operations;
@@ -28,7 +31,9 @@ namespace CoreWars.Scripting.Python
 
         public void Initialize()
         {
-            _scriptEngine = IronPython.Hosting.Python.CreateEngine();
+            if (_scriptScope is not null)
+                throw new InvalidOperationException("Script scope is already initialized!");
+            
             _scriptScope = _scriptEngine.CreateScope();
 
             _scriptEngine.Execute(_classDefinitionPythonScript, _scriptScope);
