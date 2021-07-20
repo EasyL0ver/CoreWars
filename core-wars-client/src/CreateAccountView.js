@@ -4,6 +4,7 @@ import axios from "axios";
 import "./LoginView.css"
 
 import config from './config.json'
+import { withRouter } from 'react-router-dom'
 
 
 class CreateAccountView extends React.Component {
@@ -17,6 +18,7 @@ class CreateAccountView extends React.Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.loginUser = this.loginUser.bind(this);
     }
 
     loginUser(state) {
@@ -33,6 +35,9 @@ class CreateAccountView extends React.Component {
                 },
                 { headers: headers }
             )
+            .then((response) => {
+                this.props.history.push("/")
+            })
             .catch((error) => {
                 console.log(error);
             });
@@ -86,4 +91,4 @@ class CreateAccountView extends React.Component {
     }
 }
 
-export default CreateAccountView;
+export default withRouter(CreateAccountView);
