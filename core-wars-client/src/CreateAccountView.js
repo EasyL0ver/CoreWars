@@ -3,6 +3,8 @@ import axios from "axios";
 
 import "./LoginView.css"
 
+import config from './config.json'
+
 
 class CreateAccountView extends React.Component {
     constructor(props) {
@@ -24,7 +26,7 @@ class CreateAccountView extends React.Component {
 
         axios
             .post(
-                "http://localhost:5000/Users",
+                config.api + "/Users",
                 {
                     username: state.email,
                     password: state.password

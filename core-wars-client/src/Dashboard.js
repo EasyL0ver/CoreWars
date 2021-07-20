@@ -9,6 +9,8 @@ import './Dashboard.css'
 import './CompetitorButton.css'
 import './LoginView.css'
 
+import config from './config.json'
+
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -58,7 +60,7 @@ class Dashboard extends React.Component {
 
     setUpNotifications() {
         this.connection = new HubConnectionBuilder()
-            .withUrl("http://localhost:5000/competitor/status", { accessTokenFactory: () => this.props.token })
+            .withUrl(config.api + "/competitor/status", { accessTokenFactory: () => this.props.token })
             .configureLogging(LogLevel.Information)
             .build();
 
@@ -88,7 +90,7 @@ class Dashboard extends React.Component {
     async getCompetitionNames() {
         try {
             const response = await axios.get(
-                "http://localhost:5000/competitions",
+                config.api + "/competitions",
                 { "Content-Type": "application/json" }
             );
             this.setState({
@@ -104,7 +106,7 @@ class Dashboard extends React.Component {
     async loadCompetitors() {
         try {
             const response = await axios.get(
-                "http://localhost:5000/Competitors/",
+                config.api + "/Competitors/",
                 {
                     "Content-Type": "application/json",
                     headers: {
@@ -125,7 +127,7 @@ class Dashboard extends React.Component {
     async addCompetitor(competitor) {
         try {
             const response = await axios.post(
-                "http://localhost:5000/Competitors/",
+                config.api + "/Competitors/",
                 competitor,
                 {
                     "Content-Type": "application/json",
@@ -154,7 +156,7 @@ class Dashboard extends React.Component {
     async editCompetitor(competitor, competitorId) {
         try {
             const response = await axios.put(
-                "http://localhost:5000/Competitors?editedCompetitorId=" + competitorId,
+                config.api + "/Competitors?editedCompetitorId=" + competitorId,
                 competitor,
                 {
                     "Content-Type": "application/json",
@@ -184,7 +186,7 @@ class Dashboard extends React.Component {
     async deleteCompetitor(competitorId) {
         try {
             const response = await axios.delete(
-                "http://localhost:5000/Competitors?deletedCompetitorId=" + competitorId,
+                config.api + "/Competitors?deletedCompetitorId=" + competitorId,
                 {
                     headers: {
                         'Authorization': `Bearer ${this.props.token}`

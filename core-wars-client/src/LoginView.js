@@ -3,6 +3,7 @@ import axios from "axios";
 import { decodeToken } from "react-jwt";
 
 import "./LoginView.css"
+import config from './config.json'
 
 
 class LoginView extends React.Component {
@@ -24,7 +25,7 @@ class LoginView extends React.Component {
 
         axios
             .post(
-                "http://localhost:5000/Authentication",
+                config.api + "/Authentication",
                 {
                     username: state.email,
                     password: state.password

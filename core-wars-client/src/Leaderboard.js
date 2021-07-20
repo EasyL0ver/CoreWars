@@ -6,6 +6,8 @@ import CoreSelect from './CoreSelect'
 
 import './Leaderboard.css'
 
+import config from './config.json'
+
 class Leaderboard extends React.Component {
     constructor(props) {
         super(props)
@@ -34,7 +36,7 @@ class Leaderboard extends React.Component {
     async getCompetitionNames() {
         try {
             const response = await axios.get(
-                "http://localhost:5000/competitions",
+                config.api + "/competitions",
                 { "Content-Type": "application/json" }
             );
             const competitionTypes = response.data.map(x => new Object({ value: x.name, label: x.name }));
@@ -53,7 +55,7 @@ class Leaderboard extends React.Component {
     async getLeaderboard(competitionName) {
         try {
             const response = await axios.get(
-                "http://localhost:5000/Leaderboard?competition=" + competitionName,
+                config.api + "/Leaderboard?competition=" + competitionName,
                 null,
                 { "Content-Type": "application/json" }
             );
