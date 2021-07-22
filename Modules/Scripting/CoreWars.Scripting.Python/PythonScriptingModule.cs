@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Autofac;
 using CoreWars.Common;
@@ -18,6 +19,9 @@ namespace CoreWars.Scripting.Python
                     var config = context.Resolve<IConfiguration>();
                     var ironPythonPath = config["IronPythonPath"];
                     var libraryPath = Path.Combine(ironPythonPath, "Lib");
+
+                    if (!Directory.Exists(libraryPath))
+                        throw new InvalidOperationException("iron python library folder does not exist!");
                     
                     var engine = IronPython.Hosting.Python.CreateEngine();
 
