@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoreWars.Data
 {
-    public class StatsRepositoryActor : ReceiveActor
+    public class StatsRepository : ReceiveActor
     {
         private readonly IDataContext _context;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
 
-        public StatsRepositoryActor(IDataContext context)
+        public StatsRepository(IDataContext context)
         {
             _context = context;
             Receive<CompetitionResultMessage>(msg =>

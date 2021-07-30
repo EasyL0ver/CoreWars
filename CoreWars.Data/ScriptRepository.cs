@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoreWars.Data
 {
-    public class ScriptRepositoryActor : ReceiveActor
+    public class ScriptRepository : ReceiveActor
     {
         private readonly HashSet<IActorRef> _subscribed = new();
         private readonly ILoggingAdapter _logger = Context.GetLogger();
         
-        public ScriptRepositoryActor(IDataContext context)
+        public ScriptRepository(IDataContext context)
         {
             Receive<Messages.Add<Script>>(msg =>
             {
@@ -140,6 +140,6 @@ namespace CoreWars.Data
             });
         }
         
-        public static Props Props(IDataContext ctx) => Akka.Actor.Props.Create(() => new ScriptRepositoryActor(ctx)); 
+        public static Props Props(IDataContext ctx) => Akka.Actor.Props.Create(() => new ScriptRepository(ctx)); 
     }
 }
