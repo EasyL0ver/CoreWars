@@ -23,9 +23,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CoreWars.Common.AkkaExtensions\CoreWars.Common.AkkaExtensions.csproj" />
       <ProjectReference Include="..\CoreWars.Competition\CoreWars.Competition.csproj" />
-      <ProjectReference Include="..\CoreWars.Coordination\CoreWars.Coordination.csproj" />
       <ProjectReference Include="..\CoreWars.Data\CoreWars.Data.csproj" />
+      <ProjectReference Include="..\CoreWars.Game\CoreWars.Game.csproj" />
+      <ProjectReference Include="..\CoreWars.Lobby\CoreWars.Lobby.csproj" />
       <ProjectReference Include="..\Modules\Games\DummyCompetition\DummyCompetition.csproj" />
       <ProjectReference Include="..\Modules\Games\PrisonerDilemma\PrisonerDilemma.csproj" />
       <ProjectReference Include="..\Modules\Scripting\CoreWars.Scripting.Python\CoreWars.Scripting.Python.csproj" />

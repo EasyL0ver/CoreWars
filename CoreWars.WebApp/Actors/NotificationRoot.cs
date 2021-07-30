@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Akka.Actor;
 using CoreWars.Common;
+using CoreWars.Common.AkkaExtensions.Messages;
 using CoreWars.Common.Exceptions;
 using CoreWars.WebApp.Actors.Notification;
 

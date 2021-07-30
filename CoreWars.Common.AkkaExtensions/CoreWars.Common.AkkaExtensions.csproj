@@ -6,13 +6,11 @@
 
     <ItemGroup>
       <PackageReference Include="Akka" Version="1.4.11" />
-      <PackageReference Include="Autofac" Version="6.0.0" />
       <PackageReference Include="JetBrains.Annotations" Version="2020.2.0-eap" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\CoreWars.Common.AkkaExtensions\CoreWars.Common.AkkaExtensions.csproj" />
-      <ProjectReference Include="..\CoreWars.Common\CoreWars.Common.csproj" />
+      <Folder Include="Actors" />
     </ItemGroup>
 
 </Project>

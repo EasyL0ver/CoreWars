@@ -12,7 +12,7 @@ namespace PrisonerDilemma
             public Props Build(IEnumerable<GeneratedAgent> competitionParticipants)
             {
                 return Props.Create(() =>
-                    new DilemmaCompetitionActor(competitionParticipants, DilemmaConfiguration.Default()));
+                    new DilemmaCompetition(competitionParticipants, DilemmaConfiguration.Default()));
             }
         }
         

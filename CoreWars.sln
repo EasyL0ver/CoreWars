@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Common", "CoreWars
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Scripting", "CoreWars.Scripting\CoreWars.Scripting.csproj", "{E225E303-60BD-495C-85C8-D29531E92660}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Coordination", "CoreWars.Coordination\CoreWars.Coordination.csproj", "{7E3DD35B-A504-45F9-9991-3B0323FAA09C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Lobby", "CoreWars.Lobby\CoreWars.Lobby.csproj", "{7E3DD35B-A504-45F9-9991-3B0323FAA09C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Player", "CoreWars.Player\CoreWars.Player.csproj", "{85C9A730-D238-4DB6-8851-A75F82D2CB91}"
 EndProject
@@ -25,6 +25,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyCompetition", "Modules\Games\DummyCompetition\DummyCompetition.csproj", "{DE44369D-0144-42C3-977B-6C13C0976D40}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrisonerDilemma", "Modules\Games\PrisonerDilemma\PrisonerDilemma.csproj", "{E40136F7-EE42-46F9-B035-0D1DC52EA978}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Game", "CoreWars.Game\CoreWars.Game.csproj", "{408167E2-1365-4A4A-9995-3D1230A7EAED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreWars.Common.AkkaExtensions", "CoreWars.Common.AkkaExtensions\CoreWars.Common.AkkaExtensions.csproj", "{2E4072C1-C021-43C5-A739-687D2C0CF7A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,6 +76,14 @@ Global
 		{E40136F7-EE42-46F9-B035-0D1DC52EA978}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E40136F7-EE42-46F9-B035-0D1DC52EA978}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E40136F7-EE42-46F9-B035-0D1DC52EA978}.Release|Any CPU.Build.0 = Release|Any CPU
+		{408167E2-1365-4A4A-9995-3D1230A7EAED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{408167E2-1365-4A4A-9995-3D1230A7EAED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{408167E2-1365-4A4A-9995-3D1230A7EAED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{408167E2-1365-4A4A-9995-3D1230A7EAED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E4072C1-C021-43C5-A739-687D2C0CF7A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E4072C1-C021-43C5-A739-687D2C0CF7A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E4072C1-C021-43C5-A739-687D2C0CF7A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E4072C1-C021-43C5-A739-687D2C0CF7A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{85A2350D-5F8C-4EA1-A7B2-6D250E72C7E5} = {59E3054A-969E-4C49-87FD-177E3C514A9C}

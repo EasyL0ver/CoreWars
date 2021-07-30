@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\CoreWars.Common.AkkaExtensions\CoreWars.Common.AkkaExtensions.csproj" />
       <ProjectReference Include="..\..\..\CoreWars.Competition\CoreWars.Competition.csproj" />
     </ItemGroup>
 

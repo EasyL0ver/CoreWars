@@ -6,10 +6,11 @@ using Akka.Actor;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using CoreWars.Common;
+using CoreWars.Common.AkkaExtensions;
 using CoreWars.Coordination;
-using CoreWars.Coordination.GameSlot;
 using CoreWars.Coordination.PlayerSet;
 using CoreWars.Data;
+using CoreWars.Game;
 using CoreWars.Player;
 using CoreWars.Player.Messages;
 using CoreWars.WebApp.Actors;
@@ -17,7 +18,6 @@ using CoreWars.WebApp.Actors.Notification;
 using CoreWars.WebApp.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
-using ICompetition = CoreWars.Common.ICompetition;
 using Messages = CoreWars.WebApp.Actors.Messages;
 
 namespace CoreWars.WebApp
@@ -60,7 +60,7 @@ namespace CoreWars.WebApp
         private void InitializeCompetitions()
         {
             _container
-                .Resolve<IEnumerable<ICompetition>>()
+                .Resolve<IEnumerable<ICompetitionRegistration>>()
                 .ForEach(AddCompetition);
         }
 
@@ -80,18 +80,18 @@ namespace CoreWars.WebApp
         
         
 
-        private void AddCompetition(ICompetition competition)
+        private void AddCompetition(ICompetitionRegistration competitionRegistration)
         {
             var playerSet = _container.Resolve<ISelectableSet<IActorRef>>();
-            var lobby = ActorSystem.ActorOf(PlayerLobby.Props(playerSet, competition.Info));
+            var lobby = ActorSystem.ActorOf(CompetitorLobby.Props(playerSet, competitionRegistration.Info));
           
-            for(var i = 0; i < competition.Info.MaxInstancesCount; i++)
+            for(var i = 0; i < competitionRegistration.Info.MaxInstancesCount; i++)
             {
-                var props = CompetitionSlot.Props(lobby, competition.Factory);
-                ActorSystem.ActorOf(props, $"{competition.Info.Name}-slot-{i}");
+                var props = CompetitionSlot.Props(lobby, competitionRegistration.Factory);
+                ActorSystem.ActorOf(props, $"{competitionRegistration.Info.Name}-slot-{i}");
             }
             
-            CompetitorsRoot.Tell(new AddCompetition(lobby, competition.Info));
+            CompetitorsRoot.Tell(new AddCompetition(lobby, competitionRegistration.Info));
         }
 
         private void RegisterNotifications()

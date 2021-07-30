@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
 using CoreWars.Common;
-using CoreWars.Common.TypedActorQuery;
-using CoreWars.Common.TypedActorQuery.Query;
+using CoreWars.Common.AkkaExtensions;
 using CoreWars.Competition;
 
 namespace DummyCompetition
 {
-    public class BiggestNumberWinsCompetition : CompetitionActor
+    public class BiggestNumberWinsCompetition : Competition
     {
         private IActorRef _winner;
         

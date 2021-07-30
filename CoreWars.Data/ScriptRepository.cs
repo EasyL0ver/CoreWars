@@ -5,6 +5,7 @@ using Akka.Actor;
 using Akka.Event;
 using Akka.Util.Internal;
 using CoreWars.Common;
+using CoreWars.Common.AkkaExtensions.Messages;
 using CoreWars.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -76,7 +77,7 @@ namespace CoreWars.Data
                 context.Commit();
                 
                 BroadcastEvent(new Messages.DeletedEvent<Script>(deleted));
-                Sender.Tell(new Acknowledged());
+                Sender.Tell(Acknowledged.Instance);
             });
 
             Receive<Messages.ClearScriptError>(msg =>

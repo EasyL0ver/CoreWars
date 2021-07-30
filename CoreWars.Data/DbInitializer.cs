@@ -10,7 +10,7 @@ namespace CoreWars.Data
     {
         public static void SeedCompetitionInfo(
             this CoreWarsDataContext context
-            , IEnumerable<ICompetition> competitions)
+            , IEnumerable<ICompetitionRegistration> competitions)
         {
             competitions.ForEach(competition =>
             {

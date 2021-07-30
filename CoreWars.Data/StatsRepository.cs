@@ -3,6 +3,7 @@ using System.Linq;
 using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
+using CoreWars.Common.AkkaExtensions.Messages;
 using CoreWars.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +25,7 @@ namespace CoreWars.Data
                     AdjustScore(agentId, result);
                 });
 
-                Sender.Tell(new ResultAcknowledged());
+                Sender.Tell(Acknowledged.Instance);
             });
 
             Receive<Messages.ScriptCompetitionResult>(msg =>

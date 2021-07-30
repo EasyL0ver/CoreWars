@@ -31,7 +31,7 @@ namespace CoreWars.WebApp
 
             context.Database.EnsureCreated();
             
-            var competitions = container.Resolve<IEnumerable<ICompetition>>();
+            var competitions = container.Resolve<IEnumerable<ICompetitionRegistration>>();
             context.SeedCompetitionInfo(competitions);
 
             var scriptingLanguages = container.Resolve<IEnumerable<ICompetitorFactory>>();
