@@ -17,16 +17,6 @@ namespace CoreWars.Data
         public StatsRepository(IDataContext context)
         {
             _context = context;
-            Receive<CompetitionResultMessage>(msg =>
-            {
-                msg.CompetitionResults.ForEach(value =>
-                {
-                    var (agentId, result) = value;
-                    AdjustScore(agentId, result);
-                });
-
-                Sender.Tell(Acknowledged.Instance);
-            });
 
             Receive<Messages.ScriptCompetitionResult>(msg =>
             {

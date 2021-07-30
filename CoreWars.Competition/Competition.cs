@@ -22,12 +22,11 @@ namespace CoreWars.Competition
                 x => RunCompetition());
         }
 
-        private void AnnounceResult(
-            CompetitionResultMessage resultMessage)
+        private void AnnounceResult()
         {
             _competitors.ForEach(competitor =>
             {
-                var result = resultMessage.CompetitionResults[competitor.ScriptId];
+                var result = GetResult(competitor.Reference);
                 competitor.Reference.Tell(result);
             });
             
@@ -36,10 +35,7 @@ namespace CoreWars.Competition
 
         protected void Conclude()
         {
-            var dict = _competitors.ToDictionary(x => x.ScriptId,y => GetResult(y.Reference));
-            var message = new CompetitionResultMessage(dict);
-            
-            AnnounceResult(message);
+            AnnounceResult();
         }
 
         protected IReadOnlyList<IActorRef> Competitors => _competitors.Select(x => x.Reference).ToList();
