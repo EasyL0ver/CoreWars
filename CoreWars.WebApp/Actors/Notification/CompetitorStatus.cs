@@ -1,8 +1,10 @@
 using System;
+using CoreWars.Common;
+using CoreWars.Player;
 
-namespace CoreWars.Common
+namespace CoreWars.WebApp.Actors.Notification
 {
-    public class CompetitorStatus : ICompetitorStatus
+    public class CompetitorStatus 
     {
         public CompetitorStatus(CompetitorState state, int gamesPlayed, int wins, Guid competitorId, string exceptionString)
         {

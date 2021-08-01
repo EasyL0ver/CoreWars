@@ -1,5 +1,6 @@
 using Akka.Actor;
 using CoreWars.Common;
+using CoreWars.Scripting;
 
 namespace CoreWars.WebApp
 {

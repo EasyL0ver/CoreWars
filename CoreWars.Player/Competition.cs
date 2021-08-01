@@ -6,6 +6,7 @@ using CoreWars.Common;
 using CoreWars.Data.Entities;
 using CoreWars.Player.Exceptions;
 using CoreWars.Player.Messages;
+using CoreWars.Scripting;
 
 namespace CoreWars.Player
 {

@@ -6,6 +6,7 @@ using CoreWars.Common;
 using CoreWars.Common.Exceptions;
 using CoreWars.Player.Exceptions;
 using CoreWars.Player.Messages;
+using CoreWars.Scripting;
 
 namespace CoreWars.Player
 {
@@ -147,7 +148,6 @@ namespace CoreWars.Player
 
         private void ReactingToStatusMessages()
         {
-            Receive<GameLog>(OnGameLogReceived);
             Receive<Data.Entities.Messages.ScriptStatisticsUpdated>(OnStatsUpdated);
             Receive<Subscribe>(msg =>
             {
@@ -170,10 +170,6 @@ namespace CoreWars.Player
             _statusSubscriptions.ForEach(sub => sub.Tell(obj));
         }
 
-        private void OnGameLogReceived(GameLog obj)
-        {
-            _logger.Debug(obj.Message);
-        }
 
         private void UpdateState(CompetitorState newState)
         {

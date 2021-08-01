@@ -6,9 +6,11 @@ using Akka.Actor;
 using CoreWars.Common;
 using CoreWars.Common.AkkaExtensions.Messages;
 using CoreWars.Data.Entities;
+using CoreWars.Player;
 using CoreWars.WebApp.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Competitor = CoreWars.WebApp.Model.Competitor;
 
 namespace CoreWars.WebApp.Controllers
 {

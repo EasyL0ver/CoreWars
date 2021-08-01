@@ -1,6 +1,6 @@
 namespace CoreWars.Common
 {
-    public enum CompetitionResult
+    public enum CompetitionResult : short
     {
         Inconclusive
         , Winner

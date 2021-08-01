@@ -13,6 +13,7 @@ using CoreWars.Data;
 using CoreWars.Game;
 using CoreWars.Player;
 using CoreWars.Player.Messages;
+using CoreWars.Scripting;
 using CoreWars.WebApp.Actors;
 using CoreWars.WebApp.Actors.Notification;
 using CoreWars.WebApp.Hubs;

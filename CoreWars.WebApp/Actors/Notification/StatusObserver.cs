@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Common.Exceptions;
+using CoreWars.Player;
 using CoreWars.Player.Messages;
 using CoreWars.WebApp.Hubs;
 using Microsoft.AspNetCore.SignalR;

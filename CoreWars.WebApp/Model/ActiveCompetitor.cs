@@ -1,4 +1,5 @@
 using CoreWars.Common;
+using CoreWars.Player;
 
 namespace CoreWars.WebApp.Model
 {

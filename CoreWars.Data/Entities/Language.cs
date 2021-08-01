@@ -6,7 +6,7 @@ using CoreWars.Common;
 namespace CoreWars.Data.Entities
 {
     [Table("languages")]
-    public class Language : IScriptingLanguage
+    public class Language 
     {
         [Key]
         public string Name { get; set; }
