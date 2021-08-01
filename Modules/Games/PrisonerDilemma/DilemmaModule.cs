@@ -9,7 +9,7 @@ namespace PrisonerDilemma
     {
         private class DilemmaFactory : ICompetitionActorPropsFactory
         {
-            public Props Build(IEnumerable<GeneratedAgent> competitionParticipants)
+            public Props Build(IEnumerable<IActorPlayer> competitionParticipants)
             {
                 return Props.Create(() =>
                     new DilemmaCompetition(competitionParticipants, DilemmaConfiguration.Default()));

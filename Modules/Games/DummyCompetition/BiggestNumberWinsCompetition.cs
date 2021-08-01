@@ -12,7 +12,7 @@ namespace DummyCompetition
     {
         private IActorRef _winner;
         
-        public BiggestNumberWinsCompetition(IEnumerable<GeneratedAgent> competitorActors) : base(competitorActors)
+        public BiggestNumberWinsCompetition(IEnumerable<IActorPlayer> competitorActors) : base(competitorActors)
         {
             Receive<TypedQueryResult<int>>(OnNumberPicked);
         }

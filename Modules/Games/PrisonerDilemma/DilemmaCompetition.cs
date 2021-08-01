@@ -34,7 +34,7 @@ namespace PrisonerDilemma
         }
 
         public DilemmaCompetition(
-            IEnumerable<GeneratedAgent> competitorActors
+            IEnumerable<IActorPlayer> competitorActors
             , IDilemmaConfiguration configuration) : base(competitorActors)
         {
             IActorRef actor = null;

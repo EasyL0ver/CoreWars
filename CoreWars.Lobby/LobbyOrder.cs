@@ -65,8 +65,9 @@ namespace CoreWars.Coordination
             Receive<TypedQueryResult<GeneratedAgent>>(msg =>
             {
                 var agents = msg.Result.Values;
-                _orderedBy.Tell(agents.ToList());
+                var message = new RoomCreated(agents.ToList());
                 
+                _orderedBy.Tell(message);
                 Self.Tell(PoisonPill.Instance);
             });
         }

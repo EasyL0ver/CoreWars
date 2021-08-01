@@ -1,6 +1,6 @@
 using Akka.Actor;
 
-namespace CoreWars.Coordination.Messages
+namespace CoreWars.Game.Messages
 {
     public sealed class LobbyGameTerminated
     {

@@ -8,6 +8,7 @@ using CoreWars.Common.AkkaExtensions;
 using CoreWars.Common.AkkaExtensions.Actors.Ask;
 using CoreWars.Coordination.Messages;
 using CoreWars.Game.FSMData;
+using CoreWars.Game.Messages;
 
 namespace CoreWars.Game
 {
@@ -33,16 +34,16 @@ namespace CoreWars.Game
             
             When(CompetitionSlotState.Lobby, state =>
             {
-                if (state.FsmEvent is TypedAskResult<IEnumerable<GeneratedAgent>> agentsOrderCompleted)
+                if (state.FsmEvent is TypedAskResult<RoomCreated> agentsOrderCompleted)
                 {
-                    var competitorActorProps = competitionActorPropsFactory.Build(agentsOrderCompleted.Answer);
+                    var competitorActorProps = competitionActorPropsFactory.Build(agentsOrderCompleted.Answer.ActorPlayers);
                     var competitorActor = Context.ActorOf(competitorActorProps);
                     
                     return GoTo(CompetitionSlotState.Game)
                         .Using(
                             new ActiveGameData(
                                 competitorActor
-                                , agentsOrderCompleted.Answer.ToList()));
+                                , agentsOrderCompleted.Answer.ActorPlayers));
                 }
 
                 if (state.FsmEvent is NotEnoughPlayers)
@@ -138,7 +139,7 @@ namespace CoreWars.Game
             IActorRef competitorSource)
         {
             var query = competitorSource
-                .AskFor<IEnumerable<GeneratedAgent>>(
+                .AskFor<RoomCreated>(
                     OrderAgents.Instance
                     , Context);
 

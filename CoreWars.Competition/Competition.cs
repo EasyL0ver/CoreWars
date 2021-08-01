@@ -10,11 +10,11 @@ namespace CoreWars.Competition
 {
     public abstract class Competition : ReceiveActor
     {
-        private readonly IReadOnlyList<GeneratedAgent> _competitors;
+        private readonly IReadOnlyList<IActorPlayer> _competitors;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
         
         protected Competition(
-            IEnumerable<GeneratedAgent> competitorActors)
+            IEnumerable<IActorPlayer> competitorActors)
         {
             _competitors = competitorActors.ToList();
             
@@ -26,8 +26,8 @@ namespace CoreWars.Competition
         {
             _competitors.ForEach(competitor =>
             {
-                var result = GetResult(competitor.Reference);
-                competitor.Reference.Tell(result);
+                var result = GetResult(competitor.ActorRef);
+                competitor.ActorRef.Tell(result);
             });
             
             Self.Tell(PoisonPill.Instance);
@@ -38,7 +38,7 @@ namespace CoreWars.Competition
             AnnounceResult();
         }
 
-        protected IReadOnlyList<IActorRef> Competitors => _competitors.Select(x => x.Reference).ToList();
+        protected IReadOnlyList<IActorRef> Competitors => _competitors.Select(x => x.ActorRef).ToList();
         
         protected abstract void RunCompetition();
         protected abstract CompetitionResult GetResult(IActorRef playerActor);
@@ -56,7 +56,7 @@ namespace CoreWars.Competition
                             _logger.Warning("One of game agents is unresponsive - aborting with exception: {0}", ex);
                             
                             //kill all competitors
-                            _competitors.ForEach(c => c.Reference.Tell(PoisonPill.Instance));
+                            _competitors.ForEach(c => c.ActorRef.Tell(PoisonPill.Instance));
                             Self.Tell(PoisonPill.Instance);
                             
                             return Directive.Stop;

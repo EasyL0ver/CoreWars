@@ -1,4 +1,4 @@
-namespace CoreWars.Coordination.Messages
+namespace CoreWars.Game.Messages
 {
     public class RunCompetition
     {
