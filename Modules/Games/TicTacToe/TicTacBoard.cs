@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Akka.Actor;
 using JetBrains.Annotations;
+using TicTacToe.Imports;
 
 namespace TicTacToe
 {
@@ -38,37 +39,37 @@ namespace TicTacToe
             checkCombinations.Add(GetRightVertical());
 
             return checkCombinations
-                .Any(combination => combination.All(element => element.Equals(player)));
+                .Any(combination => combination.All(element => element != null && element.Equals(player)));
 
         }
 
-        public Messages.TicTacBoardPayload GetContextPayload(IActorRef player, char playerSign, char opponentSign)
+        public TicTacBoardPayload GetContextPayload(IActorRef player, char playerSign, char opponentSign)
         {
-            char[,] array = new char[3, 3];
+            string[,] array = new string[3, 3];
             for (int x = 0; x < 3; x++)
             {
                 for (int y = 0; y < 3; y++)
                 {
                     var tileContent = Tiles[x, y];
-                    char sign;
+                    string sign;
 
                     if (tileContent == null)
                     {
-                        sign = ' ';
+                        sign = null;
                     }
                     else if (tileContent.Equals(player))
                     {
-                        sign = playerSign;
+                        sign = playerSign.ToString();
                     }
                     else
                     {
-                        sign = opponentSign;
+                        sign = opponentSign.ToString();
                     }
 
                     array[x, y] = sign;
                 }
             }
-            return new Messages.TicTacBoardPayload(array);
+            return new TicTacBoardPayload(array);
         }
 
         private IActorRef[] GetColumn(int columnNumber)

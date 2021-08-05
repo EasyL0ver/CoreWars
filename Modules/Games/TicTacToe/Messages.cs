@@ -7,15 +7,5 @@ namespace TicTacToe
         public class RunRound {}
         
         public class PropagateGameState {}
-
-        public class TicTacBoardPayload
-        {
-            public TicTacBoardPayload(char[,] board)
-            {
-                Board = board;
-            }
-
-            public char[,] Board { get; }
-        }
     }
 }

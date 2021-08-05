@@ -5,6 +5,7 @@ using CoreWars.Common;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Scripting.Hosting;
+using TicTacToe.Imports;
 
 namespace CoreWars.Scripting.Python
 {
@@ -28,6 +29,9 @@ namespace CoreWars.Scripting.Python
                     var engineSearchPaths = engine.GetSearchPaths();
                     engineSearchPaths.Add(libraryPath);
                     engine.SetSearchPaths(engineSearchPaths);
+                    
+                    //todo this is a hack!
+                    engine.Runtime.LoadAssembly(typeof(SymbolPlacement).Assembly);
 
                     return engine;
                 })

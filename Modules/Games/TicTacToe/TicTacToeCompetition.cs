@@ -8,13 +8,14 @@ using CoreWars.Common.AkkaExtensions.Actors.Ask;
 using CoreWars.Common.AkkaExtensions.Messages;
 using CoreWars.Competition;
 using JetBrains.Annotations;
+using TicTacToe.Imports;
 
 namespace TicTacToe
 {
     public class TicTacToeCompetition : Competition
     {
         private int _roundIndex;
-        [ItemCanBeNull] private TicTacBoard _gameBoard;
+        [ItemCanBeNull] private readonly TicTacBoard _gameBoard;
         
         public TicTacToeCompetition(IEnumerable<IActorPlayer> competitorActors) : base(competitorActors)
         {
@@ -23,7 +24,8 @@ namespace TicTacToe
 
             Receive<Messages.RunRound>(msg =>
             {
-                var activePlayer = Competitors[_roundIndex % 1];
+                var activePlayerIndex = _roundIndex % 2;
+                var activePlayer = Competitors[activePlayerIndex];
                 activePlayer.AskFor<SymbolPlacement>(
                     new RunMethodMessage("place_symbol")
                     , Context
@@ -47,7 +49,7 @@ namespace TicTacToe
             {
                 Competitors
                     .QueryFor<Acknowledged>(
-                        (x) => _gameBoard.GetContextPayload(x, 'X', 'O')
+                        (x) => new RunMethodMessage("update_game_state",_gameBoard.GetContextPayload(x, 'X', 'O'))
                         , Context
                         , TimeSpan.FromSeconds(10));
             });

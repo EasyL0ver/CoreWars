@@ -1,4 +1,4 @@
-namespace TicTacToe
+namespace TicTacToe.Imports
 {
     public class SymbolPlacement
     {
