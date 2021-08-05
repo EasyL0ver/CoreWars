@@ -72,7 +72,7 @@ namespace TicTacToe
                 return CompetitionResult.Loser;
             if (_gameBoard.IsPlayerWinner(playerActor))
                 return CompetitionResult.Winner;
-            if (_gameBoard.IsFull())
+            if (_gameBoard.IsFull() || _gameBoard.IsIllegalMoveCommitted())
                 return CompetitionResult.Inconclusive;
             return CompetitionResult.Loser;
         }
