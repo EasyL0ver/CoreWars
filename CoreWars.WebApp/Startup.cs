@@ -19,6 +19,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PrisonerDilemma;
+using TicTacToe;
 
 namespace CoreWars.WebApp
 {
@@ -104,6 +105,7 @@ namespace CoreWars.WebApp
             builder.RegisterModule<PythonScriptingModule>();
             builder.RegisterModule<DummyCompetitionModule>();
             builder.RegisterModule<DilemmaModule>();
+            builder.RegisterModule<TicTacToeModule>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

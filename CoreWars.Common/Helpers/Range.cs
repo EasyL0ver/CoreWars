@@ -17,6 +17,11 @@ namespace CoreWars.Common
         {
             return new Range<T>(min, max);
         }
+
+        public static Range<T> Exactly(T value)
+        {
+            return new Range<T>(value, value);
+        }
         
     }
 }
