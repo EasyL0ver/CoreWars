@@ -71,23 +71,8 @@ namespace CoreWars.Common.AkkaExtensions.Actors.Query
                 Context.Stop(Self);
             });
         }
-        
-        protected override SupervisorStrategy SupervisorStrategy()
-        {
-            return new OneForOneStrategy(
-                loggingEnabled: true
-                    , localOnlyDecider: ex =>
-                
-                {
-                    switch (ex)
-                    {
-                        default:
-                            return Directive.Escalate;
-                    }
-                });
-        }
-        
- 
+
+        protected override SupervisorStrategy SupervisorStrategy() => SupervisorStrategies.AlwaysEscalate();
 
     }
 }
