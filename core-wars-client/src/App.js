@@ -8,6 +8,7 @@ import Leaderboard from './Leaderboard';
 import NavigationBar from './NavigationBar'
 import Footer from './Footer'
 import CreateAccountView from './CreateAccountView'
+import LandingPage from './LandingPage'
 
 
 class App extends React.Component {
@@ -117,6 +118,9 @@ class App extends React.Component {
           <div className="content-container">
             <Switch>
               {routes}
+              <Route path="/">
+                <LandingPage user = {this.state.user}></LandingPage>
+              </Route>
               <Route path="/leaderboard" onEnter={this.onRouteEnter}>
                 <Leaderboard user={this.state.user}/>
               </Route>
