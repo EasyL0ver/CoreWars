@@ -12,11 +12,15 @@ namespace TicTacToe
     public class TicTacBoard
     {
         public IActorRef[,] Tiles { get; } = new IActorRef[3, 3];
+        public readonly List<IActorRef> PlayersWithIllegalMoves = new List<IActorRef>();
 
         public void AddSymbol(IActorRef player, SymbolPlacement placement)
         {
             if (Tiles[placement.X, placement.Y] != null)
-                throw new InvalidOperationException("Invalid player move!");
+            {
+                PlayersWithIllegalMoves.Add(player);
+                return;
+            }
 
             Tiles[placement.X, placement.Y] = player;
         }
@@ -24,6 +28,11 @@ namespace TicTacToe
         public bool IsFull()
         {
             return Tiles.Cast<IActorRef>().All(tile => tile != null);
+        }
+
+        public bool IsIllegalMoveCommitted()
+        {
+            return PlayersWithIllegalMoves.Any();
         }
 
         public bool IsPlayerWinner(IActorRef player)

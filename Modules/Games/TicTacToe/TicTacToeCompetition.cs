@@ -36,7 +36,7 @@ namespace TicTacToe
             {
                 _gameBoard.AddSymbol(msg.Sender, msg.Answer);
 
-                if (_gameBoard.IsPlayerWinner(msg.Sender) || _gameBoard.IsFull())
+                if (_gameBoard.IsPlayerWinner(msg.Sender) || _gameBoard.IsFull() || _gameBoard.IsIllegalMoveCommitted())
                 {
                     Conclude();
                     return;
@@ -68,6 +68,8 @@ namespace TicTacToe
 
         protected override CompetitionResult GetResult(IActorRef playerActor)
         {
+            if (_gameBoard.PlayersWithIllegalMoves.Contains(playerActor))
+                return CompetitionResult.Loser;
             if (_gameBoard.IsPlayerWinner(playerActor))
                 return CompetitionResult.Winner;
             if (_gameBoard.IsFull())
