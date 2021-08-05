@@ -8,7 +8,6 @@ using CoreWars.Coordination.PlayerSet;
 using CoreWars.Data;
 using CoreWars.Scripting.Python;
 using CoreWars.WebApp.Hubs;
-using DummyCompetition;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -103,7 +102,6 @@ namespace CoreWars.WebApp
                 .AsImplementedInterfaces();
 
             builder.RegisterModule<PythonScriptingModule>();
-            builder.RegisterModule<DummyCompetitionModule>();
             builder.RegisterModule<DilemmaModule>();
             builder.RegisterModule<TicTacToeModule>();
         }
