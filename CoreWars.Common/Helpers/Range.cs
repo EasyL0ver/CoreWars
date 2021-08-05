@@ -22,6 +22,11 @@ namespace CoreWars.Common
         {
             return new Range<T>(value, value);
         }
+
+        public bool IsWithin(T value)
+        {
+            return value.CompareTo(minimum) >= 0 && value.CompareTo(maximum) <= 0;
+        }
         
     }
 }

@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using Akka.Actor;
+using CoreWars.Common;
 using JetBrains.Annotations;
 using TicTacToe.Imports;
 
@@ -16,7 +17,7 @@ namespace TicTacToe
 
         public void AddSymbol(IActorRef player, SymbolPlacement placement)
         {
-            if (Tiles[placement.X, placement.Y] != null)
+            if (Tiles[placement.X, placement.Y] != null || Validate(placement))
             {
                 PlayersWithIllegalMoves.Add(player);
                 return;
@@ -79,6 +80,13 @@ namespace TicTacToe
                 }
             }
             return new TicTacBoardPayload(array);
+        }
+
+        private bool Validate(SymbolPlacement placement)
+        {
+            var validRange = Range<int>.Between(0, 2);
+
+            return validRange.IsWithin(placement.X) && validRange.IsWithin(placement.Y);
         }
 
         private IActorRef[] GetColumn(int columnNumber)
