@@ -22,7 +22,7 @@ namespace CoreWars.Game
             IActorRef competitorSource
             , ICompetitionActorPropsFactory competitionActorPropsFactory)
         {
-            StartWith(CompetitionSlotState.Idle, Uninitialized.Instance);
+            StartWith(CompetitionSlotState.Idle, IdleData.FromReason(IdleReason.JustStarted));
             
             When(CompetitionSlotState.Idle, state =>
             {
@@ -48,7 +48,8 @@ namespace CoreWars.Game
 
                 if (state.FsmEvent is NotEnoughPlayers)
                 {
-                    return GoTo(CompetitionSlotState.Idle);
+                    return GoTo(CompetitionSlotState.Idle)
+                        .Using(IdleData.FromReason(IdleReason.NotEnoughPlayers));
                 }
 
                 return null;
@@ -84,14 +85,13 @@ namespace CoreWars.Game
 
                 switch (nextState)
                 {
-
                     case CompetitionSlotState.Game when NextStateData is ActiveGameData nextStateGameData:
                         Context.WatchWith(nextStateGameData.Game, new LobbyGameTerminated(nextStateGameData.Game));
                         nextStateGameData.Game.Tell(new Competition.RunCompetitionMessage());
                         break;
-                    case CompetitionSlotState.Idle:
+                    case CompetitionSlotState.Idle when NextStateData is IdleData idleData:
                         Context.System.Scheduler.ScheduleTellOnce(
-                            TimeSpan.FromSeconds(10),
+                            idleData.RestartAfter,
                             Self,
                             RunCompetition.Instance,
                             Self);
