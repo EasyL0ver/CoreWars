@@ -16,7 +16,7 @@ namespace PrisonerDilemma
 
         public static IDilemmaConfiguration Default()
         {
-            return new DilemmaConfiguration(0, 3, 1, 2, 100, TimeSpan.FromSeconds(5));
+            return new DilemmaConfiguration(0, 5, 1, 3, 100, TimeSpan.FromSeconds(5));
         }
 
         public int IterationsCount { get; }
