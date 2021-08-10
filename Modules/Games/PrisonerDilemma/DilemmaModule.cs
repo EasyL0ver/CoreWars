@@ -25,7 +25,7 @@ namespace PrisonerDilemma
         {
             competitionInfo.Name = "prisoner-dilemma";
             competitionInfo.PlayerCount = Range<int>.Between(2,2);
-            competitionInfo.MaxInstancesCount = 1;
+            competitionInfo.MaxInstancesCount = 3;
         }
     }
 }
