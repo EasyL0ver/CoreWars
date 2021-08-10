@@ -6,7 +6,7 @@ namespace CoreWars.Data
     public interface IDataContext : IBaseRepository
     {
         DbSet<Script> Scripts { get; set; }
-        DbSet<Competition> Competitions { get; set; }
+        DbSet<Entities.Competition> Competitions { get; set; }
         DbSet<Language> Languages { get; }
         DbSet<ScriptStatistics> Stats { get; }
         DbSet<User> Users { get; }
@@ -59,7 +59,7 @@ namespace CoreWars.Data
             => optionsBuilder.UseNpgsql(_connectionString);
         
         public DbSet<Script> Scripts { get; set; }
-        public DbSet<Competition> Competitions { get; set; }
+        public DbSet<Entities.Competition> Competitions { get; set; }
         public DbSet<Language> Languages { get; set; }
         public DbSet<ScriptStatistics> Stats { get; set; }
         public DbSet<User> Users { get; set; }

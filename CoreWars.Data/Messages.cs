@@ -1,4 +1,5 @@
 using System;
+using CoreWars.Competition;
 
 namespace CoreWars.Data.Entities
 {
@@ -105,14 +106,14 @@ namespace CoreWars.Data.Entities
 
         public class ScriptCompetitionResult
         {
-            public ScriptCompetitionResult(Guid scriptId, Common.CompetitionResult result)
+            public ScriptCompetitionResult(Guid scriptId, CompetitorResult result)
             {
                 ScriptId = scriptId;
                 Result = result;
             }
 
             public Guid ScriptId { get; }
-            public Common.CompetitionResult Result { get; }
+            public CompetitorResult Result { get; }
         }
 
         public sealed class ScriptStatisticsUpdated

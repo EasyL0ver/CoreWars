@@ -17,7 +17,9 @@ namespace TicTacToe
         private int _roundIndex;
         [ItemCanBeNull] private readonly TicTacBoard _gameBoard;
         
-        public TicTacToeCompetition(IEnumerable<IActorPlayer> competitorActors) : base(competitorActors)
+        public TicTacToeCompetition(
+            IEnumerable<IActorPlayer> competitorActors) 
+            : base(competitorActors)
         {
             _gameBoard = new TicTacBoard();
             _roundIndex = 0;
@@ -36,7 +38,9 @@ namespace TicTacToe
             {
                 _gameBoard.AddSymbol(msg.Sender, msg.Answer);
 
-                if (_gameBoard.IsPlayerWinner(msg.Sender) || _gameBoard.IsFull() || _gameBoard.IsIllegalMoveCommitted())
+                if (_gameBoard.IsPlayerWinner(msg.Sender) 
+                    || _gameBoard.IsFull() 
+                    || _gameBoard.IsIllegalMoveCommitted())
                 {
                     Conclude();
                     return;
@@ -66,15 +70,15 @@ namespace TicTacToe
             Self.Tell(new Messages.RunRound());
         }
 
-        protected override CompetitionResult GetResult(IActorRef playerActor)
+        protected override CompetitorResult GetResult(IActorRef playerActor)
         {
             if (_gameBoard.PlayersWithIllegalMoves.Contains(playerActor))
-                return CompetitionResult.Loser;
+                return CompetitorResult.FromResult(CompetitionResult.Loser);
             if (_gameBoard.IsPlayerWinner(playerActor))
-                return CompetitionResult.Winner;
+                return CompetitorResult.FromResult(CompetitionResult.Winner);
             if (_gameBoard.IsFull() || _gameBoard.IsIllegalMoveCommitted())
-                return CompetitionResult.Inconclusive;
-            return CompetitionResult.Loser;
+                return CompetitorResult.FromResult(CompetitionResult.Inconclusive);
+            return CompetitorResult.FromResult(CompetitionResult.Loser);
         }
     }
 }

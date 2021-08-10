@@ -21,16 +21,19 @@ namespace PrisonerDilemma
             Self.Tell(new Messages.StartRound());
         }
 
-        protected override CompetitionResult GetResult(IActorRef playerActor)
+        protected override CompetitorResult GetResult(IActorRef playerActor)
         {
             var minScore = _playersScore.Values.Min();
             var winners = _playersScore.Where(x => x.Value == minScore).ToList();
 
-            if (winners.Count > 1) return CompetitionResult.Inconclusive;
-            if (winners.All(w => w.Key == playerActor))
-                return CompetitionResult.Winner;
-            
-            return CompetitionResult.Loser;
+            CompetitionResult result;
+            if (winners.Count > 1) result = CompetitionResult.Inconclusive;
+            else if (winners.All(w => w.Key == playerActor))
+                result = CompetitionResult.Winner;
+            else
+                result =CompetitionResult.Loser;
+
+            return new CompetitorResult(result, _playersScore[playerActor]);
         }
 
         public DilemmaCompetition(

@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Common.Exceptions;
+using CoreWars.Competition;
 using CoreWars.Player.Exceptions;
 using CoreWars.Player.Messages;
 using CoreWars.Scripting;
@@ -96,7 +97,7 @@ namespace CoreWars.Player
                 UpdateState(CompetitorState.Inconclusive);
             });
 
-            Receive<CompetitionResult>(msg =>
+            Receive<CompetitorResult>(msg =>
             {
                 UpdateState(CompetitorState.Active);
                 var result = new Data.Entities.Messages.ScriptCompetitionResult(_script.Id, msg);
@@ -136,7 +137,7 @@ namespace CoreWars.Player
                 Sender.Tell(ex);
             });
 
-            Receive<CompetitionResult>(msg =>
+            Receive<CompetitorResult>(msg =>
             {
                 //just in case 
                 Sender.Tell(PoisonPill.Instance);

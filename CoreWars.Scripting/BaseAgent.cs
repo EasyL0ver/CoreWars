@@ -1,6 +1,7 @@
 using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
+using CoreWars.Competition;
 
 namespace CoreWars.Scripting
 {
@@ -10,7 +11,7 @@ namespace CoreWars.Scripting
         
         public BaseAgent()
         {
-            Receive<CompetitionResult>(msg =>
+            Receive<CompetitorResult>(msg =>
             {
                 UntypedActor.Context.Parent.Tell(msg);
             });

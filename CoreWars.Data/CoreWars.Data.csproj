@@ -15,6 +15,7 @@
     <ItemGroup>
       <ProjectReference Include="..\CoreWars.Common.AkkaExtensions\CoreWars.Common.AkkaExtensions.csproj" />
       <ProjectReference Include="..\CoreWars.Common\CoreWars.Common.csproj" />
+      <ProjectReference Include="..\CoreWars.Competition\CoreWars.Competition.csproj" />
     </ItemGroup>
 
 </Project>

@@ -33,15 +33,16 @@ namespace CoreWars.Competition
             Self.Tell(PoisonPill.Instance);
         }
 
+    
+        protected IReadOnlyList<IActorRef> Competitors => _competitors.Select(x => x.ActorRef).ToList();
+        
+        protected abstract void RunCompetition();
+        protected abstract CompetitorResult GetResult(IActorRef playerActor);
+        
         protected void Conclude()
         {
             AnnounceResult();
         }
-
-        protected IReadOnlyList<IActorRef> Competitors => _competitors.Select(x => x.ActorRef).ToList();
-        
-        protected abstract void RunCompetition();
-        protected abstract CompetitionResult GetResult(IActorRef playerActor);
         
         protected override SupervisorStrategy SupervisorStrategy()
         {

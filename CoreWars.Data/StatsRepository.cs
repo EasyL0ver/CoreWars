@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Common.AkkaExtensions.Messages;
+using CoreWars.Competition;
 using CoreWars.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -60,7 +61,7 @@ namespace CoreWars.Data
             });
         }
 
-        private void AdjustScore(Guid agentId, CompetitionResult result)
+        private void AdjustScore(Guid agentId, CompetitorResult result)
         {
             var scriptScore = _context.Stats
                 .SingleOrDefault(s => s.ScriptId == agentId);
@@ -69,7 +70,7 @@ namespace CoreWars.Data
             {
                 var newStats = new ScriptStatistics()
                 {
-                    ScriptId = agentId, Wins = result == CompetitionResult.Winner ? 1 : 0, GamesPlayed = 1
+                    ScriptId = agentId, Wins = result.Result == CompetitionResult.Winner ? 1 : 0, GamesPlayed = 1, CumulativeScore = result.Score
                 };
 
                 _context.Stats.Add(newStats);
@@ -79,7 +80,9 @@ namespace CoreWars.Data
             {
                 scriptScore.GamesPlayed += 1;
 
-                if (result == CompetitionResult.Winner)
+                scriptScore.CumulativeScore += result.Score;
+
+                if (result.Result == CompetitionResult.Winner)
                     scriptScore.Wins += 1;
             }
 

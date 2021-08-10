@@ -14,6 +14,7 @@ namespace CoreWars.Data.Entities
         
         public int Wins { get; set; }
         public int GamesPlayed { get; set; }
+        public double CumulativeScore { get; set; }
         
         public virtual Script Script { get; set; }
     }
