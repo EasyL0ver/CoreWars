@@ -91,7 +91,7 @@ namespace CoreWars.Game
                         break;
                     case CompetitionSlotState.Idle:
                         Context.System.Scheduler.ScheduleTellOnce(
-                            TimeSpan.FromSeconds(2),
+                            TimeSpan.FromSeconds(10),
                             Self,
                             RunCompetition.Instance,
                             Self);
