@@ -25,7 +25,7 @@ namespace CoreWars.Common
 
         public bool IsWithin(T value)
         {
-            return value.CompareTo(minimum) >= 0 && value.CompareTo(maximum) <= 0;
+            return value.CompareTo(minimum) <= 0 && value.CompareTo(maximum) >= 0;
         }
         
     }
