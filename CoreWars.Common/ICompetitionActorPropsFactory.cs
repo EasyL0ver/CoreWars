@@ -5,6 +5,6 @@ namespace CoreWars.Common
 {
     public interface ICompetitionActorPropsFactory
     {
-        Props Build(IEnumerable<GeneratedAgent> competitionParticipants);
+        Props Build(IEnumerable<IActorPlayer> competitionParticipants);
     }
 }

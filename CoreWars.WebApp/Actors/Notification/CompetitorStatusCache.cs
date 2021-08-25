@@ -1,5 +1,6 @@
 using System;
 using CoreWars.Common;
+using CoreWars.Player;
 
 namespace CoreWars.WebApp.Actors.Notification
 {

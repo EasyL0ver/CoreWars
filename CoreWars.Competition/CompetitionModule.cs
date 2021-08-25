@@ -13,11 +13,11 @@ namespace CoreWars.Competition
             
             ConfigureCompetitionInfo(competitionConfiguration);
 
-            var competition = new Competition(competitionConfiguration, ConfigureFactory());
+            var competition = new CompetitionRegistration(competitionConfiguration, ConfigureFactory());
 
             builder
                 .RegisterInstance(competition)
-                .As<ICompetition>()
+                .As<ICompetitionRegistration>()
                 .SingleInstance();
         }
 

@@ -9,10 +9,10 @@ namespace PrisonerDilemma
     {
         private class DilemmaFactory : ICompetitionActorPropsFactory
         {
-            public Props Build(IEnumerable<GeneratedAgent> competitionParticipants)
+            public Props Build(IEnumerable<IActorPlayer> competitionParticipants)
             {
                 return Props.Create(() =>
-                    new DilemmaCompetitionActor(competitionParticipants, DilemmaConfiguration.Default()));
+                    new DilemmaCompetition(competitionParticipants, DilemmaConfiguration.Default()));
             }
         }
         
@@ -25,7 +25,7 @@ namespace PrisonerDilemma
         {
             competitionInfo.Name = "prisoner-dilemma";
             competitionInfo.PlayerCount = Range<int>.Between(2,2);
-            competitionInfo.MaxInstancesCount = 1;
+            competitionInfo.MaxInstancesCount = 3;
         }
     }
 }

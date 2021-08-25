@@ -4,8 +4,10 @@ using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Common.Exceptions;
+using CoreWars.Competition;
 using CoreWars.Player.Exceptions;
 using CoreWars.Player.Messages;
+using CoreWars.Scripting;
 
 namespace CoreWars.Player
 {
@@ -95,7 +97,7 @@ namespace CoreWars.Player
                 UpdateState(CompetitorState.Inconclusive);
             });
 
-            Receive<CompetitionResult>(msg =>
+            Receive<CompetitorResult>(msg =>
             {
                 UpdateState(CompetitorState.Active);
                 var result = new Data.Entities.Messages.ScriptCompetitionResult(_script.Id, msg);
@@ -135,7 +137,7 @@ namespace CoreWars.Player
                 Sender.Tell(ex);
             });
 
-            Receive<CompetitionResult>(msg =>
+            Receive<CompetitorResult>(msg =>
             {
                 //just in case 
                 Sender.Tell(PoisonPill.Instance);
@@ -147,7 +149,6 @@ namespace CoreWars.Player
 
         private void ReactingToStatusMessages()
         {
-            Receive<GameLog>(OnGameLogReceived);
             Receive<Data.Entities.Messages.ScriptStatisticsUpdated>(OnStatsUpdated);
             Receive<Subscribe>(msg =>
             {
@@ -170,10 +171,6 @@ namespace CoreWars.Player
             _statusSubscriptions.ForEach(sub => sub.Tell(obj));
         }
 
-        private void OnGameLogReceived(GameLog obj)
-        {
-            _logger.Debug(obj.Message);
-        }
 
         private void UpdateState(CompetitorState newState)
         {

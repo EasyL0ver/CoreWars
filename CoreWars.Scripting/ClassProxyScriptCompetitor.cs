@@ -1,6 +1,8 @@
 using System;
 using Akka.Actor;
+using Akka.Event;
 using CoreWars.Common;
+using CoreWars.Common.AkkaExtensions.Messages;
 using CoreWars.Common.Exceptions;
 using CoreWars.Competition;
 
@@ -9,6 +11,7 @@ namespace CoreWars.Scripting
     public class ClassProxyScriptCompetitor : BaseAgent
     {
         private readonly IInteroperabilityClassProxy _interoperabilityClassProxy;
+        private readonly ILoggingAdapter _logger = Context.GetLogger();
 
         public ClassProxyScriptCompetitor(IInteroperabilityClassProxy interoperabilityClassProxy)
         {
@@ -23,7 +26,7 @@ namespace CoreWars.Scripting
                                    ?? new Acknowledged();
                     
                     Sender.Tell(response);
-                    TraceMessage(FormatLogMessage(msg, response));
+                    _logger.Debug(FormatLogMessage(msg, response));
                 }
                 catch (Exception e)
                 {

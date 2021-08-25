@@ -1,0 +1,9 @@
+select 
+    scripts."Name"
+    , statistics."GamesPlayed"
+    , (statistics."Wins" / cast(statistics."GamesPlayed" as decimal) ) as win_rate
+    , (statistics."CumulativeScore" / cast(statistics."GamesPlayed" as decimal) ) as avg_score
+from scripts
+inner join statistics
+on scripts."Id" = statistics."ScriptId"
+order by avg_score desc;

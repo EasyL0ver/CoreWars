@@ -4,6 +4,7 @@ using Akka.Actor;
 using Akka.Event;
 using CoreWars.Common;
 using CoreWars.Common.Exceptions;
+using CoreWars.Player;
 using CoreWars.Player.Messages;
 using CoreWars.WebApp.Hubs;
 using Microsoft.AspNetCore.SignalR;
@@ -55,7 +56,14 @@ namespace CoreWars.WebApp.Actors.Notification
                 _timeoutCancellable.Cancel();
                 _watchedCompetitor = msg.Subject;
                 _watchedCompetitor.Tell(Subscribe.Instance);
-
+                
+                Context.System.Scheduler.ScheduleTellRepeatedly(
+                    TimeSpan.Zero
+                    , TimeSpan.FromSeconds(3)
+                    , Self
+                    , Messages.ScheduleUpdate.Instance
+                    , Self);
+                
                 Become(ListeningForStatus);
             });
             Receive<Messages.IdentityTimeout>(msg =>
@@ -73,23 +81,19 @@ namespace CoreWars.WebApp.Actors.Notification
             {
                 _cache.Wins = msg.Wins;
                 _cache.GamesPlayed = msg.GamesPlayed;
-
-                Self.Tell(Messages.ScheduleUpdate.Instance);
             });
             Receive<CompetitorState>(msg =>
             {
                 _cache.State = msg;
-                Self.Tell(Messages.ScheduleUpdate.Instance);
             });
             Receive<AgentFailureState>(msg =>
             {
                 _cache.Exception = msg.Exception;
-                Self.Tell(Messages.ScheduleUpdate.Instance);
             });
-            Receive<Messages.ScheduleUpdate>(async msg =>
+            Receive<Messages.ScheduleUpdate>(msg =>
             {
                 var updateMessage = _cache.GetMessage();
-                await NotifyUser(_connectionId, updateMessage);
+                NotifyUser(_connectionId, updateMessage).PipeTo(Self);
             });
             ReceiveAny(msg => throw new InvalidOperationException($"Unknown message type received. Received object: {msg}"));
         }

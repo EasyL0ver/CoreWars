@@ -6,7 +6,7 @@ using CoreWars.Common;
 namespace CoreWars.Data.Entities
 {
     [Table("statistics")]
-    public class ScriptStatistics : ICompetitorStatistics
+    public class ScriptStatistics 
     {
         [Key]
         [ForeignKey(nameof(Script))]
@@ -14,6 +14,7 @@ namespace CoreWars.Data.Entities
         
         public int Wins { get; set; }
         public int GamesPlayed { get; set; }
+        public double CumulativeScore { get; set; }
         
         public virtual Script Script { get; set; }
     }

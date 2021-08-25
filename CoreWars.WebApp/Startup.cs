@@ -8,7 +8,6 @@ using CoreWars.Coordination.PlayerSet;
 using CoreWars.Data;
 using CoreWars.Scripting.Python;
 using CoreWars.WebApp.Hubs;
-using DummyCompetition;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -19,6 +18,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PrisonerDilemma;
+using TicTacToe;
 
 namespace CoreWars.WebApp
 {
@@ -102,8 +102,8 @@ namespace CoreWars.WebApp
                 .AsImplementedInterfaces();
 
             builder.RegisterModule<PythonScriptingModule>();
-            builder.RegisterModule<DummyCompetitionModule>();
             builder.RegisterModule<DilemmaModule>();
+            builder.RegisterModule<TicTacToeModule>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

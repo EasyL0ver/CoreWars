@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Akka.Actor;
 using CoreWars.Common;
+using CoreWars.Scripting;
 
 namespace CoreWars.WebApp
 {

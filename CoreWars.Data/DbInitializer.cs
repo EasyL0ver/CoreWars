@@ -10,13 +10,13 @@ namespace CoreWars.Data
     {
         public static void SeedCompetitionInfo(
             this CoreWarsDataContext context
-            , IEnumerable<ICompetition> competitions)
+            , IEnumerable<ICompetitionRegistration> competitions)
         {
             competitions.ForEach(competition =>
             {
                 var name = competition.Info.Name;
                 if (!context.Competitions.Any(c => c.Name == name))
-                    context.Competitions.Add(new Competition()
+                    context.Competitions.Add(new Entities.Competition()
                     {
                         Name = name
                     });
